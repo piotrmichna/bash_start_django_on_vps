@@ -60,3 +60,7 @@ function get_param(){
     done
   fi
 }
+
+get_param "Instalacja dejango? [Y/n]" "yYnN"
+
+echo "$PARAM"
