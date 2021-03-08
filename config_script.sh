@@ -45,11 +45,3 @@ function message(){
     echo "------> $1 <---" |& tee -a $LOG_FILE &> /dev/null
   fi
 }
-
-message "Instalacja django title" -t
-message "Instalacja django error" -e
-message "Instalacja django correct" -c
-message "Instalacja django message" -m
-message "Instalacja django? [Y/n]:" -q
-read x
-message "Instalacja django pusta $x"
