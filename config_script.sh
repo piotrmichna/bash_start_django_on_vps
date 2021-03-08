@@ -32,6 +32,10 @@ function message(){
         echo -ne "${GREY}[${GREEN}✓${GREY}]--->${BLUE} $1 ${GREY}<---${NC}\n\r"
         echo "------> $1 <---" |& tee -a $LOG_FILE &> /dev/null
       ;;
+      '-m') # message
+        echo -ne "${GREY}------> ${GREEN}$1 ${GREEN}<---${NC}\n\r"
+        echo "------> $1 <---" |& tee -a $LOG_FILE &> /dev/null
+      ;;
     esac
   else
     echo -ne "${GREY}------> $1 <---${NC}\n\r"
