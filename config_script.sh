@@ -28,6 +28,10 @@ function message(){
         echo -ne "${RED}${BLINK}ERROR${NC}${RED}-> $1 <---${NC}\n\r"
         echo "------> $1 <---" |& tee -a $LOG_FILE &> /dev/null
       ;;
+      '-c') # correct ✓
+        echo -ne "${GREY}[${GREEN}✓${GREY}]--->${BLUE} $1 ${GREY}<---${NC}\n\r"
+        echo "------> $1 <---" |& tee -a $LOG_FILE &> /dev/null
+      ;;
     esac
   else
     echo -ne "${GREY}------> $1 <---${NC}\n\r"
