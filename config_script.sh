@@ -61,6 +61,29 @@ function get_param(){
   fi
 }
 
+function get_config_user(){
+  get_param "Załadować aplikacje z Githuba? [n/t]" "TtNn"
+  if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+    C_GIT=1
+  else
+    C_GIT=0
+  fi
+
+  get_param "Utworzyć usługę systemową dla aplikacji? [n/t]" "TtNn"
+  if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+    C_SERVICE=1
+  else
+    C_SERVICE=0
+  fi
+
+  get_param "Podaj nazwę aplikacji"
+  APP_NAME=$PARAM
+  get_param "Podaj opis aplikacji"
+  APP_DESCRIPTION=$PARAM
+  get_param "Podaj katalog aplikacji ~/"
+  APP_DIR=$PARAM
+}
+
 function get_config(){
   message "Konfiguracja instalatora" "-m"
   get_param "Modyfikacja prompt'a termianal? [n/t]" "TtNn"
