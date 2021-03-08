@@ -36,6 +36,9 @@ function message(){
         echo -ne "${GREY}------> ${GREEN}$1 ${GREEN}<---${NC}\n\r"
         echo "------> $1 <---" |& tee -a $LOG_FILE &> /dev/null
       ;;
+      '-q') # question
+        echo -ne "${GREY}------> ${BOLD}$1: ${GREEN}"
+      ;;
     esac
   else
     echo -ne "${GREY}------> $1 <---${NC}\n\r"
