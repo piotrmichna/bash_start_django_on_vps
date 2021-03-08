@@ -84,6 +84,15 @@ function get_config_user(){
   APP_DIR=$PARAM
 }
 
+function get_config_root(){
+  get_param "Utworzyć użytkownika systemowego? [*/t]" "TtNn"
+  if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+    C_USER=1
+  else
+    C_USER=0
+  fi
+}
+
 function get_config(){
   message "Konfiguracja instalatora" "-m"
   get_param "Modyfikacja prompt'a termianal? [n/t]" "TtNn"
