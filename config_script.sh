@@ -17,7 +17,7 @@ LOG_FILE="app.log"
 
 
 function message(){
-  if [ -n $2 ] ; then
+  if [ -n "$2" ] ; then
     case "$2" in
       '-t') # title
         echo -ne "\n\r${BLUE}${BOLD}------> $1 <-----------[ ${currentDate} ${currentTime} ]${NC}\n\r"
@@ -46,4 +46,10 @@ function message(){
   fi
 }
 
-message "Instalacja django" -t
+message "Instalacja django title" -t
+message "Instalacja django error" -e
+message "Instalacja django correct" -c
+message "Instalacja django message" -m
+message "Instalacja django? [Y/n]:" -q
+read x
+message "Instalacja django pusta $x"
