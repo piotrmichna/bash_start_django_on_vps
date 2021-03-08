@@ -45,3 +45,18 @@ function message(){
     echo "------> $1 <---" |& tee -a $LOG_FILE &> /dev/null
   fi
 }
+
+function get_param(){
+  if [ -n "$1" ] ; then
+    PARAM=""
+    while [ "" == "$PARAM" ] ; do
+      message "$1" "-q"
+      read PARAM
+      if [ -n "$2" ] ; then
+        if [ `echo $2 | grep $PARAM | wc -l` -eq 0 ] ; then
+          PARAM=""
+        fi
+      fi
+    done
+  fi
+}
