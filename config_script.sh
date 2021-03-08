@@ -33,7 +33,7 @@ function message(){
         echo "------> $1 <---" |& tee -a $LOG_FILE &> /dev/null
       ;;
       '-m') # message
-        echo -ne "${GREY}------> ${GREEN}$1 ${GREEN}<---${NC}\n\r"
+        echo -ne "${GREEN}------> $1 ${GREEN}<---${NC}\n\r"
         echo "------> $1 <---" |& tee -a $LOG_FILE &> /dev/null
       ;;
       '-q') # question
@@ -95,17 +95,24 @@ function get_config_root(){
 
 function get_config(){
   message "Konfiguracja instalatora" "-m"
-  get_param "Modyfikacja prompt'a termianal? [n/t]" "TtNn"
+  get_param "Modyfikacja prompt'a termianal? [*/t]" "TtNn"
   if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
     C_PROMPT=1
   else
     C_PROMPT=0
   fi
 
-  if [ "$USER" == "root" ] ; then
-    echo "Konfiguracja dla root"
+  get_param "Instalacja i konfiguracja narzędzi? [*/t]" "TtNn"
+  if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+    C_TOOLS=1
   else
-    echo "Konfiguracja użytkownika"
+    C_TOOLS=0
+  fi
+
+  if [ "$USER" == "root" ] ; then
+    get_config_root
+  else
+    get_config_user
   fi
 }
 
