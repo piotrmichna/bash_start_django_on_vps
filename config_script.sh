@@ -24,6 +24,10 @@ function message(){
         echo "" |& tee -a $LOG_FILE &> /dev/null
         echo "------> $1 <-----------[ ${currentDate} ${currentTime} ]" |& tee -a $LOG_FILE &> /dev/null
       ;;
+      '-e') # error
+        echo -ne "${RED}${BLINK}ERROR${NC}${RED}-> $1 <---${NC}\n\r"
+        echo "------> $1 <---" |& tee -a $LOG_FILE &> /dev/null
+      ;;
     esac
   else
     echo -ne "${GREY}------> $1 <---${NC}\n\r"
