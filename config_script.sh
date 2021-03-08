@@ -60,3 +60,23 @@ function get_param(){
     done
   fi
 }
+
+function get_config(){
+  message "Konfiguracja instalatora" "-m"
+  get_param "Modyfikacja prompt'a termianal? [n/t]" "TtNn"
+  if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+    C_PROMPT=1
+  else
+    C_PROMPT=0
+  fi
+
+  if [ "$USER" == "root" ] ; then
+    echo "Konfiguracja dla root"
+  else
+    echo "Konfiguracja użytkownika"
+  fi
+}
+
+
+
+get_config
