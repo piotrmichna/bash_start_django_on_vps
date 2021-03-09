@@ -33,7 +33,7 @@ function message(){
         echo "------> $1 <---" |& tee -a $LOG_FILE &> /dev/null
       ;;
       '-m') # message
-        echo -ne "${GREY}------> ${GREEN}$1 ${GREEN}<---${NC}\n\r"
+        echo -ne "${GREEN}------> $1 ${GREEN}<---${NC}\n\r"
         echo "------> $1 <---" |& tee -a $LOG_FILE &> /dev/null
       ;;
       '-q') # question
@@ -45,3 +45,77 @@ function message(){
     echo "------> $1 <---" |& tee -a $LOG_FILE &> /dev/null
   fi
 }
+
+function get_param(){
+  if [ -n "$1" ] ; then
+    PARAM=""
+    while [ "" == "$PARAM" ] ; do
+      message "$1" "-q"
+      read PARAM
+      if [ -n "$2" ] ; then
+        if [ `echo $2 | grep $PARAM | wc -l` -eq 0 ] ; then
+          PARAM=""
+        fi
+      fi
+    done
+  fi
+}
+
+function get_config_user(){
+  get_param "Załadować aplikacje z Githuba? [n/t]" "TtNn"
+  if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+    C_GIT=1
+  else
+    C_GIT=0
+  fi
+
+  get_param "Utworzyć usługę systemową dla aplikacji? [n/t]" "TtNn"
+  if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+    C_SERVICE=1
+  else
+    C_SERVICE=0
+  fi
+
+  get_param "Podaj nazwę aplikacji"
+  APP_NAME=$PARAM
+  get_param "Podaj opis aplikacji"
+  APP_DESCRIPTION=$PARAM
+  get_param "Podaj katalog aplikacji ~/"
+  APP_DIR=$PARAM
+}
+
+function get_config_root(){
+  get_param "Utworzyć użytkownika systemowego? [*/t]" "TtNn"
+  if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+    C_USER=1
+  else
+    C_USER=0
+  fi
+}
+
+function get_config(){
+  message "Konfiguracja instalatora" "-m"
+  get_param "Modyfikacja prompt'a termianal? [*/t]" "TtNn"
+  if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+    C_PROMPT=1
+  else
+    C_PROMPT=0
+  fi
+
+  get_param "Instalacja i konfiguracja narzędzi? [*/t]" "TtNn"
+  if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+    C_TOOLS=1
+  else
+    C_TOOLS=0
+  fi
+
+  if [ "$USER" == "root" ] ; then
+    get_config_root
+  else
+    get_config_user
+  fi
+}
+
+
+
+get_config
