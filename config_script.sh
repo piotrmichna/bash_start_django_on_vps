@@ -147,6 +147,19 @@ function get_conf_service(){
   fi
 }
 
+function get_config_psql_db(){
+  while true ; do
+    get_param "Podaj nazwę bazy"
+    PSQL_NAME=$PARAM
+    x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='$PSQL_NAME'"`
+    if [ "$x" == "" ] ; then
+      break
+    else
+      message "Baza danych już istnieje" "-e"
+    fi
+  done
+}
+
 function get_config_psql(){
   get_param "Utworzyć konfiguracje bazy postgresql? [n/t]" "TtNn"
   if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
