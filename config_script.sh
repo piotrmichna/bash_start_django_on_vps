@@ -63,7 +63,7 @@ function get_param(){
 
 function check_dir(){
   if [ -n "$1" ] ; then
-    while ; do
+    while true ; do
       message "$1" "-q"
       read PARAM
       if [ -d "$HOME/$PARAM" ] ; then
