@@ -226,7 +226,6 @@ function get_config_user(){
 
   message "KONFIGURACJA USŁUGI SYSTEMOWEJ" "-m"
   get_conf_service
-
 }
 
 function get_config_root(){
@@ -261,5 +260,4 @@ function get_config(){
   fi
 }
 
-#get_config
-get_config_psql_user
+get_config
