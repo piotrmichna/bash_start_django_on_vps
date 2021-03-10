@@ -26,11 +26,14 @@ function message(){
       ;;
       '-e') # error
         echo -ne "${RED}${BLINK}ERROR${NC}${RED}-> $1 <---${NC}\n\r"
-        echo "------> $1 <---" |& tee -a $LOG_FILE &> /dev/null
+        echo "ERROR-> $1 <---" |& tee -a $LOG_FILE &> /dev/null
+      ;;
+      '-w') # worning
+        echo -ne "${RED}${BLINK}ERROR${NC}${RED}-> $1 <---${NC}\n\r"
       ;;
       '-c') # correct ✓
         echo -ne "${GREY}[${GREEN}✓${GREY}]--->${BLUE} $1 ${GREY}<---${NC}\n\r"
-        echo "------> $1 <---" |& tee -a $LOG_FILE &> /dev/null
+        echo "[✓]---> $1 <---" |& tee -a $LOG_FILE &> /dev/null
       ;;
       '-m') # message
         echo -ne "${GREEN}------> $1 ${GREEN}<---${NC}\n\r"
@@ -67,7 +70,7 @@ function check_dir(){
       message "$1" "-q"
       read PARAM
       if [ -d "$HOME/$PARAM" ] ; then
-        message "Katalog [ $HOME/$PARAM ] już istnieje!" "-e"
+        message "Katalog [ $HOME/$PARAM ] już istnieje!" "-w"
       else
         break
       fi
@@ -97,7 +100,7 @@ function get_git_clone_config(){
         C_CGIT=1
         break
       else
-        message "Błędny adres repozytorium!" "-e"
+        message "Błędny adres repozytorium!" "-w"
       fi
     fi
   done  
@@ -155,7 +158,7 @@ function get_config_psql_db(){
     if [ "$x" == "" ] ; then
       break
     else
-      message "Baza danych już istnieje" "-e"
+      message "Baza danych już istnieje" "-w"
     fi
   done
 }
@@ -180,7 +183,7 @@ function get_config_psql_user(){
     if [ "$x" == "" ] ; then      
       break
     else
-      message "Użytkownik baza danych już istnieje" "-e"
+      message "Użytkownik baza danych już istnieje" "-w"
     fi
   done
   while true ; do
@@ -194,7 +197,7 @@ function get_config_psql_user(){
     if [ "$PSQL_PASS" == "$PARAM" ] ; then
       break
     else
-      message "Hasła nie są zgodne" "-e"
+      message "Hasła nie są zgodne" "-w"
     fi
   done
 
@@ -238,7 +241,7 @@ function get_config_root(){
 }
 
 function get_config(){
-  message "Konfiguracja instalatora" "-m"
+  message "KONFIGURACJA INSTALATORA" "-t"
   get_param "Modyfikacja prompt'a termianal? [*/t]" "TtNn"
   if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
     C_PROMPT=1
