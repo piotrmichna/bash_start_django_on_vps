@@ -46,29 +46,40 @@ function install_prog(){
     done
 }
 
-function get_firtualenv(){
-    message 'Środowisko virtualenv' "-t"
-
-    x=`pip3 list | grep virtualenv | wc -l`
-    if [ $x -eq 0 ] ; then
-        message 'Instalacja virtualenv' "-m"
-        pip3 install virtualenv |& tee -a $LOG_FILE &> /dev/null
-        x=`pip3 list | grep virtualenv | wc -l`
+function get_pip_install(){
+    for i in $@ ; do
+        x=`pip3 list | grep $i | wc -l`
         if [ $x -eq 0 ] ; then
-            message "Nie udana instalacja virtualenv." "-e"
-            exit
+            message "Instalacja biblioteki $i"
+            pip3 install $i |& tee -a $LOG_FILE &> /dev/null
+            x=`pip3 list | grep $i | wc -l`
+            if [ $x -eq 0 ] ; then
+                message "Instalacji biblioteki $i." "-e"
+                exit
+            else
+                message "Zainstalowano bibliotekę $i." "-c"
+            fi
         else
-            message "Pomyślnie zainstalowano virtualenv." "-c"
+            message "Biblioteka $i jest już zainstalowana."
         fi
-    else
-        message 'Dostępne środowisko virtualenv'
-    fi
+    done
+}
+
+function get_firtualenv(){
+    message "ŚRODOWISKO VIRTUALENV" "-t"
+
+    get_pip_install virtualenv
+    
     message 'Konfiguracja środowiska virtualenv'
     cd $HOME/$PROJ_DIR
     virtualenv -p python3 venv |& tee -a $LOG_FILE &> /dev/null
     if [ -d "venv" ] ; then
         message "Utworzenie środowiska virtualenv." "-c"
+        cd $HOME/$PROJ_DIR
+        . venv/bin/activate
+        message 'Aktywacja środowiska virtualenv' "-c"
         message 'Instalacja wymaganych bibliotek' "-m"
+        get_pip_install psycopg2-binary Django django-rest
     else
         message "Nie udane utworzenie środowiska virtualenv." "-e"
     fi
@@ -112,11 +123,13 @@ if [ "$PROJ_DIR" != "" ] ; then
         git init
         if [ $? -eq 0 ] ; then
             message "Pomyślnie zinicjowano puste repozytorium w katalogu $HOME/$PROJ_DIR." "-c"
-            get_firtualenv            
+            get_firtualenv
+            message "Django budowanie projektu." "-T"
+            cd $HOME/$PROJ_DIR
+            django-admin startproject $DJANGO_DIR
+            message "django-admin startproject $DJANGO_DIR." "-c"
         else
             message "Nie udana inicjalizacja repozytorium w katalogu $HOME/$PROJ_DIR." "-e"
-        fi
-
-        message "Utworzono nowy projekt django." "-c"
+        fi        
     fi
 fi
