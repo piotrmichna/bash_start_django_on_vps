@@ -13,6 +13,39 @@ echo "------> INSTALL DJANGO <-----------[ ${currentDate} ${currentTime} ]" |& t
 
 get_config
 
+function install_prog(){
+    for i in $@ ; do
+        sudo dpkg -s $i &> /dev/null
+        if [ $? -eq 0 ] ; then
+            #soft_config $i
+            message "Program $i jest już zainstalowany" "-w"
+        else
+            message "Instalacja $i" "-m"
+            sudo apt-get install -y $i |& tee -a $LOG_FILE &> /dev/null
+            sudo dpkg-query -l $i &> /dev/null
+
+            if [ $? -eq 1 ] ; then
+                message "Program $i nie został zainstalowany! zerknij do pliku $LOG_FILE w katalogu instalatora." "-e"
+                message "Zerknij po informacje do pliku $LOG_FILE w katalogu instalatora." "-w"
+                message "Konynuować działanie skryptu? [t/n]" "-q"
+                while true ; do
+                    read x
+                    echo -ne "${NC}\n\r"
+                    if [ "$x" == "T" ] ||  [ "$x" == "t" ] ; then
+                        break
+                    else
+                        message "Przerwano wykonywanie skryptu" "-w"
+                        exit 
+                    fi
+                done
+            else
+                message "Program $i został zainstalowany." "-c"
+                #soft_config $i
+            fi
+        fi
+    done
+}
+
 if [ $C_TOOLS -eq 1 ] ; then
     message 'Aktualizacja repozytorium' "-m"
     sudo apt-get update |& tee -a $LOG_FILE &> /dev/null
