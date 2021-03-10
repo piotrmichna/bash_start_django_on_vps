@@ -211,7 +211,7 @@ function get_config_psql(){
   if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
     C_PSQL=1
     get_config_psql_db
-    
+    get_config_psql_user
   else
     C_PSQL=0
   fi
@@ -220,6 +220,9 @@ function get_config_psql(){
 function get_config_user(){
   message "KONFIGURACJA DJANGO" "-m"
   get_django_conf
+
+  message "KONFIGURACJA BAZY POSTGRES" "-m"
+  get_config_psql
 
   message "KONFIGURACJA USŁUGI SYSTEMOWEJ" "-m"
   get_conf_service
@@ -259,4 +262,4 @@ function get_config(){
 }
 
 #get_config
-get_config_psql
+get_config_psql_user
