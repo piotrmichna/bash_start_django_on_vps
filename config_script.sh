@@ -62,36 +62,44 @@ function get_param(){
 }
 
 function get_git_clone_config(){
+  if [ "$PROJ_DIR" == "" ] ; then
+    PROJ_DIR="dxd"
+  fi
   get_param "Załadować aplikacje z Githuba? [n/t]" "TtNn"
   if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
-    C_CGIT=1
+
     mkdir /tmp/$PROJ_DIR
     while true ; do
-      get_param "Podaj adres repozytorium aplikacji"
-      GIT_LINK=$PARAM
+      get_param "Podaj adres repozytorium aplikacji [q-quit]"
+
       if [ "$PARAM" == "Q" ] || [ "$PARAM" == "q" ] ; then
         rm -rf /tmp/$PROJ_DIR
+        C_CGIT=0
+        echo "------> Repozytorium zdalne=NIE <---" |& tee -a $LOG_FILE &> /dev/null
         break
       else
-        git clone $GIT_LINK /tmp/$PROJ_DIR &>> $LOG_FILE
+        git clone $PARAM /tmp/$PROJ_DIR &> /dev/null
+
         if [ $? -eq 0 ] ; then
           rm -rf /tmp/$PROJ_DIR
+          GIT_LINK=$PARAM
+          C_CGIT=1
+          echo "------> Repozytorium zdalne=$GIT_LINK <---" |& tee -a $LOG_FILE &> /dev/null
           break
         else
-          message "Błędny adres repozytorium! [q-quit]" "-e"
+          message "Błędny adres repozytorium!" "-e"
         fi
       fi
     done
   else
     C_CGIT=0
-    get_param "Podaj katalog głownej aplikacji"
-    APP_DIR=$PARAM
+    echo "------> Repozytorium zdalne=NIE <---" |& tee -a $LOG_FILE &> /dev/null
   fi
 }
 
 function get_config_user(){
   get_git_clone_config
-  
+
 
   get_param "Utworzyć usługę systemową dla aplikacji? [n/t]" "TtNn"
   if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
@@ -140,6 +148,5 @@ function get_config(){
   fi
 }
 
-
-
-get_config
+#get_config
+get_git_clone_config
