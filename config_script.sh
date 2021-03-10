@@ -155,6 +155,7 @@ function get_config_psql(){
       get_param "Podaj nazwę bazy"
       PSQL_NAME=$PARAM
       x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='$PSQL_NAME'"`
+      echo "$x"
       if [ !$x ] ; then
         break
       else
@@ -165,6 +166,7 @@ function get_config_psql(){
       get_param "Podaj nazwę użytkownika bazy danych"
       PSQL_USER=$PARAM
       x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='$PSQL_USER'"`
+      echo "$x"
       if [ !$x ] ; then
         while true ; do
           get_param "Podaj hasło"
@@ -233,4 +235,4 @@ function get_config(){
 }
 
 #get_config
-get_conf_service
+get_config_psql
