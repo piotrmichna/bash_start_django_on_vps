@@ -17,7 +17,8 @@ NC="\e[0m"
 currentDate=$(date +"%F")
 currentTime=$(date +"%T")
 
-LOG_FILE="log_${currentDate}_${currentTime}.log"
+DIR_SC=`pwd`
+LOG_FILE="$DIR_SC/log_${currentDate}_${currentTime}.log"
 
 
 function message(){
