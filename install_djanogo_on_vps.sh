@@ -61,3 +61,24 @@ if [ $C_TOOLS -eq 1 ] ; then
     sudo apt-get purge nginx bc -y |& tee -a $LOG_FILE &> /dev/null
     sudo apt-get autoremove -y |& tee -a $LOG_FILE &> /dev/null    
 fi
+
+if [ "$PROJ_DIR" != "" ] ; then
+    mkdir $HOME/$PROJ_DIR
+    if [ $? -eq 0 ] ; then
+        message "Utworzono katalog projektu $HOME/$PROJ_DIR." "-c"
+    else
+        message "Nie utoworzono $HOME/$PROJ_DIR." "-w"
+    fi
+
+    if [ $C_CGIT -eq 1 ]; then
+        git clone $GIT_LINK $HOME/$PROJ_DIR &> /dev/null
+
+        if [ $? -eq 0 ] ; then
+            message "Pomyślnie pobrano repozytorium $GIT_LINK." "-c"
+        else
+            message "Pobieranie repozytorium $GIT_LINK." "-e"
+        fi
+    else
+        message "Utworzono nowy projekt django." "-c"
+    fi
+fi
