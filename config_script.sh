@@ -160,47 +160,36 @@ function get_config_psql_db(){
   done
 }
 
+function get_config_psql_user(){  
+  while true ; do
+    if [ "$PSQL_USER" == "" ] ; then
+      get_param "Podaj nazwę użytkownika bazy danych"
+      PSQL_USER=$PARAM
+    else
+      get_param "Czy znasz hasło dla użytkownika $PSQL_USER i checsz go dodać [t/n]" "TtNn"
+      if [ "$PARAM" == "N" ] || [ "$PARAM" == "n" ] ; then
+        get_param "Podaj nazwę użytkownika bazy danych"
+        PSQL_USER=$PARAM
+      else
+        break
+      fi
+    fi
+
+    x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='$PSQL_USER'"`
+    if [ "$x" == "" ] ; then      
+      break
+    else
+      message "Użytkownik baza danych już istnieje" "-e"
+    fi
+  done
+}
+
 function get_config_psql(){
   get_param "Utworzyć konfiguracje bazy postgresql? [n/t]" "TtNn"
   if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
     C_PSQL=1
-    while true ; do
-      get_param "Podaj nazwę bazy"
-      PSQL_NAME=$PARAM
-      x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='$PSQL_NAME'"`
-      echo "$x"
-      if [ !$x ] ; then
-        break
-      else
-        message "Baza danych już istnieje" "-e"
-      fi
-    done
-    while true ; do
-      get_param "Podaj nazwę użytkownika bazy danych"
-      PSQL_USER=$PARAM
-      x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='$PSQL_USER'"`
-      echo "$x"
-      if [ !$x ] ; then
-        while true ; do
-          get_param "Podaj hasło"
-          PSQL_PASS=$PARAM
-          if [ "$PSQL_PASS" != "" ] ; then
-            break
-          fi
-        done
-
-        while true ; do
-          get_param "Podaj ponownie hasło"
-          $PARAM
-          if [ "$PSQL_PASS" == "$PARAM" ] ; then
-            break
-          fi
-        done
-        break
-      else
-        message "Baza danych już istnieje" "-e"
-      fi
-    done
+    get_config_psql_db
+    
   else
     C_PSQL=0
   fi
