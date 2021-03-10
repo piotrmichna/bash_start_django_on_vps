@@ -90,6 +90,7 @@ function get_git_clone_config(){
     if [ "$PARAM" == "Q" ] || [ "$PARAM" == "q" ] ; then
       rm -rf /tmp/$PROJ_DIR
       C_CGIT=0
+      echo "---> Repozytorium gita=BRAK" |& tee -a $LOG_FILE &> /dev/null
       break
     else
       git clone $PARAM /tmp/$PROJ_DIR &> /dev/null
@@ -98,6 +99,7 @@ function get_git_clone_config(){
         rm -rf /tmp/$PROJ_DIR
         GIT_LINK=$PARAM
         C_CGIT=1
+        echo "---> Repozytorium gita=$GIT_LINK" |& tee -a $LOG_FILE &> /dev/null
         break
       else
         message "Błędny adres repozytorium!" "-w"
@@ -109,6 +111,7 @@ function get_git_clone_config(){
 function get_django_conf(){  
   check_dir "Podaj katalog projektu ~/"
   PROJ_DIR=$PARAM
+  echo "---> Ktalog projektu=$HOME/$PROJ_DIR" |& tee -a $LOG_FILE &> /dev/null
 
   get_param "Załadować aplikacje z Githuba? [n/t]" "TtNn"
   if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
@@ -117,6 +120,7 @@ function get_django_conf(){
     C_CGIT=0
     get_param "Podaj katalog projektu Django: ~/$PROJ_DIR/"
     DJANGO_DIR=$PARAM
+    echo "---> Katalog projektu Django=$HOME/$PROJ_DIR/$DJANGO_DIR" |& tee -a $LOG_FILE &> /dev/null
   fi
 }
 
@@ -125,12 +129,15 @@ function get_conf_service(){
   if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
     get_param "Podaj nazwa usługi systemowej (bez spacji)"
     C_SYS_NAME=$PARAM
+    echo "---> Nazwa usługi systemowej=${C_SYS_NAME}.service" |& tee -a $LOG_FILE &> /dev/null
 
     get_param "Podaj opis usługi systemowej"
     C_SYS_DESCRIPTION=$PARAM
+    echo "---> Opis usługi systemowej=${C_SYS_DESCRIPTION}" |& tee -a $LOG_FILE &> /dev/null
 
-    get_param "Podaj liste hostów: host0,host1.."
+    get_param "Podaj liste hostów dla nginx: host0,host1.."
     C_SYS_HOSTS=$PARAM
+    echo "---> Lista hostów nginx=${C_SYS_HOSTS}" |& tee -a $LOG_FILE &> /dev/null
 
     # host=$(echo $C_SYS_HOSTS | tr "," "\n")
     # local hosts=""
@@ -156,6 +163,7 @@ function get_config_psql_db(){
     PSQL_NAME=$PARAM
     x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='$PSQL_NAME'"`
     if [ "$x" == "" ] ; then
+      echo "---> Nazwa bazy postgresql=${PSQL_NAME}" |& tee -a $LOG_FILE &> /dev/null
       break
     else
       message "Baza danych już istnieje" "-w"
@@ -186,6 +194,7 @@ function get_config_psql_user(){
       message "Użytkownik baza danych już istnieje" "-w"
     fi
   done
+  echo "---> Nazwa użytkownika postgresql=${PSQL_USER}" |& tee -a $LOG_FILE &> /dev/null
   while true ; do
     message "Podaj hasło" "-q"
     read -s PSQL_PASS
@@ -204,19 +213,23 @@ function get_config_psql_user(){
   get_param "Zapisać wszystkie hasła w pliku log? [n/t]" "TtNn"
   if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
     C_PASS_LOG=1 
+    echo "---> Hasło użytkownika postgresql=${PSQL_PASS}" |& tee -a $LOG_FILE &> /dev/null
   else
     C_PASS_LOG=0
   fi
+
 }
 
 function get_config_psql(){
   get_param "Utworzyć konfiguracje bazy postgresql? [n/t]" "TtNn"
   if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+    echo "---> Baza postgresql=TAK" |& tee -a $LOG_FILE &> /dev/null
     C_PSQL=1
     get_config_psql_db
     get_config_psql_user
   else
     C_PSQL=0
+    echo "---> Baza postgresql=NIE" |& tee -a $LOG_FILE &> /dev/null
   fi
 }
 
@@ -244,15 +257,19 @@ function get_config(){
   message "KONFIGURACJA INSTALATORA" "-t"
   get_param "Modyfikacja prompt'a termianal? [*/t]" "TtNn"
   if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+    echo "---> Modyfikacja prompt'a termianal=TAK" |& tee -a $LOG_FILE &> /dev/null
     C_PROMPT=1
   else
+    echo "---> Modyfikacja prompt'a termianal=NIE" |& tee -a $LOG_FILE &> /dev/null
     C_PROMPT=0
   fi
 
   get_param "Instalacja i konfiguracja narzędzi? [*/t]" "TtNn"
   if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+    echo "---> Instalcja i konfiguracja narzędzi=TAK" |& tee -a $LOG_FILE &> /dev/null
     C_TOOLS=1
   else
+    echo "---> Instalcja i konfiguracja narzędzi=NIE" |& tee -a $LOG_FILE &> /dev/null
     C_TOOLS=0
   fi
 
