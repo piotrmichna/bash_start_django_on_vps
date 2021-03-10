@@ -24,32 +24,33 @@ function message(){
   if [ -n "$2" ] ; then
     case "$2" in
       '-t') # title
-        echo -ne "\n\r${C_TIT}${BOLD}------> $1 <-----------[ ${currentDate} ${currentTime} ]${NC}\n\r"
+        echo -ne "\n\r${C_NRM}${BOLD}------> ${C_TIT}${BOLD}$1 ${C_NRM}${BOLD}<-----------${NC}\n\r"
         echo "" |& tee -a $LOG_FILE &> /dev/null
-        echo "------> $1 <-----------[ ${currentDate} ${currentTime} ]" |& tee -a $LOG_FILE &> /dev/null
+        echo "------> $1 <-----------" |& tee -a $LOG_FILE &> /dev/null
       ;;
       '-e') # error
-        echo -ne "${C_ERR}${BLINK}ERROR${NC}${C_ERR}-> ${BOLD}$1 <---${NC}\n\r"
-        echo "ERROR-> $1 <---" |& tee -a $LOG_FILE &> /dev/null
+        echo -ne "${C_ERR}${BLINK}ERROR${NC}${C_NRM}->${C_ERR} ${BOLD}$1 ${NC}\n\r"
+        echo "ERROR-> $1 " |& tee -a $LOG_FILE &> /dev/null
       ;;
       '-w') # worning
-        echo -ne "${C_WOR}------> $1 <---${NC}\n\r"
+        echo -ne "${C_NRM}------>${C_WOR} $1 ${NC}\n\r"
       ;;
       '-c') # correct ✓
-        echo -ne "${C_NRM}[${GREEN}✓${C_NRM}]--->${C_COR} $1 ${C_NRM}<---${NC}\n\r"
-        echo "[✓]---> $1 <---" |& tee -a $LOG_FILE &> /dev/null
+        echo -ne "${C_NRM}[${GREEN}✓${C_NRM}]--->${C_COR} $1 ${NC}\n\r"
+        echo "[✓]---> $1 " |& tee -a $LOG_FILE &> /dev/null
       ;;
       '-m') # message
-        echo -ne "${C_MES}------> $1 ${C_MES}<---${NC}\n\r"
-        echo "------> $1 <---" |& tee -a $LOG_FILE &> /dev/null
+        echo -ne "${C_NRM}------>${C_MES} $1 ${NC}\n\r"
+        echo "" |& tee -a $LOG_FILE &> /dev/null
+        echo "------> $1 " |& tee -a $LOG_FILE &> /dev/null
       ;;
       '-q') # question
         echo -ne "${C_NRM}------> ${BOLD}$1: ${C_QST}${BOLD}"
       ;;
     esac
   else
-    echo -ne "${C_NRM}------> $1 <---${NC}\n\r"
-    echo "------> $1 <---" |& tee -a $LOG_FILE &> /dev/null
+    echo -ne "${C_NRM}------> $1 ${NC}\n\r"
+    echo "------> $1 " |& tee -a $LOG_FILE &> /dev/null
   fi
 }
 
@@ -124,6 +125,7 @@ function get_django_conf(){
     get_git_clone_config
   else
     C_CGIT=0
+    echo "---> Repozytorium gita=BRAK" |& tee -a $LOG_FILE &> /dev/null
     get_param "Podaj katalog projektu Django: ~/$PROJ_DIR/"
     DJANGO_DIR=$PARAM
     echo "---> Katalog projektu Django=$HOME/$PROJ_DIR/$DJANGO_DIR" |& tee -a $LOG_FILE &> /dev/null
