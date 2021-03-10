@@ -147,13 +147,85 @@ function get_conf_service(){
   fi
 }
 
+function get_config_psql_db(){
+  while true ; do
+    get_param "Podaj nazwę bazy"
+    PSQL_NAME=$PARAM
+    x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='$PSQL_NAME'"`
+    if [ "$x" == "" ] ; then
+      break
+    else
+      message "Baza danych już istnieje" "-e"
+    fi
+  done
+}
+
+function get_config_psql_user(){
+  while true ; do
+    if [ "$PSQL_USER" == "" ] ; then
+      get_param "Podaj nazwę użytkownika bazy"
+      PSQL_USER=$PARAM
+    else
+      message "Jeśli nie znasz hasła dla użytkonika $PSQL_USER konfiguracja nie będzie poprawna!" "-m"
+      get_param "Czy użyć użytkownika [t/n]" "TtNn"
+      if [ "$PARAM" == "N" ] || [ "$PARAM" == "n" ] ; then
+        get_param "Podaj nazwę użytkownika bazy danych"
+        PSQL_USER=$PARAM
+      else
+        break
+      fi
+    fi
+
+    x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='$PSQL_USER'"`
+    if [ "$x" == "" ] ; then      
+      break
+    else
+      message "Użytkownik baza danych już istnieje" "-e"
+    fi
+  done
+  while true ; do
+    message "Podaj hasło" "-q"
+    read -s PSQL_PASS
+    echo -ne "\n\r"
+
+    message "Podaj ponownie hasło" "-q"
+    read -s PARAM
+    echo -ne "\n\r"
+    if [ "$PSQL_PASS" == "$PARAM" ] ; then
+      break
+    else
+      message "Hasła nie są zgodne" "-e"
+    fi
+  done
+
+  get_param "Zapisać wszystkie hasła w pliku log? [n/t]" "TtNn"
+  if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+    C_PASS_LOG=1 
+  else
+    C_PASS_LOG=0
+  fi
+}
+
+function get_config_psql(){
+  get_param "Utworzyć konfiguracje bazy postgresql? [n/t]" "TtNn"
+  if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+    C_PSQL=1
+    get_config_psql_db
+    get_config_psql_user
+  else
+    C_PSQL=0
+  fi
+}
+
 function get_config_user(){
   message "KONFIGURACJA DJANGO" "-m"
   get_django_conf
 
+  message "KONFIGURACJA BAZY POSTGRES" "-m"
+  get_config_psql
+
   message "KONFIGURACJA USŁUGI SYSTEMOWEJ" "-m"
   get_conf_service
-
 }
 
 function get_config_root(){
@@ -188,5 +260,4 @@ function get_config(){
   fi
 }
 
-#get_config
-get_conf_service
+get_config
