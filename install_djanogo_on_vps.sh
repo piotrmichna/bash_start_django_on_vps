@@ -35,7 +35,7 @@ function install_prog(){
                         break
                     else
                         message "Przerwano wykonywanie skryptu" "-w"
-                        exit 
+                        exit
                     fi
                 done
             else
@@ -57,4 +57,7 @@ if [ $C_TOOLS -eq 1 ] ; then
     message 'INSTALACJA NARZĘDZI' "-m"
     install_prog git vim links bc python3-pip python3-dev postgresql postgresql-contrib nginx
 
+    message 'CZYSZCZENIE' "-m"
+    sudo apt-get purge nginx bc -y |& tee -a $LOG_FILE &> /dev/null
+    sudo apt-get autoremove -y |& tee -a $LOG_FILE &> /dev/null    
 fi
