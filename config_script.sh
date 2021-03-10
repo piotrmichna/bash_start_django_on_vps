@@ -63,7 +63,7 @@ function get_param(){
 
 function check_dir(){
   if [ -n "$1" ] ; then
-    while ; do
+    while true ; do
       message "$1" "-q"
       read PARAM
       if [ -d "$HOME/$PARAM" ] ; then
@@ -87,7 +87,6 @@ function get_git_clone_config(){
     if [ "$PARAM" == "Q" ] || [ "$PARAM" == "q" ] ; then
       rm -rf /tmp/$PROJ_DIR
       C_CGIT=0
-      echo "------> Repozytorium zdalne=NIE <---" |& tee -a $LOG_FILE &> /dev/null
       break
     else
       git clone $PARAM /tmp/$PROJ_DIR &> /dev/null
@@ -96,7 +95,6 @@ function get_git_clone_config(){
         rm -rf /tmp/$PROJ_DIR
         GIT_LINK=$PARAM
         C_CGIT=1
-        echo "------> Repozytorium zdalne=$GIT_LINK <---" |& tee -a $LOG_FILE &> /dev/null
         break
       else
         message "Błędny adres repozytorium!" "-e"
@@ -105,14 +103,23 @@ function get_git_clone_config(){
   done  
 }
 
-function get_config_user(){
+function get_django_conf(){  
+  check_dir "Podaj katalog projektu ~/"
+  PROJ_DIR=$PARAM
+
   get_param "Załadować aplikacje z Githuba? [n/t]" "TtNn"
   if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
     get_git_clone_config
   else
     C_CGIT=0
-    echo "------> Repozytorium zdalne=NIE <---" |& tee -a $LOG_FILE &> /dev/null
+    get_param "Podaj katalog projektu Django: ~/$PROJ_DIR/"
+    DJANGO_DIR=$PARAM
   fi
+}
+
+function get_config_user(){
+  message "KONFIGURACJA DJANGO" "-m"
+  get_django_conf
 
 
   get_param "Utworzyć usługę systemową dla aplikacji? [n/t]" "TtNn"
@@ -163,4 +170,4 @@ function get_config(){
 }
 
 #get_config
-get_git_clone_config
+get_django_conf
