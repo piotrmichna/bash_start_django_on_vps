@@ -103,8 +103,7 @@ function get_git_clone_config(){
   done  
 }
 
-function get_django_conf(){
-  message "KONFIGURACJA DJANGO" "-m"
+function get_django_conf(){  
   check_dir "Podaj katalog projektu ~/"
   PROJ_DIR=$PARAM
 
@@ -119,13 +118,8 @@ function get_django_conf(){
 }
 
 function get_config_user(){
-
-  get_param "Załadować aplikacje z Githuba? [n/t]" "TtNn"
-  if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
-    get_git_clone_config
-  else
-    C_CGIT=0
-  fi
+  message "KONFIGURACJA DJANGO" "-m"
+  get_django_conf
 
 
   get_param "Utworzyć usługę systemową dla aplikacji? [n/t]" "TtNn"
