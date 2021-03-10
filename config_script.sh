@@ -147,6 +147,50 @@ function get_conf_service(){
   fi
 }
 
+function get_config_psql(){
+  get_param "Utworzyć konfiguracje bazy postgresql? [n/t]" "TtNn"
+  if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+    C_PSQL=1
+    while true ; do
+      get_param "Podaj nazwę bazy"
+      PSQL_NAME=$PARAM
+      x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='$PSQL_NAME'"`
+      if [ !$x ] ; then
+        break
+      else
+        message "Baza danych już istnieje" "-e"
+      fi
+    done
+    while true ; do
+      get_param "Podaj nazwę użytkownika bazy danych"
+      PSQL_USER=$PARAM
+      x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='$PSQL_USER'"`
+      if [ !$x ] ; then
+        while true ; do
+          get_param "Podaj hasło"
+          PSQL_PASS=$PARAM
+          if [ "$PSQL_PASS" != "" ] ; then
+            break
+          fi
+        done
+
+        while true ; do
+          get_param "Podaj ponownie hasło"
+          $PARAM
+          if [ "$PSQL_PASS" == "$PARAM" ] ; then
+            break
+          fi
+        done
+        break
+      else
+        message "Baza danych już istnieje" "-e"
+      fi
+    done
+  else
+    C_PSQL=0
+  fi
+}
+
 function get_config_user(){
   message "KONFIGURACJA DJANGO" "-m"
   get_django_conf
