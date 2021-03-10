@@ -3,48 +3,52 @@
 # author: Piotr Michna
 # e-mail: pm@piotrmichna.pl
 
-RED="\e[0;31m"
+C_ERR="\e[0;31m"
+C_WOR="\e[0;33m"
+C_MES="\e[0;34m"
+C_QST="\e[0;32m"
+C_COR="\e[0;32m"
+C_TIT="\e[0;34m"
+C_NRM="\e[0;97m"
 GREEN="\e[0;32m"
-BLUE="\e[0;34m"
-GREY="\e[0;90m"
 BLINK="\e[5m"
 BOLD="\e[1m"
 NC="\e[0m"
 currentDate=$(date +"%F")
 currentTime=$(date +"%T")
 
-LOG_FILE="app.log"
+LOG_FILE="log_${currentDate}_${currentTime}.log"
 
 
 function message(){
   if [ -n "$2" ] ; then
     case "$2" in
       '-t') # title
-        echo -ne "\n\r${BLUE}${BOLD}------> $1 <-----------[ ${currentDate} ${currentTime} ]${NC}\n\r"
+        echo -ne "\n\r${C_TIT}${BOLD}------> $1 <-----------[ ${currentDate} ${currentTime} ]${NC}\n\r"
         echo "" |& tee -a $LOG_FILE &> /dev/null
         echo "------> $1 <-----------[ ${currentDate} ${currentTime} ]" |& tee -a $LOG_FILE &> /dev/null
       ;;
       '-e') # error
-        echo -ne "${RED}${BLINK}ERROR${NC}${RED}-> $1 <---${NC}\n\r"
+        echo -ne "${C_ERR}${BLINK}ERROR${NC}${C_ERR}-> ${BOLD}$1 <---${NC}\n\r"
         echo "ERROR-> $1 <---" |& tee -a $LOG_FILE &> /dev/null
       ;;
       '-w') # worning
-        echo -ne "${RED}${BLINK}ERROR${NC}${RED}-> $1 <---${NC}\n\r"
+        echo -ne "${C_WOR}------> $1 <---${NC}\n\r"
       ;;
       '-c') # correct ✓
-        echo -ne "${GREY}[${GREEN}✓${GREY}]--->${BLUE} $1 ${GREY}<---${NC}\n\r"
+        echo -ne "${C_NRM}[${GREEN}✓${C_NRM}]--->${C_COR} $1 ${C_NRM}<---${NC}\n\r"
         echo "[✓]---> $1 <---" |& tee -a $LOG_FILE &> /dev/null
       ;;
       '-m') # message
-        echo -ne "${GREEN}------> $1 ${GREEN}<---${NC}\n\r"
+        echo -ne "${C_MES}------> $1 ${C_MES}<---${NC}\n\r"
         echo "------> $1 <---" |& tee -a $LOG_FILE &> /dev/null
       ;;
       '-q') # question
-        echo -ne "${GREY}------> ${BOLD}$1: ${GREEN}"
+        echo -ne "${C_NRM}------> ${BOLD}$1: ${C_QST}${BOLD}"
       ;;
     esac
   else
-    echo -ne "${GREY}------> $1 <---${NC}\n\r"
+    echo -ne "${C_NRM}------> $1 <---${NC}\n\r"
     echo "------> $1 <---" |& tee -a $LOG_FILE &> /dev/null
   fi
 }
@@ -55,6 +59,7 @@ function get_param(){
     while [ "" == "$PARAM" ] ; do
       message "$1" "-q"
       read PARAM
+      echo -ne "${NC}"
       if [ -n "$2" ] ; then
         if [ `echo $2 | grep $PARAM | wc -l` -eq 0 ] ; then
           PARAM=""
@@ -69,6 +74,7 @@ function check_dir(){
     while true ; do
       message "$1" "-q"
       read PARAM
+      echo -ne "${NC}"
       if [ -d "$HOME/$PARAM" ] ; then
         message "Katalog [ $HOME/$PARAM ] już istnieje!" "-w"
       else
@@ -198,11 +204,11 @@ function get_config_psql_user(){
   while true ; do
     message "Podaj hasło" "-q"
     read -s PSQL_PASS
-    echo -ne "\n\r"
+    echo -ne "${NC}\n\r"
 
     message "Podaj ponownie hasło" "-q"
     read -s PARAM
-    echo -ne "\n\r"
+    echo -ne "${NC}\n\r"
     if [ "$PSQL_PASS" == "$PARAM" ] ; then
       break
     else
@@ -280,4 +286,12 @@ function get_config(){
   fi
 }
 
-get_config
+# message "KONFIGURACJA INSTLATORA" "-t"
+# message "instalacja message" "-m"
+# message "instalacja question" "-q"
+# read x 
+# echo -ne "${NC}"
+# message "instalacja correct" "-c"
+# message "instalacja worning" "-w"
+# message "instalacja error" "-e"
+# message "instalacja narzedzi"
