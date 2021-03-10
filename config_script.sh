@@ -87,7 +87,6 @@ function get_git_clone_config(){
     if [ "$PARAM" == "Q" ] || [ "$PARAM" == "q" ] ; then
       rm -rf /tmp/$PROJ_DIR
       C_CGIT=0
-      echo "------> Repozytorium zdalne=NIE <---" |& tee -a $LOG_FILE &> /dev/null
       break
     else
       git clone $PARAM /tmp/$PROJ_DIR &> /dev/null
@@ -96,7 +95,6 @@ function get_git_clone_config(){
         rm -rf /tmp/$PROJ_DIR
         GIT_LINK=$PARAM
         C_CGIT=1
-        echo "------> Repozytorium zdalne=$GIT_LINK <---" |& tee -a $LOG_FILE &> /dev/null
         break
       else
         message "Błędny adres repozytorium!" "-e"
@@ -109,19 +107,15 @@ function get_django_conf(){
   message "Konfiguracja Django" "-m"
   check_dir "Podaj katalog projektu ~/"
   PROJ_DIR=$PARAM
-  echo "------> Katalog projektu django=$PROJ_DIR <---" |& tee -a $LOG_FILE &> /dev/null
 
   get_param "Załadować aplikacje z Githuba? [n/t]" "TtNn"
   if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
     get_git_clone_config
   else
     C_CGIT=0
-    echo "------> Konfiguracja nowego projektu=TAK <---" |& tee -a $LOG_FILE &> /dev/null
     get_param "Podaj katalog projektu Django: ~/$PROJ_DIR/"
     DJANGO_DIR=$PARAM
-    echo "------> Katalog projektu Django: ~/$PROJ_DIR/$DJANGO_DIR <---" |& tee -a $LOG_FILE &> /dev/null
   fi
-
 }
 
 function get_config_user(){
@@ -131,7 +125,6 @@ function get_config_user(){
     get_git_clone_config
   else
     C_CGIT=0
-    echo "------> Repozytorium zdalne=NIE <---" |& tee -a $LOG_FILE &> /dev/null
   fi
 
 
