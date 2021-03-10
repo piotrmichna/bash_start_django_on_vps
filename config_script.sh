@@ -64,9 +64,28 @@ function get_param(){
 function get_git_clone_config(){
   get_param "Załadować aplikacje z Githuba? [n/t]" "TtNn"
   if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
-    C_GIT=1
+    C_CGIT=1
+    mkdir /tmp/$PROJ_DIR
+    while true ; do
+      get_param "Podaj adres repozytorium aplikacji"
+      GIT_LINK=$PARAM
+      if [ "$PARAM" == "Q" ] || [ "$PARAM" == "q" ] ; then
+        rm -rf /tmp/$PROJ_DIR
+        break
+      else
+        git clone $GIT_LINK /tmp/$PROJ_DIR &>> $LOG_FILE
+        if [ $? -eq 0 ] ; then
+          rm -rf /tmp/$PROJ_DIR
+          break
+        else
+          message "Błędny adres repozytorium! [q-quit]" "-e"
+        fi
+      fi
+    done
   else
-    C_GIT=0
+    C_CGIT=0
+    get_param "Podaj katalog głownej aplikacji"
+    APP_DIR=$PARAM
   fi
 }
 
