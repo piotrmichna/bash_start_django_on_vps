@@ -183,4 +183,4 @@ function get_config(){
 }
 
 #get_config
-get_git_clone_config
+get_django_conf
