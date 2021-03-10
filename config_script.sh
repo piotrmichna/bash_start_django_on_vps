@@ -117,24 +117,43 @@ function get_django_conf(){
   fi
 }
 
-function get_config_user(){
-  message "KONFIGURACJA DJANGO" "-m"
-  get_django_conf
-
-
-  get_param "Utworzyć usługę systemową dla aplikacji? [n/t]" "TtNn"
+function get_conf_service(){
+  get_param "Utworzyć usługę systemową dla aplikacji? gunicor + nginx [n/t]" "TtNn"
   if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+    get_param "Podaj nazwa usługi systemowej (bez spacji)"
+    C_SYS_NAME=$PARAM
+
+    get_param "Podaj opis usługi systemowej"
+    C_SYS_DESCRIPTION=$PARAM
+
+    get_param "Podaj liste hostów: host0,host1.."
+    C_SYS_HOSTS=$PARAM
+
+    # host=$(echo $C_SYS_HOSTS | tr "," "\n")
+    # local hosts=""
+    # for addr in $host ; do
+    #     echo "$addr"
+    #     if [ "$hosts" == "" ] ; then
+    #       hosts="'$addr'"
+    #     else
+    #       hosts="${hosts},'$addr'"
+    #     fi
+    # done
+    # echo "django hosts =$hosts"
+
     C_SERVICE=1
   else
     C_SERVICE=0
   fi
+}
 
-  get_param "Podaj nazwę aplikacji"
-  APP_NAME=$PARAM
-  get_param "Podaj opis aplikacji"
-  APP_DESCRIPTION=$PARAM
-  get_param "Podaj katalog aplikacji ~/"
-  APP_DIR=$PARAM
+function get_config_user(){
+  message "KONFIGURACJA DJANGO" "-m"
+  get_django_conf
+
+  message "KONFIGURACJA USŁUGI SYSTEMOWEJ" "-m"
+  get_conf_service
+
 }
 
 function get_config_root(){
@@ -170,4 +189,4 @@ function get_config(){
 }
 
 #get_config
-get_django_conf
+get_conf_service
