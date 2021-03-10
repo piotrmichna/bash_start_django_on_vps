@@ -129,6 +129,18 @@ function get_conf_service(){
     get_param "Podaj liste hostów: host0,host1.."
     C_SYS_HOSTS=$PARAM
 
+    # host=$(echo $C_SYS_HOSTS | tr "," "\n")
+    # local hosts=""
+    # for addr in $host ; do
+    #     echo "$addr"
+    #     if [ "$hosts" == "" ] ; then
+    #       hosts="'$addr'"
+    #     else
+    #       hosts="${hosts},'$addr'"
+    #     fi
+    # done
+    # echo "django hosts =$hosts"
+
     C_SERVICE=1
   else
     C_SERVICE=0
@@ -177,4 +189,4 @@ function get_config(){
 }
 
 #get_config
-get_django_conf
+get_conf_service
