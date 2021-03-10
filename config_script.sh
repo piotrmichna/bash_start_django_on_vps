@@ -104,7 +104,7 @@ function get_git_clone_config(){
 }
 
 function get_django_conf(){
-  message "Konfiguracja Django" "-m"
+  message "KONFIGURACJA DJANGO" "-m"
   check_dir "Podaj katalog projektu ~/"
   PROJ_DIR=$PARAM
 
