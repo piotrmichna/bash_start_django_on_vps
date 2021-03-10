@@ -46,6 +46,34 @@ function install_prog(){
     done
 }
 
+function get_firtualenv(){
+    message 'Środowisko virtualenv' "-t"
+
+    x=`pip3 list | grep virtualenv | wc -l`
+    if [ $x -eq 0 ] ; then
+        message 'Instalacja virtualenv' "-m"
+        pip3 install virtualenv |& tee -a $LOG_FILE &> /dev/null
+        x=`pip3 list | grep virtualenv | wc -l`
+        if [ $x -eq 0 ] ; then
+            message "Nie udana instalacja virtualenv." "-e"
+            exit
+        else
+            message "Pomyślnie zainstalowano virtualenv." "-c"
+        fi
+    else
+        message 'Dostępne środowisko virtualenv'
+    fi
+    message 'Konfiguracja środowiska virtualenv'
+    cd $HOME/$PROJ_DIR
+    virtualenv -p python3 venv |& tee -a $LOG_FILE &> /dev/null
+    if [ -d "venv" ] ; then
+        message "Utworzenie środowiska virtualenv." "-c"
+        message 'Instalacja wymaganych bibliotek' "-m"
+    else
+        message "Nie udane utworzenie środowiska virtualenv." "-e"
+    fi
+}
+
 if [ $C_TOOLS -eq 1 ] ; then
     message 'Aktualizacja repozytorium' "-m"
     sudo apt-get update |& tee -a $LOG_FILE &> /dev/null
