@@ -55,5 +55,6 @@ if [ $C_TOOLS -eq 1 ] ; then
     sudo apt-get upgrade -y |& tee -a $LOG_FILE &> /dev/null
     message 'Wykonane' "-c"
     message 'INSTALACJA NARZĘDZI' "-m"
-    
+    install_prog git vim links bc python3-pip python3-dev postgresql postgresql-contrib nginx
+
 fi
