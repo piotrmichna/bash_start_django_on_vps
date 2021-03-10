@@ -61,6 +61,20 @@ function get_param(){
   fi
 }
 
+function check_dir(){
+  if [ -n "$1" ] ; then
+    while ; do
+      message "$1" "-q"
+      read PARAM
+      if [ -d "$HOME/$PARAM" ] ; then
+        message "Katalog [ $HOME/$PARAM ] już istnieje!" "-e"
+      else
+        break
+      fi
+    done
+  fi
+}
+
 function get_git_clone_config(){
   if [ "$PROJ_DIR" == "" ] ; then
     PROJ_DIR="dxd"
