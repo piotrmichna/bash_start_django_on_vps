@@ -160,13 +160,14 @@ function get_config_psql_db(){
   done
 }
 
-function get_config_psql_user(){  
+function get_config_psql_user(){
   while true ; do
     if [ "$PSQL_USER" == "" ] ; then
-      get_param "Podaj nazwę użytkownika bazy danych"
+      get_param "Podaj nazwę użytkownika bazy"
       PSQL_USER=$PARAM
     else
-      get_param "Czy znasz hasło dla użytkownika $PSQL_USER i checsz go dodać [t/n]" "TtNn"
+      message "Jeśli nie znasz hasła dla użytkonika $PSQL_USER konfiguracja nie będzie poprawna!" "-m"
+      get_param "Czy użyć użytkownika [t/n]" "TtNn"
       if [ "$PARAM" == "N" ] || [ "$PARAM" == "n" ] ; then
         get_param "Podaj nazwę użytkownika bazy danych"
         PSQL_USER=$PARAM
@@ -182,6 +183,27 @@ function get_config_psql_user(){
       message "Użytkownik baza danych już istnieje" "-e"
     fi
   done
+  while true ; do
+    message "Podaj hasło" "-q"
+    read -s PSQL_PASS
+    echo -ne "\n\r"
+
+    message "Podaj ponownie hasło" "-q"
+    read -s PARAM
+    echo -ne "\n\r"
+    if [ "$PSQL_PASS" == "$PARAM" ] ; then
+      break
+    else
+      message "Hasła nie są zgodne" "-e"
+    fi
+  done
+
+  get_param "Zapisać wszystkie hasła w pliku log? [n/t]" "TtNn"
+  if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+    C_PASS_LOG=1 
+  else
+    C_PASS_LOG=0
+  fi
 }
 
 function get_config_psql(){
