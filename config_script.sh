@@ -61,13 +61,18 @@ function get_param(){
   fi
 }
 
-function get_config_user(){
+function get_git_clone_config(){
   get_param "Załadować aplikacje z Githuba? [n/t]" "TtNn"
   if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
     C_GIT=1
   else
     C_GIT=0
   fi
+}
+
+function get_config_user(){
+  get_git_clone_config
+  
 
   get_param "Utworzyć usługę systemową dla aplikacji? [n/t]" "TtNn"
   if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
