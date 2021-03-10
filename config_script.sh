@@ -105,7 +105,27 @@ function get_git_clone_config(){
   done  
 }
 
+function get_django_conf(){
+  message "Konfiguracja Django" "-m"
+  check_dir "Podaj katalog projektu ~/"
+  PROJ_DIR=$PARAM
+  echo "------> Katalog projektu django=$PROJ_DIR <---" |& tee -a $LOG_FILE &> /dev/null
+
+  get_param "Załadować aplikacje z Githuba? [n/t]" "TtNn"
+  if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+    get_git_clone_config
+  else
+    C_CGIT=0
+    echo "------> Konfiguracja nowego projektu=TAK <---" |& tee -a $LOG_FILE &> /dev/null
+    get_param "Podaj katalog projektu Django: ~/$PROJ_DIR/"
+    DJANGO_DIR=$PARAM
+    echo "------> Katalog projektu Django: ~/$PROJ_DIR/$DJANGO_DIR <---" |& tee -a $LOG_FILE &> /dev/null
+  fi
+
+}
+
 function get_config_user(){
+
   get_param "Załadować aplikacje z Githuba? [n/t]" "TtNn"
   if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
     get_git_clone_config
