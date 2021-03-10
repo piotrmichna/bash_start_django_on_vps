@@ -103,10 +103,20 @@ if [ "$PROJ_DIR" != "" ] ; then
 
         if [ $? -eq 0 ] ; then
             message "Pomyślnie pobrano repozytorium $GIT_LINK." "-c"
+            get_firtualenv
         else
             message "Pobieranie repozytorium $GIT_LINK." "-e"
         fi
     else
+        cd $HOME/$PROJ_DIR
+        git init
+        if [ $? -eq 0 ] ; then
+            message "Pomyślnie zinicjowano puste repozytorium w katalogu $HOME/$PROJ_DIR." "-c"
+            get_firtualenv            
+        else
+            message "Nie udana inicjalizacja repozytorium w katalogu $HOME/$PROJ_DIR." "-e"
+        fi
+
         message "Utworzono nowy projekt django." "-c"
     fi
 fi
