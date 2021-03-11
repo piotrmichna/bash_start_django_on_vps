@@ -222,4 +222,19 @@ WantedBy=multi-user.target"
 
 if [ "$0" == "./lib_django.sh" ] || [ "$0" == "lib_django.sh" ] ; then
     echo "Skrypt z lib_django.sh"
+    LOG_FILE="log.txt"
+    PROJ_DIR="dev/ddd"
+    DJANGO_DIR="dxd"
+    PSQL_NAME="ddd_db"
+    PSQL_USER="ddd_user"
+    PSQL_PASS="ddpass"
+    C_CGIT=0
+    C_SYS_NAME="ddd"
+    C_SYS_DESCRIPTION="Ddd Django gunicorn service"
+    C_SYS_HOSTS="ddd.pl,www.ddd.pl,localhost"
+
+    get_django
+    get_postgresql
+    get_nginx
+    get_service
 fi
