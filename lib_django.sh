@@ -79,6 +79,24 @@ function get_postgresql(){
     message "Nadanie uprawnień $PSQL_USER do bazy $PSQL_NAME" "-c"
 }
 
+function venv_deactivate(){
+    cd $HOME/$PROJ_DIR
+    x=`which python3`
+    echo "$x"
+    if [ "$x" == "${HOME}/${PROJ_DIR}/venv/bin/python3" ] ; then
+        deactivate
+        message "Deaktywacja środowiska virtualenv." "-m"
+        x=`which python3`
+        if [ "$x" != "${HOME}/${PROJ_DIR}/venv/bin/python3" ] ; then
+            message "Środowisko virtualenv wyłączone." "-c"
+        else
+            message "Nie udane wyłączenie środowiska virtualenv." "-w"
+        fi
+    else
+        message "Środowiska virtualenv nie było aktywne." "-w"
+    fi
+}
+
 function get_django(){
     mkdir $HOME/$PROJ_DIR
     if [ $? -eq 0 ] ; then
