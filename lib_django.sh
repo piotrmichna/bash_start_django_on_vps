@@ -5,6 +5,12 @@
 
 PYTHON_INSTAL_LIB="psycopg2-binary Django django-rest gunicorn"
 
+function get_exit(){
+    echo -ne "${C_TIT}${BOLD}------> ERROR EXIT ON INSTALL DJANGO <-----------${NC}\n\r"
+    echo "------> ERROR EXIT ON INSTALL DJANGO <-----------" |& tee -a $LOG_FILE &> /dev/null
+    exit 0
+}
+
 function get_pip_install(){
     for i in $@ ; do
         x=`pip3 list | grep $i | wc -l`
