@@ -80,15 +80,14 @@ function get_postgresql(){
 }
 
 function venv_deactivate(){
-    cd $HOME/$PROJ_DIR
+    message "Deaktywacja środowiska virtualenv." "-m"
+    cd ${HOME}/${PROJ_DIR}
     x=`which python3`
-    echo "$x"
     if [ "$x" == "${HOME}/${PROJ_DIR}/venv/bin/python3" ] ; then
         deactivate
-        message "Deaktywacja środowiska virtualenv." "-m"
         x=`which python3`
         if [ "$x" != "${HOME}/${PROJ_DIR}/venv/bin/python3" ] ; then
-            message "Środowisko virtualenv wyłączone." "-c"
+            message "OFF środowisko virtualenv." "-c"
         else
             message "Nie udane wyłączenie środowiska virtualenv." "-w"
         fi
@@ -231,7 +230,7 @@ function get_nginx(){
         proxy_pass http://unix:${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}.sock;
     }
 }"
-    cd $HOME/$PROJ_DIR/
+    cd ${HOME}/${PROJ_DIR}/
 
     sudo echo "$serv_conf" > "${DJANGO_DIR}.serv"
     sudo cp "${DJANGO_DIR}.serv" /etc/nginx/sites-available/
@@ -248,8 +247,8 @@ function get_nginx(){
 }
 
 function get_service(){
-    message "USŁUGA SYSTEMOWA GUNICORN" "-T"
-    message "Aktywacja środowiska virtualnev"
+    message "USŁUGA SYSTEMOWA GUNICORN" "-t"
+
     venv_activate
 
     get_pip_install gunicorn
@@ -262,7 +261,7 @@ function get_service(){
 Description=$C_SYS_DESCRIPTION
 After=network.target
 [Service]
-User=invent
+User=$USER
 Group=www-data
 WorkingDirectory=${HOME}/${PROJ_DIR}/${DJANGO_DIR}/
 ExecStart=${HOME}/${PROJ_DIR}/venv/bin/gunicorn --workers 1 --bind unix:${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}.sock ${DJANGO_DIR}.wsgi:application
@@ -272,14 +271,21 @@ WantedBy=multi-user.target"
     sudo echo "$service_vile" > "${C_SYS_NAME}.service"
     sudo cp "${C_SYS_NAME}.service" /etc/systemd/system/
     #sudo rm "${C_SYS_NAME}.service"
+    message "Utworzono usługę ${C_SYS_NAME}.service" "-c"
+
     sduo systemctl enable "${C_SYS_NAME}.service" |& tee -a $LOG_FILE &> /dev/null
+    message "Aktywowano usługę ${C_SYS_NAME}.service" "-c"
     sduo systemctl start "${C_SYS_NAME}.service" |& tee -a $LOG_FILE &> /dev/null
+    message "Uruchomiono usługę ${C_SYS_NAME}.service" "-c"
     sduo systemctl daemon-reload |& tee -a $LOG_FILE &> /dev/null
+    message "Ponownie załadowany deamon" "-c"
     sduo systemctl restart "${C_SYS_NAME}.service" |& tee -a $LOG_FILE &> /dev/null
 }
 
 
 if [ "$0" == "./lib_django.sh" ] || [ "$0" == "lib_django.sh" ] ; then
+    source config_script.sh
+    sudo ls > /dev/null
     echo "Skrypt z lib_django.sh"
     LOG_FILE="log.txt"
     PROJ_DIR="dev/ddd"
@@ -294,6 +300,7 @@ if [ "$0" == "./lib_django.sh" ] || [ "$0" == "lib_django.sh" ] ; then
 
     get_django
     get_postgresql
+    get_django_settings
     get_nginx
     get_service
 fi
