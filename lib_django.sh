@@ -97,6 +97,22 @@ function venv_deactivate(){
     fi
 }
 
+
+function venv_activate(){
+    local local_dir=`pwd`
+    cd $HOME/$PROJ_DIR
+    if [ !-d "venv" ] ; then
+        get_virtualenv
+    else
+        x=`which python3`
+        if [ "$x" != "${HOME}/${PROJ_DIR}/venv/bin/python3" ] ; then
+            message "Środowisko virtualenv wyłączone." "-c"
+        else
+            message "Nie udane wyłączenie środowiska virtualenv." "-w"
+        fi
+    fi
+}
+
 function get_django(){
     mkdir $HOME/$PROJ_DIR
     if [ $? -eq 0 ] ; then
