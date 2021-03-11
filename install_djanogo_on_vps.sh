@@ -46,28 +46,6 @@ function install_prog(){
     done
 }
 
-
-
-function get_firtualenv(){
-    message "ŚRODOWISKO VIRTUALENV" "-t"
-
-    get_pip_install virtualenv
-    
-    message 'Konfiguracja środowiska virtualenv'
-    cd $HOME/$PROJ_DIR
-    virtualenv -p python3 venv |& tee -a $LOG_FILE &> /dev/null
-    if [ -d "venv" ] ; then
-        message "Utworzenie środowiska virtualenv." "-c"
-        cd $HOME/$PROJ_DIR
-        . venv/bin/activate
-        message 'Aktywacja środowiska virtualenv' "-c"
-        message 'Instalacja wymaganych bibliotek' "-m"
-        get_pip_install psycopg2-binary Django django-rest
-    else
-        message "Nie udane utworzenie środowiska virtualenv." "-e"
-    fi
-}
-
 if [ $C_TOOLS -eq 1 ] ; then
     message 'Aktualizacja repozytorium' "-m"
     sudo apt-get update |& tee -a $LOG_FILE &> /dev/null
