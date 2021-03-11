@@ -4,6 +4,7 @@
 # e-mail: pm@piotrmichna.pl
 
 source config_script.sh
+source lib_django.sh
 
 sudo ls > /dev/null
 
@@ -47,6 +48,7 @@ function install_prog(){
 }
 
 if [ $C_TOOLS -eq 1 ] ; then
+    message 'UAKTUALNIENIE SYSTEMU' "-t"
     message 'Aktualizacja repozytorium' "-m"
     sudo apt-get update |& tee -a $LOG_FILE &> /dev/null
     message 'Wykonane' "-c"
@@ -54,43 +56,25 @@ if [ $C_TOOLS -eq 1 ] ; then
     message 'Aktualizacja systemu' "-m"
     sudo apt-get upgrade -y |& tee -a $LOG_FILE &> /dev/null
     message 'Wykonane' "-c"
-    message 'INSTALACJA NARZĘDZI' "-m"
+    message 'INSTALACJA NARZĘDZI' "-t"
     install_prog git vim links bc python3-pip python3-dev postgresql postgresql-contrib nginx
 
-    message 'CZYSZCZENIE' "-m"
-    sudo apt-get purge nginx bc -y |& tee -a $LOG_FILE &> /dev/null
-    sudo apt-get autoremove -y |& tee -a $LOG_FILE &> /dev/null    
+    # message 'CZYSZCZENIE' "-m"
+    # sudo apt-get purge nginx bc -y |& tee -a $LOG_FILE &> /dev/null
+    # sudo apt-get autoremove -y |& tee -a $LOG_FILE &> /dev/null    
 fi
 
-if [ "$PROJ_DIR" != "" ] ; then
-    mkdir $HOME/$PROJ_DIR
-    if [ $? -eq 0 ] ; then
-        message "Utworzono katalog projektu $HOME/$PROJ_DIR." "-c"
-    else
-        message "Nie utoworzono $HOME/$PROJ_DIR." "-w"
-    fi
+get_django
 
-    if [ $C_CGIT -eq 1 ]; then
-        git clone $GIT_LINK $HOME/$PROJ_DIR &> /dev/null
+if [ $C_PSQL -eq 1 ] ; then
+    get_postgresql
+fi
 
-        if [ $? -eq 0 ] ; then
-            message "Pomyślnie pobrano repozytorium $GIT_LINK." "-c"
-            get_firtualenv
-        else
-            message "Pobieranie repozytorium $GIT_LINK." "-e"
-        fi
-    else
-        cd $HOME/$PROJ_DIR
-        git init
-        if [ $? -eq 0 ] ; then
-            message "Pomyślnie zinicjowano puste repozytorium w katalogu $HOME/$PROJ_DIR." "-c"
-            get_firtualenv
-            message "Django budowanie projektu." "-T"
-            cd $HOME/$PROJ_DIR
-            django-admin startproject $DJANGO_DIR
-            message "django-admin startproject $DJANGO_DIR." "-c"
-        else
-            message "Nie udana inicjalizacja repozytorium w katalogu $HOME/$PROJ_DIR." "-e"
-        fi        
-    fi
+if [ "$PROJ_DIR" != "" ] ; then    
+    get_django_settings    
+fi
+
+if [ $C_SERVICE -eq 1 ] ; then
+    get_nginx
+    get_service
 fi
