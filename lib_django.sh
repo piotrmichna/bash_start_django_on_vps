@@ -152,6 +152,43 @@ function get_nginx(){
     message "Restart nginx" "-c"
 }
 
+function get_service(){
+    message "USŁUGA SYSTEMOWA GUNICORN" "-T"
+    message "Aktywacja środowiska virtualnev"
+    cd $HOME/$PROJ_DIR
+    . venv/bin/activate
+    x=`pip3 list | grep Django | wc -l`
+    if [ $x -eq 1 ] ; then
+        message "Środowisko venv aktywne." "-c"
+    else
+        message "Aktywne środowiska venv." "-e"
+    fi
+
+    get_pip_install gunicorn
+
+    message "Tworzenie plików konfiguracji usługi ${C_SYS_NAME}.service" "-m"
+
+    local service_vile="[Unit]
+Description=$C_SYS_DESCRIPTION
+After=network.target
+[Service]
+User=invent
+Group=www-data
+WorkingDirectory=${HOME}/${PROJ_DIR}/${DJANGO_DIR}/
+ExecStart=${HOME}/${PROJ_DIR}/venv/bin/gunicorn --workers 1 --bind unix:${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}.sock ${DJANGO_DIR}.wsgi:application
+[Install]
+WantedBy=multi-user.target"
+
+    sudo echo "$service_vile" > "${C_SYS_NAME}.service"
+    sudo cp "${C_SYS_NAME}.service" /etc/systemd/system/
+    #sudo rm "${C_SYS_NAME}.service"
+    sduo systemctl enable "${C_SYS_NAME}.service" |& tee -a $LOG_FILE &> /dev/null
+    sduo systemctl start "${C_SYS_NAME}.service" |& tee -a $LOG_FILE &> /dev/null
+    sduo systemctl daemon-reload |& tee -a $LOG_FILE &> /dev/null
+    sduo systemctl restart "${C_SYS_NAME}.service" |& tee -a $LOG_FILE &> /dev/null
+}
+
+
 if [ "$0" == "./lib_django.sh" ] || [ "$0" == "lib_django.sh" ] ; then
     echo "Skrypt z lib_django.sh"
 fi
