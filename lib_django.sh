@@ -154,9 +154,14 @@ function get_django(){
         git clone ${GIT_LINK} ${HOME}/${PROJ_DIR} |& tee -a $LOG_FILE &> /dev/null
 
         if [ $? -eq 0 ] ; then
-            message "Pomyślnie pobrano repozytorium ${GIT_LINK}." "-c"
-            get_virtualenv
-            venv_deactivate
+            if [ -d ${HOME}/${PROJ_DIR}/${DJANGO_DIR} ] ; then
+                message "Pomyślnie pobrano repozytorium ${GIT_LINK}." "-c"
+                get_virtualenv
+                venv_deactivate
+            else
+                message "Błędna nazwa Katalogu projektu Django w pobranym repozytorium." "-e"
+                get_exit
+            fi
         else
             message "Pobieranie repozytorium ${GIT_LINK}." "-e"
             get_exit
