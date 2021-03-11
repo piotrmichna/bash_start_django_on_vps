@@ -213,6 +213,7 @@ function get_config_psql_user(){
     read -s PARAM
     echo -ne "${NC}\n\r"
     if [ "$PSQL_PASS" == "$PARAM" ] ; then
+    C_PSQL=1
       break
     else
       message "Hasła nie są zgodne" "-w"
@@ -230,10 +231,11 @@ function get_config_psql_user(){
 }
 
 function get_config_psql(){
+  C_PSQL=0
   get_param "Utworzyć konfiguracje bazy postgresql? [n/t]" "TtNn"
   if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
     echo "---> Baza postgresql=TAK" |& tee -a $LOG_FILE &> /dev/null
-    C_PSQL=1
+    
     get_config_psql_db
     get_config_psql_user
   else
