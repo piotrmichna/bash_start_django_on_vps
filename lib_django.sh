@@ -25,7 +25,7 @@ function get_pip_install(){
                 message "Zainstalowano bibliotekę $i." "-c"
             fi
         else
-            message "Biblioteka $i jest już zainstalowana."
+            message "Biblioteka $i jest już zainstalowana." "-w"
         fi
     done
 }
@@ -35,7 +35,7 @@ function get_virtualenv(){
 
     get_pip_install virtualenv
 
-    message 'Konfiguracja środowiska virtualenv'
+    message 'Konfiguracja środowiska virtualenv' "-m"
     cd ${HOME}/${PROJ_DIR}
     virtualenv -p python3 venv |& tee -a $LOG_FILE &> /dev/null
     if [ -d "venv" ] ; then
@@ -47,32 +47,39 @@ function get_virtualenv(){
         get_pip_install psycopg2-binary Django django-rest
     else
         message "Nie udane utworzenie środowiska virtualenv." "-e"
+        get_exit
     fi
 }
 
 function get_postgresql(){
-    message "BAZA PostreSQL" "-t"
-    message "Tworzenie bazy postgresql $PSQL_NAME"
-    sudo -u postgres psql -c "CREATE DATABASE $PSQL_NAME" |& tee -a $LOG_FILE &> /dev/null
-
+    message "TWORZENIE BAZY PostreSQL" "-t"
+    message "Tworzenie bazy postgresql $PSQL_NAME" "-m"
     x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='$PSQL_NAME'"`
     if [ "$x" != "" ] ; then
-        message "Baza danych $PSQL_NAME istnieje" "-c"
+        message "Baza danych $PSQL_NAME juź istnieje" "-w"
     else
-      message "Błąd tworzenia baza danych" "-e"
+        sudo -u postgres psql -c "CREATE DATABASE $PSQL_NAME" |& tee -a $LOG_FILE &> /dev/null
+        x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='$PSQL_NAME'"`
+        if [ "$x" != "" ] ; then
+            message "Baza danych $PSQL_NAME utworzona." "-c"
+        else
+            message "Błąd tworzenia baza danych." "-e"
+            get_exit
+        fi
     fi
-    message "Tworzenie użytkownika postgresql $PSQL_USER"
+    message "Tworzenie użytkownika postgresql $PSQL_USER" "-m"
     x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='$PSQL_USER'"`
     if [ "$x" == "" ] ; then
-      sudo -u postgres psql -c "CREATE USER $PSQL_USER WITH PASSWORD '${PSQL_PASS}'" |& tee -a $LOG_FILE &> /dev/null
-      x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='$PSQL_USER'"`
+        sudo -u postgres psql -c "CREATE USER $PSQL_USER WITH PASSWORD '${PSQL_PASS}'" |& tee -a $LOG_FILE &> /dev/null
+        x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='$PSQL_USER'"`
         if [ "$x" != "" ] ; then
             message "Dodano użytkownika $PSQL_USER" "-c"
         else
             message "Błąd tworzenia użytkownika $PSQL_USER" "-e"
+            get_exit
         fi
     else
-      message "Użytkownik baza danych już istnieje" "-m"
+      message "Użytkownik baza danych już istnieje" "-w"
     fi
     message "Uprawnienia bazy danych" "-m"
     sudo -u postgres psql -c "ALTER ROLE $PSQL_USER SET client_encoding TO 'utf8'" |& tee -a $LOG_FILE &> /dev/null
@@ -95,7 +102,8 @@ function venv_deactivate(){
         if [ "$x" != "${HOME}/${PROJ_DIR}/venv/bin/python3" ] ; then
             message "OFF środowisko virtualenv." "-c"
         else
-            message "Nie udane wyłączenie środowiska virtualenv." "-w"
+            message "Nie udane wyłączenie środowiska virtualenv." "-e"
+            get_exit
         fi
     else
         message "Środowiska virtualenv nie było aktywne." "-w"
@@ -118,6 +126,7 @@ function venv_activate(){
                 message "ON środowisko virtualenv." "-c"
             else
                 message "Nie udane wyłączenie środowiska virtualenv." "-e"
+                get_exit
             fi
         fi        
     else
@@ -127,11 +136,18 @@ function venv_activate(){
 }
 
 function get_django(){
+    message "Django." "-t"
+    if [ -d "${HOME}/${PROJ_DIR}" ] ; then
+        message "Nie utoworzono ${HOME}/${PROJ_DIR}." "-w"
+        message "Katalog ${HOME}/${PROJ_DIR} już istnieje." "-e"
+        get_exit
+    fi
     mkdir ${HOME}/${PROJ_DIR}
     if [ $? -eq 0 ] ; then
         message "Utworzono katalog projektu ${HOME}/${PROJ_DIR}." "-c"
     else
-        message "Nie utoworzono ${HOME}/${PROJ_DIR}." "-w"
+        message "Nie utoworzono ${HOME}/${PROJ_DIR}." "-e"
+        get_exit
     fi
 
     if [ $C_CGIT -eq 1 ]; then
@@ -143,10 +159,11 @@ function get_django(){
             venv_deactivate
         else
             message "Pobieranie repozytorium ${GIT_LINK}." "-e"
+            get_exit
         fi
     else
         cd ${HOME}/${PROJ_DIR}
-        git init
+        git init |& tee -a $LOG_FILE &> /dev/null
         if [ $? -eq 0 ] ; then
             message "Pomyślnie zinicjowano puste repozytorium w katalogu ${HOME}/${PROJ_DIR}." "-c"
             get_virtualenv
@@ -157,6 +174,7 @@ function get_django(){
             venv_deactivate
         else
             message "Nie udana inicjalizacja repozytorium w katalogu ${HOME}/${PROJ_DIR}." "-e"
+            get_exit
         fi        
     fi
 }
@@ -164,7 +182,7 @@ function get_django(){
 function get_django_settings(){
     if [ -d "${HOME}/${PROJ_DIR}/${DJANGO_DIR}" ] ; then
         message "KONFIGURACJA Django." "-t"
-        message "Utworzenie pliku local_settings.py." "-c"
+        message "Konfiguracja ustawień Django." "-m"
         local host=$(echo $C_SYS_HOSTS | tr "," "\n")
         local hosts=""
         for addr in $host ; do
@@ -191,16 +209,26 @@ LANGUAGE_CODE = 'pl-pl'
 TIME_ZONE = 'Europe/Warsaw'
 
 STATIC_URL = '/static/'"
-    echo "$local_setting" > ${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}/local_settings.py
+
+        local x=""
+        if [ -f "${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}/local_settings.py" ] ; then
+            x='Nadpisano poprzednią kofigurację local_settings.py'
+        fi
+        echo "$local_setting" > ${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}/local_settings.py
+        if [ "$x" != "" ] ; then
+            message "$x" "-w"
+        else
+            message "Utworzono  kofigurację local_settings.py" "-c"
+        fi
 
         if [ "${GIT_LINK}" == "" ] ; then
-            message "from ${DJANGO_DIR}.local_settings import DATABASES, ALLOWED_HOSTS w pliku settings.py." "-c"
             local_setting="try:
     from ${DJANGO_DIR}.local_settings import (DATABASES, ALLOWED_HOSTS, LANGUAGE_CODE, TIME_ZONE, STATIC_URL)
 except ModuleNotFoundError:
     print('Brak konfiguracji bazy danych w pliku local_settings.py!')
     exit(0)"
             echo "$local_setting" >> ${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}/settings.py
+            message "Zmodyfikowano kofigurację settings.py" "-c"
         fi
 
         venv_activate
@@ -243,7 +271,10 @@ function get_nginx(){
     sudo rm "${DJANGO_DIR}.serv"
     message "Zapis /etc/nginx/sites-available/${DJANGO_DIR}.serv" "-c"
 
-    sudo ln -s "/etc/nginx/sites-available/${DJANGO_DIR}.serv" "/etc/nginx/sites-enabled/${DJANGO_DIR}.serv"
+    sudo ln -s "/etc/nginx/sites-available/${DJANGO_DIR}.serv" "/etc/nginx/sites-enabled/${DJANGO_DIR}.serv" |& tee -a x &> /dev/null
+    if [ "$x" != "" ] ; then
+        message "Nadpisano poprzednią konfigurację ${DJANGO_DIR}.serv" "-w"
+    fi
 
     message "Dowiązanie /etc/nginx/sites-enabled/${DJANGO_DIR}.serv" "-c"
 
@@ -275,6 +306,9 @@ ExecStart=${HOME}/${PROJ_DIR}/venv/bin/gunicorn --workers 1 --bind unix:${HOME}/
 WantedBy=multi-user.target"
 
     sudo echo "$service_vile" > "${C_SYS_NAME}.service"
+    if [ -f "/etc/systemd/system/${C_SYS_NAME}.service" ] ; then
+        message "Nadpisanie poprzedniej usługi ${C_SYS_NAME}.service" "-w"
+    fi
     sudo cp "${C_SYS_NAME}.service" /etc/systemd/system/
     #sudo rm "${C_SYS_NAME}.service"
     message "Utworzono usługę ${C_SYS_NAME}.service" "-c"
