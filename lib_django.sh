@@ -24,7 +24,7 @@ function get_pip_install(){
     done
 }
 
-function get_firtualenv(){
+function get_virtualenv(){
     message "ŚRODOWISKO VIRTUALENV" "-t"
 
     get_pip_install virtualenv
@@ -122,11 +122,12 @@ function get_django(){
     fi
 
     if [ $C_CGIT -eq 1 ]; then
-        git clone $GIT_LINK $HOME/$PROJ_DIR  |& tee -a $LOG_FILE &> /dev/null
+        git clone $GIT_LINK $HOME/$PROJ_DIR |& tee -a $LOG_FILE &> /dev/null
 
         if [ $? -eq 0 ] ; then
             message "Pomyślnie pobrano repozytorium $GIT_LINK." "-c"
-            get_firtualenv
+            get_virtualenv
+            venv_deactivate
         else
             message "Pobieranie repozytorium $GIT_LINK." "-e"
         fi
@@ -135,11 +136,12 @@ function get_django(){
         git init
         if [ $? -eq 0 ] ; then
             message "Pomyślnie zinicjowano puste repozytorium w katalogu $HOME/$PROJ_DIR." "-c"
-            get_firtualenv
+            get_virtualenv
             message "Django budowanie projektu." "-T"
             cd $HOME/$PROJ_DIR
             django-admin startproject $DJANGO_DIR
             message "django-admin startproject $DJANGO_DIR." "-c"
+            venv_deactivate
         else
             message "Nie udana inicjalizacja repozytorium w katalogu $HOME/$PROJ_DIR." "-e"
         fi        
@@ -163,11 +165,11 @@ function get_nginx(){
     listen [::]:80;
     server_name $hosts;
     location /static/ {
-        root $HOME/$PROJ_DIR/$DJANGO_DIR/$DJANGO_DIR/;
+        root ${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}/;
     }
     location / {
         include proxy_params;
-        proxy_pass http://unix:$HOME/$PROJ_DIR/$DJANGO_DIR/${DJANGO_DIR}.sock;
+        proxy_pass http://unix:${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}.sock;
     }
 }"
     cd $HOME/$PROJ_DIR/
@@ -189,16 +191,11 @@ function get_nginx(){
 function get_service(){
     message "USŁUGA SYSTEMOWA GUNICORN" "-T"
     message "Aktywacja środowiska virtualnev"
-    cd $HOME/$PROJ_DIR
-    . venv/bin/activate
-    x=`pip3 list | grep Django | wc -l`
-    if [ $x -eq 1 ] ; then
-        message "Środowisko venv aktywne." "-c"
-    else
-        message "Aktywne środowiska venv." "-e"
-    fi
+    venv_activate
 
     get_pip_install gunicorn
+
+    venv_deactivate
 
     message "Tworzenie plików konfiguracji usługi ${C_SYS_NAME}.service" "-m"
 
