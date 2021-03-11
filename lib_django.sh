@@ -30,11 +30,11 @@ function get_virtualenv(){
     get_pip_install virtualenv
 
     message 'Konfiguracja środowiska virtualenv'
-    cd $HOME/$PROJ_DIR
+    cd ${HOME}/${PROJ_DIR}
     virtualenv -p python3 venv |& tee -a $LOG_FILE &> /dev/null
     if [ -d "venv" ] ; then
         message "Utworzenie środowiska virtualenv." "-c"
-        cd $HOME/$PROJ_DIR
+        cd ${HOME}/${PROJ_DIR}
         . venv/bin/activate
         message 'Aktywacja środowiska virtualenv' "-c"
         message 'Instalacja wymaganych bibliotek' "-m"
@@ -99,57 +99,116 @@ function venv_deactivate(){
 
 
 function venv_activate(){
+    message "Aktywacja środowiska virtualenv." "-m"
     local local_dir=`pwd`
-    cd $HOME/$PROJ_DIR
-    if [ !-d "venv" ] ; then
-        get_virtualenv
-    else
+    cd "${HOME}/${PROJ_DIR}"
+    if [ -d "venv" ] ; then
         x=`which python3`
-        if [ "$x" != "${HOME}/${PROJ_DIR}/venv/bin/python3" ] ; then
-            message "Środowisko virtualenv wyłączone." "-c"
+        if [ "$x" == "${HOME}/${PROJ_DIR}/venv/bin/python3" ] ; then
+            message "Środowisko virtualenv było włączone." "-w"
         else
-            message "Nie udane wyłączenie środowiska virtualenv." "-w"
-        fi
+            . venv/bin/activate
+            x=`which python3`
+            if [ "$x" == "${HOME}/${PROJ_DIR}/venv/bin/python3" ] ; then
+                message "ON środowisko virtualenv." "-c"
+            else
+                message "Nie udane wyłączenie środowiska virtualenv." "-e"
+            fi
+        fi        
+    else
+        get_virtualenv
     fi
+    cd "$local_dir"
 }
 
 function get_django(){
-    mkdir $HOME/$PROJ_DIR
+    mkdir ${HOME}/${PROJ_DIR}
     if [ $? -eq 0 ] ; then
-        message "Utworzono katalog projektu $HOME/$PROJ_DIR." "-c"
+        message "Utworzono katalog projektu ${HOME}/${PROJ_DIR}." "-c"
     else
-        message "Nie utoworzono $HOME/$PROJ_DIR." "-w"
+        message "Nie utoworzono ${HOME}/${PROJ_DIR}." "-w"
     fi
 
     if [ $C_CGIT -eq 1 ]; then
-        git clone $GIT_LINK $HOME/$PROJ_DIR |& tee -a $LOG_FILE &> /dev/null
+        git clone ${GIT_LINK} ${HOME}/${PROJ_DIR} |& tee -a $LOG_FILE &> /dev/null
 
         if [ $? -eq 0 ] ; then
-            message "Pomyślnie pobrano repozytorium $GIT_LINK." "-c"
+            message "Pomyślnie pobrano repozytorium ${GIT_LINK}." "-c"
             get_virtualenv
             venv_deactivate
         else
-            message "Pobieranie repozytorium $GIT_LINK." "-e"
+            message "Pobieranie repozytorium ${GIT_LINK}." "-e"
         fi
     else
-        cd $HOME/$PROJ_DIR
+        cd ${HOME}/${PROJ_DIR}
         git init
         if [ $? -eq 0 ] ; then
-            message "Pomyślnie zinicjowano puste repozytorium w katalogu $HOME/$PROJ_DIR." "-c"
+            message "Pomyślnie zinicjowano puste repozytorium w katalogu ${HOME}/${PROJ_DIR}." "-c"
             get_virtualenv
-            message "Django budowanie projektu." "-T"
-            cd $HOME/$PROJ_DIR
-            django-admin startproject $DJANGO_DIR
-            message "django-admin startproject $DJANGO_DIR." "-c"
+            message "Django budowanie projektu." "-t"
+            cd ${HOME}/${PROJ_DIR}
+            django-admin startproject ${DJANGO_DIR}
+            message "django-admin startproject ${DJANGO_DIR}." "-c"
             venv_deactivate
         else
-            message "Nie udana inicjalizacja repozytorium w katalogu $HOME/$PROJ_DIR." "-e"
+            message "Nie udana inicjalizacja repozytorium w katalogu ${HOME}/${PROJ_DIR}." "-e"
         fi        
     fi
 }
 
+function get_django_settings(){
+    if [ -d "${HOME}/${PROJ_DIR}/${DJANGO_DIR}" ] ; then
+        message "KONFIGURACJA Django." "-t"
+        message "Utworzenie pliku local_settings.py." "-c"
+        local host=$(echo $C_SYS_HOSTS | tr "," "\n")
+        local hosts=""
+        for addr in $host ; do
+            if [ "$hosts" == "" ] ; then
+            hosts="'$addr'"
+            else
+            hosts="${hosts},'$addr'"
+            fi
+        done
+
+        local local_setting="ALLOWED_HOSTS = [${hosts}]
+DATABASES = {
+    'default': {
+        'ENGINE': \"django.db.backends.postgresql_psycopg2\",
+        'NAME': \"$PSQL_NAME\",
+        'HOST': \"localhost\",
+        'PASSWORD': \"$PSQL_PASS\",
+        'USER': \"$PSQL_USER\",
+        'PORT': 5432
+    }
+}
+LANGUAGE_CODE = 'pl-pl'
+
+TIME_ZONE = 'Europe/Warsaw'
+
+STATIC_URL = '/static/'"
+    echo "$local_setting" > ${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}/local_settings.py
+
+        if [ "${GIT_LINK}" == "" ] ; then
+            message "from ${DJANGO_DIR}.local_settings import DATABASES, ALLOWED_HOSTS w pliku settings.py." "-c"
+            local_setting="try:
+    from ${DJANGO_DIR}.local_settings import (DATABASES, ALLOWED_HOSTS, LANGUAGE_CODE, TIME_ZONE, STATIC_URL)
+except ModuleNotFoundError:
+    print('Brak konfiguracji bazy danych w pliku local_settings.py!')
+    exit(0)"
+            echo "$local_setting" >> ${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}/settings.py
+        fi
+
+        venv_activate
+        cd "${HOME}/${PROJ_DIR}/${DJANGO_DIR}"
+        message "Wykonanie migracji modeli do bazy." "-m"
+        python manage.py migrate |& tee -a $LOG_FILE &> /dev/null
+        message "Wykonano migracje modeli do bazy." "-c"
+        venv_deactivate
+    fi
+}
+
 function get_nginx(){
-    message "KONFIGURACJA Nginx." "-T"
+    message "KONFIGURACJA Nginx." "-t"
     install_prog nginx
     message 'Konfiguracja servera nginx' "-m"
 
