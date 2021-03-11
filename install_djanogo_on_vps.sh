@@ -46,24 +46,7 @@ function install_prog(){
     done
 }
 
-function get_pip_install(){
-    for i in $@ ; do
-        x=`pip3 list | grep $i | wc -l`
-        if [ $x -eq 0 ] ; then
-            message "Instalacja biblioteki $i"
-            pip3 install $i |& tee -a $LOG_FILE &> /dev/null
-            x=`pip3 list | grep $i | wc -l`
-            if [ $x -eq 0 ] ; then
-                message "Instalacji biblioteki $i." "-e"
-                exit
-            else
-                message "Zainstalowano bibliotekę $i." "-c"
-            fi
-        else
-            message "Biblioteka $i jest już zainstalowana."
-        fi
-    done
-}
+
 
 function get_firtualenv(){
     message "ŚRODOWISKO VIRTUALENV" "-t"
