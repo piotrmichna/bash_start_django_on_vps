@@ -99,6 +99,10 @@ function install_prog(){
     done
 }
 
+if [ $C_PROMPT -eq 1 ] ; then
+    get_prompt
+fi
+
 if [ $C_TOOLS -eq 1 ] ; then
     message 'UAKTUALNIENIE SYSTEMU' "-t"
     message 'Aktualizacja repozytorium' "-m"
