@@ -1,5 +1,6 @@
 git_venv_prompt() {
     # Define the colors that will be used
+    # color palette -> https://robotmoon.com/256-colors/
     local blue="\[$(tput setaf 39)\]"
     local orange="\[$(tput setaf 208)\]"
     local green="\[$(tput setaf 25)\]"
