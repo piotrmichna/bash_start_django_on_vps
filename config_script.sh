@@ -20,6 +20,19 @@ currentTime=$(date +"%T")
 DIR_SC=`pwd`
 LOG_FILE="$DIR_SC/log_${currentDate}_${currentTime}.log"
 
+function get_logo(){
+  echo -ne "-------|${C_MES}${BOLD}/home/user/${NC}\n\r"
+  echo -ne "-------|       |\n\r"
+  echo -ne "-------|       + ${C_MES}${BOLD}proj_app/ ${NC}${GREEN}# Katalog aplikacji${NC}\n\r"
+  echo -ne "-------|             |\n\r"
+  echo -ne "-------|             + ${C_MES}${BOLD}.git/${NC}\n\r"
+  echo -ne "-------|             + ${C_MES}${BOLD}django_proj/ ${NC}${GREEN}# Katalog projektu Django${NC}\n\r"
+  echo -ne "-------|             |    |\n\r"
+  echo -ne "-------|             |    + ${C_MES}${BOLD}django_proj/${NC}\n\r"
+  echo -ne "-------|             |    + ${GREEN}${BOLD}manage.py${NC}\n\r"
+  echo -ne "-------|             + ${C_MES}${BOLD}venv${NC}\n\r\n\r"
+}
+
 
 function message(){
   if [ -n "$2" ] ; then
@@ -101,13 +114,16 @@ function get_git_clone_config(){
       echo "---> Repozytorium gita=BRAK" |& tee -a $LOG_FILE &> /dev/null
       break
     else
-      git clone $PARAM /tmp/$PROJ_DIR &> /dev/null
+      message "Sprawdzanie repozytorium!" "-m"
+      git clone --depth 1 --single-branch $PARAM /tmp/$PROJ_DIR &> /dev/null
 
       if [ $? -eq 0 ] ; then
         rm -rf /tmp/$PROJ_DIR
         GIT_LINK=$PARAM
         C_CGIT=1
         echo "---> Repozytorium gita=$GIT_LINK" |& tee -a $LOG_FILE &> /dev/null
+        message "Sprawdź w repozytorium nazwę katalogu projektu Django!" "-w"
+        message "I wpisz ją tak samo niżej!" "-w"
         break
       else
         message "Błędny adres repozytorium!" "-w"
@@ -117,7 +133,7 @@ function get_git_clone_config(){
 }
 
 function get_django_conf(){  
-  check_dir "Podaj katalog projektu ~/"
+  check_dir "Podaj katalog aplikacji ~/"
   PROJ_DIR=$PARAM
   echo "---> Ktalog projektu=$HOME/$PROJ_DIR" |& tee -a $LOG_FILE &> /dev/null
 
@@ -126,11 +142,11 @@ function get_django_conf(){
     get_git_clone_config
   else
     C_CGIT=0
-    echo "---> Repozytorium gita=BRAK" |& tee -a $LOG_FILE &> /dev/null
-    get_param "Podaj katalog projektu Django: ~/$PROJ_DIR/"
-    DJANGO_DIR=$PARAM
-    echo "---> Katalog projektu Django=$HOME/$PROJ_DIR/$DJANGO_DIR" |& tee -a $LOG_FILE &> /dev/null
+    echo "---> Repozytorium gita=BRAK" |& tee -a $LOG_FILE &> /dev/null    
   fi
+  get_param "Podaj katalog projektu Django: ~/$PROJ_DIR/"
+  DJANGO_DIR=$PARAM
+  echo "---> Katalog projektu Django=$HOME/$PROJ_DIR/$DJANGO_DIR" |& tee -a $LOG_FILE &> /dev/null
 }
 
 function get_conf_service(){
@@ -147,19 +163,6 @@ function get_conf_service(){
     get_param "Podaj liste hostów dla nginx: host0,host1.."
     C_SYS_HOSTS=$PARAM
     echo "---> Lista hostów nginx=${C_SYS_HOSTS}" |& tee -a $LOG_FILE &> /dev/null
-
-    # host=$(echo $C_SYS_HOSTS | tr "," "\n")
-    # local hosts=""
-    # for addr in $host ; do
-    #     echo "$addr"
-    #     if [ "$hosts" == "" ] ; then
-    #       hosts="'$addr'"
-    #     else
-    #       hosts="${hosts},'$addr'"
-    #     fi
-    # done
-    # echo "django hosts =$hosts"
-
     C_SERVICE=1
   else
     C_SERVICE=0
@@ -245,6 +248,7 @@ function get_config_psql(){
 }
 
 function get_config_user(){
+  get_logo
   message "KONFIGURACJA DJANGO" "-m"
   get_django_conf
 

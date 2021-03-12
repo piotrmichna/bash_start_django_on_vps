@@ -44,7 +44,7 @@ function get_virtualenv(){
         . venv/bin/activate
         message 'Aktywacja środowiska virtualenv' "-c"
         message 'Instalacja wymaganych bibliotek' "-m"
-        get_pip_install psycopg2-binary Django django-rest
+        get_pip_install psycopg2-binary Django django-rest djangorestframework
     else
         message "Nie udane utworzenie środowiska virtualenv." "-e"
         get_exit
@@ -154,9 +154,14 @@ function get_django(){
         git clone ${GIT_LINK} ${HOME}/${PROJ_DIR} |& tee -a $LOG_FILE &> /dev/null
 
         if [ $? -eq 0 ] ; then
-            message "Pomyślnie pobrano repozytorium ${GIT_LINK}." "-c"
-            get_virtualenv
-            venv_deactivate
+            if [ -d ${HOME}/${PROJ_DIR}/${DJANGO_DIR} ] ; then
+                message "Pomyślnie pobrano repozytorium ${GIT_LINK}." "-c"
+                get_virtualenv
+                venv_deactivate
+            else
+                message "Błędna nazwa Katalogu projektu Django w pobranym repozytorium." "-e"
+                get_exit
+            fi
         else
             message "Pobieranie repozytorium ${GIT_LINK}." "-e"
             get_exit
@@ -271,7 +276,7 @@ function get_nginx(){
     sudo rm "${DJANGO_DIR}.serv"
     message "Zapis /etc/nginx/sites-available/${DJANGO_DIR}.serv" "-c"
 
-    sudo ln -s "/etc/nginx/sites-available/${DJANGO_DIR}.serv" "/etc/nginx/sites-enabled/${DJANGO_DIR}.serv" |& tee -a x &> /dev/null
+    x=$(sudo ln -s "/etc/nginx/sites-available/${DJANGO_DIR}.serv" "/etc/nginx/sites-enabled/${DJANGO_DIR}.serv")
     if [ "$x" != "" ] ; then
         message "Nadpisano poprzednią konfigurację ${DJANGO_DIR}.serv" "-w"
     fi
@@ -313,13 +318,14 @@ WantedBy=multi-user.target"
     #sudo rm "${C_SYS_NAME}.service"
     message "Utworzono usługę ${C_SYS_NAME}.service" "-c"
 
-    sduo systemctl enable "${C_SYS_NAME}.service" |& tee -a $LOG_FILE &> /dev/null
+    sudo systemctl enable "${C_SYS_NAME}.service" |& tee -a $LOG_FILE &> /dev/null
     message "Aktywowano usługę ${C_SYS_NAME}.service" "-c"
-    sduo systemctl start "${C_SYS_NAME}.service" |& tee -a $LOG_FILE &> /dev/null
+    sudo systemctl start "${C_SYS_NAME}.service" |& tee -a $LOG_FILE &> /dev/null
     message "Uruchomiono usługę ${C_SYS_NAME}.service" "-c"
-    sduo systemctl daemon-reload |& tee -a $LOG_FILE &> /dev/null
+    sudo systemctl daemon-reload |& tee -a $LOG_FILE &> /dev/null
     message "Ponownie załadowany deamon" "-c"
-    sduo systemctl restart "${C_SYS_NAME}.service" |& tee -a $LOG_FILE &> /dev/null
+    sudo systemctl restart "${C_SYS_NAME}.service" |& tee -a $LOG_FILE &> /dev/null
+
 }
 
 
