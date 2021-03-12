@@ -14,6 +14,44 @@ echo "------> INSTALL DJANGO <-----------[ ${currentDate} ${currentTime} ]" |& t
 
 get_config
 
+function get_prompt(){
+    message 'MODYFIKACJA PROMPT' "-t"
+    message "Sprawdzanie konfiguracji" "-m"
+    x=`ls -a $HOME | grep .git_venv_prompt.sh | wc -l`
+
+    if [ $x -gt 0 ] ; then
+        message "Prompt jest już skonfigurowany" "-w"
+    else
+        local link_bash=""
+        x=`ls -a $HOME | grep .bashrc | wc -l`
+        if [ $x -eq 1 ] ; then
+            message "Sprawdzanie pliku .bashrc." "-m"
+            link_bash="${HOME}/.bashrc"
+        else
+            x=`ls -a $HOME | grep .bash_profile | wc -l`
+            if [ $x -eq 1 ] ; then
+                message "Sprawdzanie pliku .bash_profile." "-m"
+                link_bash="${HOME}/.bash_profile"
+            else
+                message "Brak pliku .bashrc lub .bash_profile w katalogu domowym użytkownika!" "-e"
+                get_exit
+            fi
+        fi
+
+        if [ "$link_bash" != "" ] ; then
+            message "Kopiowanie skryptu .git_bash_prompt.sh do katalogu domowego." "-m"
+            cp git_venv_prompt.sh "$HOME/.git_bash_prompt.sh"
+
+            x=`ls -a $HOME | grep .git_venv_prompt.sh | wc -l`
+            if [ $x -gt 0 ] ; then
+                message "Skrypt .git_bash_prompt.sh w katalogu domowym." "-c"
+                echo "source ~/git_venv_prompt.sh" > $link_bash
+            fi
+
+        fi
+    fi
+}
+
 function install_prog(){
     for i in $@ ; do
         sudo dpkg -s $i &> /dev/null
