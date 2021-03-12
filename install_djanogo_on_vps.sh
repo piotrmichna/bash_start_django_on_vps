@@ -26,22 +26,23 @@ function get_prompt(){
             if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
                 flag=2
             else
-                message "Pominięto  konfigurację prompt." "-m"
+                message "Pominięto  konfigurację prompt." "-w"
                 flag=0
             fi
+            break
         done
     fi
-    if [ $flag -gt 0 ]
+    if [ $flag -gt 0 ] ; then
         local link_bash=""
         x=`ls -a $HOME | grep .bashrc | wc -l`
         if [ $x -eq 1 ] ; then
-            message "Sprawdzanie pliku .bashrc." "-m"
-            link_bash="${HOME}/.bashrc"
+            message "Sprawdzanie pliku .bashrc." "-c"
+            link_bash=".bashrc"
         else
             x=`ls -a $HOME | grep .bash_profile | wc -l`
             if [ $x -eq 1 ] ; then
-                message "Sprawdzanie pliku .bash_profile." "-m"
-                link_bash="${HOME}/.bash_profile"
+                message "Sprawdzanie pliku .bash_profile." "-c"
+                link_bash=".bash_profile"
             else
                 message "Brak pliku .bashrc lub .bash_profile w katalogu domowym użytkownika!" "-e"
                 get_exit
@@ -50,12 +51,15 @@ function get_prompt(){
 
         if [ "$link_bash" != "" ] ; then
             message "Kopiowanie skryptu .git_bash_prompt.sh do katalogu domowego." "-m"
-            cp git_venv_prompt.sh "$HOME/.git_bash_prompt.sh"
+            cp git_venv_prompt.sh "$HOME/.git_venv_prompt.sh"
 
             x=`ls -a $HOME | grep .git_venv_prompt.sh | wc -l`
-            if [ $x -gt 0 ] && [ $flag -eq 1 ] ; then
+            if [ $x -gt 0 ] ; then
                 message "Skrypt .git_bash_prompt.sh w katalogu domowym." "-c"
-                echo "source ~/git_venv_prompt.sh" > $link_bash
+                if [ $flag -eq 1 ] ; then
+                    echo "source ~/.git_venv_prompt.sh" >> "${HOME}/$link_bash"
+                    message "Dołączenie skryptu w pliku $link_bash." "-c"
+                fi
             fi
 
         fi
