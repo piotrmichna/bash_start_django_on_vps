@@ -276,7 +276,7 @@ function get_nginx(){
     sudo rm "${DJANGO_DIR}.serv"
     message "Zapis /etc/nginx/sites-available/${DJANGO_DIR}.serv" "-c"
 
-    sudo ln -s "/etc/nginx/sites-available/${DJANGO_DIR}.serv" "/etc/nginx/sites-enabled/${DJANGO_DIR}.serv" |& tee -a x &> /dev/null
+    x=$(sudo ln -s "/etc/nginx/sites-available/${DJANGO_DIR}.serv" "/etc/nginx/sites-enabled/${DJANGO_DIR}.serv")
     if [ "$x" != "" ] ; then
         message "Nadpisano poprzednią konfigurację ${DJANGO_DIR}.serv" "-w"
     fi
