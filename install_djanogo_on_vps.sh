@@ -16,12 +16,22 @@ get_config
 
 function get_prompt(){
     message 'MODYFIKACJA PROMPT' "-t"
-    message "Sprawdzanie konfiguracji" "-m"
+    message "Sprawdzanie konfiguracji." "-m"
+    local flag=1
     x=`ls -a $HOME | grep .git_venv_prompt.sh | wc -l`
-
-    if [ $x -gt 0 ] ; then
-        message "Prompt jest już skonfigurowany" "-w"
-    else
+    if [ $x -eq 1 ] ; then
+        message "Prompt jest już skonfigurowany." "-w"
+        while true ; do
+            get_param "Nadpisać konfiguracje prompt? [n/t]" "TtNn"
+            if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+                flag=2
+            else
+                message "Pominięto  konfigurację prompt." "-m"
+                flag=0
+            fi
+        done
+    fi
+    if [ $flag -gt 0 ]
         local link_bash=""
         x=`ls -a $HOME | grep .bashrc | wc -l`
         if [ $x -eq 1 ] ; then
@@ -43,7 +53,7 @@ function get_prompt(){
             cp git_venv_prompt.sh "$HOME/.git_bash_prompt.sh"
 
             x=`ls -a $HOME | grep .git_venv_prompt.sh | wc -l`
-            if [ $x -gt 0 ] ; then
+            if [ $x -gt 0 ] && [ $flag -eq 1 ] ; then
                 message "Skrypt .git_bash_prompt.sh w katalogu domowym." "-c"
                 echo "source ~/git_venv_prompt.sh" > $link_bash
             fi
