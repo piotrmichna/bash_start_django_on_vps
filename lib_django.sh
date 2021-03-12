@@ -44,7 +44,7 @@ function get_virtualenv(){
         . venv/bin/activate
         message 'Aktywacja środowiska virtualenv' "-c"
         message 'Instalacja wymaganych bibliotek' "-m"
-        get_pip_install psycopg2-binary Django django-rest
+        get_pip_install psycopg2-binary Django django-rest djangorestframework
     else
         message "Nie udane utworzenie środowiska virtualenv." "-e"
         get_exit
