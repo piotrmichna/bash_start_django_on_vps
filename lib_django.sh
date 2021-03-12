@@ -318,13 +318,14 @@ WantedBy=multi-user.target"
     #sudo rm "${C_SYS_NAME}.service"
     message "Utworzono usługę ${C_SYS_NAME}.service" "-c"
 
-    sduo systemctl enable "${C_SYS_NAME}.service" |& tee -a $LOG_FILE &> /dev/null
+    sudo systemctl enable "${C_SYS_NAME}.service" |& tee -a $LOG_FILE &> /dev/null
     message "Aktywowano usługę ${C_SYS_NAME}.service" "-c"
-    sduo systemctl start "${C_SYS_NAME}.service" |& tee -a $LOG_FILE &> /dev/null
+    sudo systemctl start "${C_SYS_NAME}.service" |& tee -a $LOG_FILE &> /dev/null
     message "Uruchomiono usługę ${C_SYS_NAME}.service" "-c"
-    sduo systemctl daemon-reload |& tee -a $LOG_FILE &> /dev/null
+    sudo systemctl daemon-reload |& tee -a $LOG_FILE &> /dev/null
     message "Ponownie załadowany deamon" "-c"
-    sduo systemctl restart "${C_SYS_NAME}.service" |& tee -a $LOG_FILE &> /dev/null
+    sudo systemctl restart "${C_SYS_NAME}.service" |& tee -a $LOG_FILE &> /dev/null
+
 }
 
 

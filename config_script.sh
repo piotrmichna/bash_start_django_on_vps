@@ -21,16 +21,16 @@ DIR_SC=`pwd`
 LOG_FILE="$DIR_SC/log_${currentDate}_${currentTime}.log"
 
 function get_logo(){
-  echo -ne "${C_MES}${BOLD}/home/user/${NC}\n\r"
-  echo -ne "       |\n\r"
-  echo -ne "       + ${C_MES}${BOLD}proj_app/ ${NC}${GREEN}# Katalog aplikacji${NC}\n\r"
-  echo -ne "             |\n\r"
-  echo -ne "             + ${C_MES}${BOLD}.git/${NC}\n\r"
-  echo -ne "             + ${C_MES}${BOLD}django_proj/ ${NC}${GREEN}# Katalog projektu Django${NC}\n\r"
-  echo -ne "             |    |\n\r"
-  echo -ne "             |    + ${C_MES}${BOLD}django_proj/${NC}\n\r"
-  echo -ne "             |    + ${GREEN}${BOLD}manage.py${NC}\n\r"
-  echo -ne "             + ${C_MES}${BOLD}venv${NC}\n\r\n\r"
+  echo -ne "-------|${C_MES}${BOLD}/home/user/${NC}\n\r"
+  echo -ne "-------|       |\n\r"
+  echo -ne "-------|       + ${C_MES}${BOLD}proj_app/ ${NC}${GREEN}# Katalog aplikacji${NC}\n\r"
+  echo -ne "-------|             |\n\r"
+  echo -ne "-------|             + ${C_MES}${BOLD}.git/${NC}\n\r"
+  echo -ne "-------|             + ${C_MES}${BOLD}django_proj/ ${NC}${GREEN}# Katalog projektu Django${NC}\n\r"
+  echo -ne "-------|             |    |\n\r"
+  echo -ne "-------|             |    + ${C_MES}${BOLD}django_proj/${NC}\n\r"
+  echo -ne "-------|             |    + ${GREEN}${BOLD}manage.py${NC}\n\r"
+  echo -ne "-------|             + ${C_MES}${BOLD}venv${NC}\n\r\n\r"
 }
 
 
