@@ -292,6 +292,7 @@ function get_config(){
     get_config_root
     # apt-get update && sudo apt-get upgrade -y && sudo apt-get autoremove -y
     # apt-get install vim git nginx
+    # pip3 install virtualenv
     # ufw allow OpenSSH
     # ufw allow 'Nginx Full' 
     # ufw app list

@@ -20,7 +20,7 @@ function get_pip_install(){
             x=`pip3 list | grep $i | wc -l`
             if [ $x -eq 0 ] ; then
                 message "Instalacji biblioteki $i." "-e"
-                exit
+                get_exit
             else
                 message "Zainstalowano bibliotekę $i." "-c"
             fi
@@ -32,8 +32,18 @@ function get_pip_install(){
 
 function get_virtualenv(){
     message "ŚRODOWISKO VIRTUALENV" "-t"
-
-    get_pip_install virtualenv
+    message 'Sprawdzenie dostępności virtualenv' "-m"
+    x=`pip3 list | grep virtualenv | wc -l`
+    if [ $x -eq 0 ] ; then
+        sudo pip3 install virtualenv |& tee -a $LOG_FILE &> /dev/null
+    fi
+    x=`pip3 list | grep virtualenv | wc -l`
+    if [ $x -eq 1 ] ; then
+        message 'Dostępny virtualenv' "-c"
+    else
+        message 'Instalacja virtualenv' "-e"
+        get_exit
+    fi
 
     message 'Konfiguracja środowiska virtualenv' "-m"
     cd ${HOME}/${PROJ_DIR}
