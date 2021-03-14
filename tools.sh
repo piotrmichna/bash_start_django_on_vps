@@ -38,34 +38,39 @@ function get_position(){
     T_COL=$((${pos[1]} - 1))
 }
 
+function end_line_date(){
+    currentDate=$(date +"%F")
+    currentTime=$(date +"%T")
+    get_position
+    if [ $T_COL -lt 42 ] ; then
+        echo -ne " <" |& tee -a $LOG_FILE
+        get_position
+        while [ $T_COL -lt 44 ] ; do
+            echo -ne "-" |& tee -a $LOG_FILE
+            get_position
+        done
+        echo -ne "[${currentDate} ${currentTime}]\n\r" |& tee -a $LOG_FILE
+    else
+        echo -ne " <" |& tee -a $LOG_FILE
+        get_position
+        while [ $T_COL -lt 65 ] ; do
+            echo -ne "-" |& tee -a $LOG_FILE
+            get_position
+        done
+        echo -ne "\n\r"  |& tee -a $LOG_FILE
+    fi
+    echo -ne "${NC}"
+}
+
 function message(){
     tput civis
   if [ -n "$2" ] ; then
     case "$2" in
       '-t') # title
-        currentDate=$(date +"%F")
-        currentTime=$(date +"%T")
+        echo "" |& tee -a $LOG_FILE
         echo -ne "\n\r${C_TIT}------> ${BOLD}${1}${NC}${C_TIT}"
         echo -n "------> $1" |& tee -a $LOG_FILE &> /dev/null
-        get_position
-        if [ $T_COL -lt 42 ] ; then
-            echo -ne " <" |& tee -a $LOG_FILE
-            get_position
-            while [ $T_COL -lt 44 ] ; do
-                echo -ne "-" |& tee -a $LOG_FILE
-                get_position
-            done
-            echo -ne "[${currentDate} ${currentTime}]\n\r" |& tee -a $LOG_FILE
-        else
-            echo -ne " <" |& tee -a $LOG_FILE
-            get_position
-            while [ $T_COL -lt 65 ] ; do
-                echo -ne "-" |& tee -a $LOG_FILE
-                get_position
-            done
-            echo -ne "\n\r"  |& tee -a $LOG_FILE
-        fi
-        echo "" |& tee -a $LOG_FILE &> /dev/null
+        end_line_date
       ;;
       '-e') # error
         echo -ne "${C_ERR}${BLINK}ERROR${NC}${C_NRM}->${C_ERR} ${BOLD}$1 ${NC}\n\r"
