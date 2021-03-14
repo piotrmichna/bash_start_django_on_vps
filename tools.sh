@@ -6,12 +6,12 @@
 C_ERR="\e[0;31m"
 C_WOR="\e[0;33m"
 C_MES="\e[0;34m"
-C_QST="\e[0;35m"
+C_QST="\e[0;42m\e[30m"
 C_COR="\e[0;32m"
 C_TIT="\e[0;33m"
 C_NRM="\e[0;97m"
 GREEN="\e[0;32m"
-INV="\e[7m"
+WHITE="\e[0;97m"
 DM="\e[2m"
 BLINK="\e[5m"
 BOLD="\e[1m"
@@ -79,20 +79,19 @@ function message(){
         echo "ERROR-> $1 " |& tee -a $LOG_FILE &> /dev/null
       ;;
       '-w') # worning
-        echo -ne "${C_NRM}  [${C_WOR}!${C_NRM}]->${C_WOR} $1 ${NC}\n\r"
-        echo "--[!]-> $1 " |& tee -a $LOG_FILE &> /dev/null
+        echo -ne "${C_NRM}  |${C_WOR}!${C_NRM}|->${C_WOR} $1 ${NC}\n\r"
+        echo "--|!|-> $1 " |& tee -a $LOG_FILE &> /dev/null
       ;;
       '-c') # correct ✓
-        echo -ne "  ${C_NRM}[${GREEN}✓${C_NRM}]->${C_COR} $1 ${NC}\n\r"
-        echo "--[✓]-> $1 " |& tee -a $LOG_FILE &> /dev/null
+        echo -ne "  ${C_NRM}|${GREEN}✓${C_NRM}|->${C_COR} $1 ${NC}\n\r"
+        echo "--|✓|-> $1 " |& tee -a $LOG_FILE &> /dev/null
       ;;
       '-m') # message
-        echo -ne "${C_NRM}  [${C_MES}i${C_NRM}]->${C_MES} $1 ${NC}\n\r"
-        echo "" |& tee -a $LOG_FILE &> /dev/null
-        echo "--[i]-> $1 " |& tee -a $LOG_FILE &> /dev/null
+        echo -ne "${C_NRM}  |${C_MES}i${C_NRM}|->${C_MES} $1 ${NC}\n\r"
+        echo "--|i|-> $1 " |& tee -a $LOG_FILE &> /dev/null
       ;;
       '-q') # question
-        echo -ne "${C_NRM}  [${C_QST}?${C_NRM}]-> ${C_QST}$1: ${BOLD}"
+        echo -ne "${C_NRM}  |${C_QST}?${C_NRM}|-> ${C_QST}$1: ${NC} "
       ;;
     esac
   else
@@ -106,8 +105,9 @@ function get_param(){
     PARAM=""
     while [ "" == "$PARAM" ] ; do
       message "$1" "-q"
+
       read PARAM
-      echo -ne "${NC}"
+      echo -ne "\e[40m\e[0m"
       if [ -n "$2" ] ; then
         if [ `echo $2 | grep $PARAM | wc -l` -eq 0 ] ; then
           PARAM=""
@@ -122,7 +122,7 @@ function check_dir(){
     while true ; do
       message "$1" "-q"
       read PARAM
-      echo -ne "${NC}"
+      echo -ne "\e[49m"
       if [ -d "$HOME/$PARAM" ] ; then
         message "Katalog [ ~/$PARAM ] już istnieje!" "-w"
       else
@@ -170,16 +170,37 @@ function start_scripts(){
     echo "" |& tee -a $LOG_FILE &> /dev/null
     echo "     Korzystając z tego linku https://mikr.us/?r=758803ea" |& tee -a $LOG_FILE &> /dev/null
     echo "             otrzymasz dodatkowy miesiąc gratis." |& tee -a $LOG_FILE &> /dev/null
+    
+    echo -ne "\n\r${NC}${C_TIT}${BOLD}-----------------------------------------------------------------"
+    echo "-----------------------------------------------------------------" |& tee -a $LOG_FILE &> /dev/null
     echo "" |& tee -a $LOG_FILE &> /dev/null
 }
 
+function get_project_tree(){
+    echo -ne "     -> ${C_TIT}${BOLD}STRUKTURA CZYSTEGO PROJEKTU Django${NC}\n\r"
+    echo -ne "     ->   ${C_MES}${BOLD}~/proj_app/ ${NC}${GREEN}${DM}# Katalog projektu${NC}\n\r"
+    echo -ne "     ->        ${C_TIT}${BOLD}+ ${C_MES}${BOLD}.git/${NC}\n\r"
+    echo -ne "     ->        ${C_TIT}${BOLD}+ ${C_MES}${BOLD}django_proj/ ${NC}${GREEN}${DM}# Katalog Django${NC}\n\r"
+    echo -ne "     ->        ${C_TIT}${BOLD}|    + ${C_MES}${BOLD}django_proj/${NC}${GREEN}${DM} # Katalog głównej aplikacji Django${NC}\n\r"
+    echo -ne "     ->        ${C_TIT}${BOLD}|    |    + ${WHITE}settings.py${NC}\n\r"
+    echo -ne "     ->        ${C_TIT}${BOLD}|    |    + ${WHITE}local_settings.py${GREEN}${DM} # Plik generowany automatycznie.${NC}\n\r"
+    echo -ne "     ->        ${C_TIT}${BOLD}|    + ${GREEN}${BOLD}manage.py${NC}\n\r"
+    echo -ne "     ->        ${C_TIT}${BOLD}+ ${C_MES}${BOLD}venv${NC}\n\r"
+    echo -ne "     ->        ${C_TIT}${BOLD}+ ${WHITE}${DM}.gitignore${NC}\n\r"
+    echo -ne "     ->        ${C_TIT}${BOLD}+ ${WHITE}$LOG_FILE${GREEN}${DM} # Zapis logów konfiguracji i instalacji.${NC}\n\r\n\r"
+}
 
-start_scripts
-message "TYTUŁ MODÓŁU" "-t"
-message "Błąd wykonywania instrukcji!" "-e"
-message "Użytkownik ddd_user już istnieje." "-w"
-message "Proces wykonywania instrukcji." "-m"
-message "Wykonywanie instrukcji." "-c"
-message "Wykonać instalację narzędzi? [t/n]" "-q"
-echo -ne "${NC}\n\r"
-message "Wiadomość informacyjna"
+
+if [ "$0" == "./tools.sh" ] || [ "$0" == "tools.sh" ] ; then
+    start_scripts
+    message "TYTUŁ MODÓŁU" "-t"
+    message "Błąd wykonywania instrukcji!" "-e"
+    message "Użytkownik ddd_user już istnieje." "-w"
+    message "Proces wykonywania instrukcji." "-m"
+    message "Wykonywanie instrukcji." "-c"
+    message "Wykonać instalację narzędzi? [t/n]" "-q"
+    echo -ne "${NC}\n\r"
+    message "Wiadomość informacyjna"
+    get_project_tree
+    get_param "Struktura katalogów jest zrozumiała?" "TtNn"
+fi
