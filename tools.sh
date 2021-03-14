@@ -117,6 +117,21 @@ function get_param(){
   fi
 }
 
+function check_dir(){
+  if [ -n "$1" ] ; then
+    while true ; do
+      message "$1" "-q"
+      read PARAM
+      echo -ne "${NC}"
+      if [ -d "$HOME/$PARAM" ] ; then
+        message "Katalog [ ~/$PARAM ] już istnieje!" "-w"
+      else
+        break
+      fi
+    done
+  fi
+}
+
 function start_scripts(){
     sudo ls > /dev/null
     echo -ne "\n\r${NC}${C_TIT}${BOLD}-----------------------------------------------------------------"
