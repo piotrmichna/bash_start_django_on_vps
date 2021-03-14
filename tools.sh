@@ -8,7 +8,7 @@ C_WOR="\e[0;33m"
 C_MES="\e[0;34m"
 C_QST="\e[0;32m"
 C_COR="\e[0;32m"
-C_TIT="\e[0;34m"
+C_TIT="\e[0;33m"
 C_NRM="\e[0;97m"
 GREEN="\e[0;32m"
 INV="\e[7m"
@@ -23,6 +23,7 @@ currentTime=$(date +"%T")
 DIR_SC=`pwd`
 #LOG_FILE="$DIR_SC/log_${currentDate}_${currentTime}.log"
 LOG_FILE="log_file.log"
+rm log_file.log
 
 T_COL=0
 T_ROW=0
@@ -96,30 +97,31 @@ function message(){
     echo -ne "${C_NRM}------> $1 ${NC}\n\r"
     echo "------> $1 " |& tee -a $LOG_FILE &> /dev/null
   fi
+  tput cnorm
 }
 
 function start_scripts(){
     sudo ls > /dev/null
-    echo -ne "\n\r${NC}${C_MES}${DM}-----------------------------------------------------------------"
+    echo -ne "\n\r${NC}${C_TIT}${BOLD}-----------------------------------------------------------------"
     echo "-----------------------------------------------------------------" |& tee -a $LOG_FILE &> /dev/null
     echo -ne "\n\r${C_TIT}${BOLD}"
     figlet -t -k -f /usr/share/figlet/small.flf " Django  on VPS " |& tee -a $LOG_FILE
-    echo -ne "${NC}${C_MES}${DM}-----------------------------------------------------------------"
+    echo -ne "${NC}${C_TIT}${BOLD}-----------------------------------------------------------------"
     echo "-----------------------------------------------------------------" |& tee -a $LOG_FILE &> /dev/null
 
-    echo -ne "\n\r${C_MES}  Autor: ${BOLD}Piotr Michna${NC}"
-    echo -ne "\n\r${C_MES}${DM} e-mail: pm@piotrmichna.pl"
-    echo -ne "\n\r${C_MES}${DM}   Data: 15.03.2021\n\r"
+    echo -ne "\n\r${C_TIT}  Autor: ${BOLD}Piotr Michna${NC}"
+    echo -ne "\n\r${C_TIT}${DM} e-mail: pm@piotrmichna.pl"
+    echo -ne "\n\r${C_TIT}${DM}   Data: 15.03.2021\n\r"
 
-    echo -ne "\n\r${C_MES}${DM} Skrypt przygotowany w oparciu o wirtualny serwer projektu:"
-    echo -ne "\n\r${C_MES} UW-TEAM.ORG Jakuba Mrugalskiego"
-    echo -ne "\n\r${C_MES}${DM}        Link: ${NC}${C_MES}https://mikr.us${NC}\n\r"
-    echo -ne "\n\r${C_MES}         MIKR.US 1.0 ${BLINK}35zł/rok"
-    echo -ne "\n\r${C_MES}${DM}         RAM: ${NC}${C_MES}256MB"
-    echo -ne "\n\r${C_MES}${DM} Technologia: ${NC}${C_MES}OpenVZ 6${NC}"
-    echo -ne "\n\r${C_MES}${DM}      System: ${NC}${C_MES}Ubuntu 16${NC}\n\r"
-    echo -ne "\n\r${C_MES}     Korzystając z tego linku https://mikr.us/?r=758803ea"
-    echo -ne "\n\r${C_MES}             otrzymasz dodatkowy miesiąc gratis.\n\r"
+    echo -ne "\n\r${C_TIT}${DM} Skrypt przygotowany w oparciu o wirtualny serwer projektu:"
+    echo -ne "\n\r${C_TIT} UW-TEAM.ORG Jakuba Mrugalskiego"
+    echo -ne "\n\r${C_TIT}${DM}        Link: ${NC}${C_TIT}https://mikr.us${NC}\n\r"
+    echo -ne "\n\r${C_TIT}         MIKR.US 1.0 ${BLINK}35zł/rok"
+    echo -ne "\n\r${C_TIT}${DM}         RAM: ${NC}${C_TIT}256MB"
+    echo -ne "\n\r${C_TIT}${DM} Technologia: ${NC}${C_TIT}OpenVZ 6${NC}"
+    echo -ne "\n\r${C_TIT}${DM}      System: ${NC}${C_TIT}Ubuntu 16${NC}\n\r"
+    echo -ne "\n\r${C_TIT}     Korzystając z tego linku https://mikr.us/?r=758803ea"
+    echo -ne "\n\r${C_TIT}             otrzymasz dodatkowy miesiąc gratis.\n\r"
 
     echo "  Autor: Piotr Michna" |& tee -a $LOG_FILE &> /dev/null
     echo " e-mail: pm@piotrmichna.pl" |& tee -a $LOG_FILE &> /dev/null
@@ -141,4 +143,4 @@ function start_scripts(){
 
 
 start_scripts
-message "TYTUŁ MODÓŁU TYTUŁ MODÓŁUTYTUŁ" "-t"
+message "TYTUŁ MODÓŁU" "-t"
