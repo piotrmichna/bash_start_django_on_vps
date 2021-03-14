@@ -6,7 +6,7 @@
 C_ERR="\e[0;31m"
 C_WOR="\e[0;33m"
 C_MES="\e[0;34m"
-C_QST="\e[0;32m"
+C_QST="\e[0;35m"
 C_COR="\e[0;32m"
 C_TIT="\e[0;33m"
 C_NRM="\e[0;97m"
@@ -40,6 +40,7 @@ function get_position(){
 }
 
 function end_line_date(){
+    tput civis
     currentDate=$(date +"%F")
     currentTime=$(date +"%T")
     get_position
@@ -60,11 +61,11 @@ function end_line_date(){
         done
         echo -ne "\n\r"  |& tee -a $LOG_FILE
     fi
+    tput cnorm
     echo -ne "${NC}"
 }
 
 function message(){
-    tput civis
   if [ -n "$2" ] ; then
     case "$2" in
       '-t') # title
@@ -74,30 +75,30 @@ function message(){
         end_line_date
       ;;
       '-e') # error
-        echo -ne "${C_ERR}${BLINK}ERROR${NC}${C_NRM}->${C_ERR} ${BOLD}$1 ${NC}\n\r"
+        echo -ne "${C_ERR}${BLINK}ERROR${C_NRM}${NC}->${C_ERR} ${BOLD}$1 ${NC}\n\r"
         echo "ERROR-> $1 " |& tee -a $LOG_FILE &> /dev/null
       ;;
       '-w') # worning
-        echo -ne "${C_NRM}------>${C_WOR} $1 ${NC}\n\r"
+        echo -ne "${C_NRM}  [${C_WOR}!${C_NRM}]->${C_WOR} $1 ${NC}\n\r"
+        echo "--[!]-> $1 " |& tee -a $LOG_FILE &> /dev/null
       ;;
       '-c') # correct ✓
-        echo -ne "${C_NRM}[${GREEN}✓${C_NRM}]--->${C_COR} $1 ${NC}\n\r"
-        echo "[✓]---> $1 " |& tee -a $LOG_FILE &> /dev/null
+        echo -ne "  ${C_NRM}[${GREEN}✓${C_NRM}]->${C_COR} $1 ${NC}\n\r"
+        echo "--[✓]-> $1 " |& tee -a $LOG_FILE &> /dev/null
       ;;
       '-m') # message
-        echo -ne "${C_NRM}------>${C_MES} $1 ${NC}\n\r"
+        echo -ne "${C_NRM}  [${C_MES}i${C_NRM}]->${C_MES} $1 ${NC}\n\r"
         echo "" |& tee -a $LOG_FILE &> /dev/null
-        echo "------> $1 " |& tee -a $LOG_FILE &> /dev/null
+        echo "--[i]-> $1 " |& tee -a $LOG_FILE &> /dev/null
       ;;
       '-q') # question
-        echo -ne "${C_NRM}------> ${BOLD}$1: ${C_QST}${BOLD}"
+        echo -ne "${C_NRM}  [${C_QST}?${C_NRM}]-> ${C_QST}$1: ${BOLD}"
       ;;
     esac
   else
-    echo -ne "${C_NRM}------> $1 ${NC}\n\r"
+    echo -ne "${C_NRM}     -> $1 ${NC}\n\r"
     echo "------> $1 " |& tee -a $LOG_FILE &> /dev/null
   fi
-  tput cnorm
 }
 
 function start_scripts(){
@@ -144,3 +145,10 @@ function start_scripts(){
 
 start_scripts
 message "TYTUŁ MODÓŁU" "-t"
+message "Błąd wykonywania instrukcji!" "-e"
+message "Użytkownik ddd_user już istnieje." "-w"
+message "Proces wykonywania instrukcji." "-m"
+message "Wykonywanie instrukcji." "-c"
+message "Wykonać instalację narzędzi? [t/n]" "-q"
+echo -ne "${NC}\n\r"
+message "Wiadomość informacyjna"
