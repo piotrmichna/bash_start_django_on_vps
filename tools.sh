@@ -21,15 +21,51 @@ currentDate=$(date +"%F")
 currentTime=$(date +"%T")
 
 DIR_SC=`pwd`
-LOG_FILE="$DIR_SC/log_${currentDate}_${currentTime}.log"
+#LOG_FILE="$DIR_SC/log_${currentDate}_${currentTime}.log"
+LOG_FILE="log_file.log"
+
+T_COL=0
+T_ROW=0
+
+function get_position(){
+    exec < /dev/tty
+    oldstty=$(stty -g)
+    stty raw -echo min 0
+    echo -en "\033[6n" > /dev/tty
+    IFS=';' read -r -d R -a pos
+    stty $oldstty
+    T_ROW=$((${pos[0]:2} - 1))
+    T_COL=$((${pos[1]} - 1))
+}
 
 function message(){
+    tput civis
   if [ -n "$2" ] ; then
     case "$2" in
       '-t') # title
-        echo -ne "\n\r${C_NRM}${BOLD}------> ${C_TIT}${BOLD}$1 ${C_NRM}${BOLD}<-----------${NC}\n\r"
+        currentDate=$(date +"%F")
+        currentTime=$(date +"%T")
+        echo -ne "\n\r${C_TIT}------> ${BOLD}${1}${NC}${C_TIT}"
+        echo -n "------> $1" |& tee -a $LOG_FILE &> /dev/null
+        get_position
+        if [ $T_COL -lt 42 ] ; then
+            echo -ne " <" |& tee -a $LOG_FILE
+            get_position
+            while [ $T_COL -lt 44 ] ; do
+                echo -ne "-" |& tee -a $LOG_FILE
+                get_position
+            done
+            echo -ne "[${currentDate} ${currentTime}]\n\r" |& tee -a $LOG_FILE
+        else
+            echo -ne " <" |& tee -a $LOG_FILE
+            get_position
+            while [ $T_COL -lt 65 ] ; do
+                echo -ne "-" |& tee -a $LOG_FILE
+                get_position
+            done
+            echo -ne "\n\r"  |& tee -a $LOG_FILE
+        fi
         echo "" |& tee -a $LOG_FILE &> /dev/null
-        echo "------> $1 <-----------" |& tee -a $LOG_FILE &> /dev/null
       ;;
       '-e') # error
         echo -ne "${C_ERR}${BLINK}ERROR${NC}${C_NRM}->${C_ERR} ${BOLD}$1 ${NC}\n\r"
@@ -98,4 +134,6 @@ function start_scripts(){
     echo "" |& tee -a $LOG_FILE &> /dev/null
 }
 
+
 start_scripts
+message "TYTUŁ MODÓŁU TYTUŁ MODÓŁUTYTUŁ" "-t"
