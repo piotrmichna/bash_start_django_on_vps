@@ -39,6 +39,14 @@ function get_position(){
     T_COL=$((${pos[1]} - 1))
 }
 
+function display_progres(){
+    echo -ne "$1"
+    while read -r data; do
+        echo "---> $data" &> /dev/null
+    done
+    echo -ne "\e[1A\e[K\e[0m"
+}
+
 function end_line_date(){
     tput civis
     currentDate=$(date +"%F")
