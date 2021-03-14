@@ -101,6 +101,22 @@ function message(){
   fi
 }
 
+function get_param(){
+  if [ -n "$1" ] ; then
+    PARAM=""
+    while [ "" == "$PARAM" ] ; do
+      message "$1" "-q"
+      read PARAM
+      echo -ne "${NC}"
+      if [ -n "$2" ] ; then
+        if [ `echo $2 | grep $PARAM | wc -l` -eq 0 ] ; then
+          PARAM=""
+        fi
+      fi
+    done
+  fi
+}
+
 function start_scripts(){
     sudo ls > /dev/null
     echo -ne "\n\r${NC}${C_TIT}${BOLD}-----------------------------------------------------------------"
