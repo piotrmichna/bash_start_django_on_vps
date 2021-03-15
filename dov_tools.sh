@@ -438,6 +438,39 @@ function install_prog(){
   done
 }
 
+function get_pip_install(){
+  PIP_END=0
+  for i in $@ ; do
+    local lib_name=""
+    local j=$i
+    x=`echo $j | grep "==" | wc -l`
+    if [ $x -eq 1 ] ; then
+      oldIFS="$IFS"
+      IFS='=='; j=($j)
+      lib_name="$j"
+      IFS="$oldIFS"
+    else
+      lib_name=$i
+    fi
+    x=`pip3 list | grep $lib_name | wc -l`
+    if [ $x -eq 0 ] ; then
+        message "Instalacja biblioteki $i" "-m"
+        pip3 install "$i" | pv -w 50 -l -c | tee -a $LOG_FILE | display_progres $C_MES
+        x=`pip3 list | grep $lib_name | wc -l`
+        if [ $x -eq 0 ] ; then
+            message "Instalacji biblioteki $i." "-e"
+            get_exit
+        else
+            message "Zainstalowano bibliotekę $i." "-c"
+            PIP_END=1
+        fi
+    else
+        message "Biblioteka $i jest już zainstalowana." "-w"
+        PIP_END=1
+    fi
+  done
+}
+
 function get_virtualenv(){
   message "ŚRODOWISKO VIRTUALENV" "-m"
   x=`pip3 list | grep virtualenv | wc -l`
