@@ -23,7 +23,7 @@ currentTime=$(date +"%T")
 DIR_SC=`pwd`
 #LOG_FILE="$DIR_SC/log_${currentDate}_${currentTime}.log"
 LOG_FILE="log_file.log"
-rm log_file.log
+rm $LOG_FILE
 
 SYS_UPDATE=0
 T_COL=0
