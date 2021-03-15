@@ -552,7 +552,9 @@ function get_virtualenv(){
         message 'Błąd instalacji virtualenv' "-e"
         get_exit 'Błąd instalacji virtualenv'
     fi
-  else
+  fi
+  x=`pip3 list | grep virtualenv | wc -l`
+  if [ $x -eq 1 ] ; then
     message 'Tworzenie środowiska virtualenv' "-m"
     cd ${HOME}/${PROJ_DIR}
     virtualenv -p python3 venv | pv -w 50 -l -c | tee -a $LOG_FILE | display_progres $C_MES
