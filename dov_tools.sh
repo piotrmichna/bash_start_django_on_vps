@@ -519,33 +519,19 @@ function get_virtualenv(){
         message "Utworzono środowisko virtualenv." "-c"
         cd ${HOME}/${PROJ_DIR}
         . venv/bin/activate
-        message 'Aktywacja środowiska virtualenv' "-c"
-        message 'Instalacja wymaganych bibliotek' "-m"
-        get_pip_install psycopg2-binary Django django-rest djangorestframework
+        x=`which python`
+        if [ "$x" == "${HOME}/${PROJ_DIR}/venv/bin/python" ] ; then
+          message 'Aktywne środowisko virtualenv' "-c"
+          get_install_lib
+        else
+          message "Brak środowiska virtualenv." "-e"
+          get_exit "Budowanie virtualenv"
+        fi
     else
         message "Nie udane utworzenie środowiska virtualenv." "-e"
-        get_exit
+        get_exit "Budowanie virtualenv"
     fi
   fi
-}
-
-function get_pip_install(){
-    for i in $@ ; do
-        x=`pip3 list | grep $i | wc -l`
-        if [ $x -eq 0 ] ; then
-            message "Instalacja biblioteki $i"
-            pip3 install $i |& tee -a $LOG_FILE &> /dev/null
-            x=`pip3 list | grep $i | wc -l`
-            if [ $x -eq 0 ] ; then
-                message "Instalacji biblioteki $i." "-e"
-                get_exit
-            else
-                message "Zainstalowano bibliotekę $i." "-c"
-            fi
-        else
-            message "Biblioteka $i jest już zainstalowana." "-w"
-        fi
-    done
 }
 
 if [ "$0" == "./dov_tools.sh" ] || [ "$0" == "dov_tools.sh" ] ; then
