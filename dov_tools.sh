@@ -109,7 +109,7 @@ function message(){
         echo "--|i|-> $1 " |& tee -a $LOG_FILE &> /dev/null
       ;;
       '-q') # question
-        echo -ne "${C_NRM}  |${C_QST}?${C_NRM}|-> ${C_QST}$1: ${NC} "
+        echo -ne "${C_NRM}  |${GREEN}?${C_NRM}|-> ${C_QST}$1: ${NC} "
         sudo modprobe pcspkr
         beep
       ;;
@@ -157,7 +157,7 @@ function start_scripts(){
     echo -ne "\n\r${NC}${C_TIT}${BOLD}-----------------------------------------------------------------"
     echo "-----------------------------------------------------------------" |& tee -a $LOG_FILE &> /dev/null
     echo -ne "\n\r${C_TIT}${BOLD}"
-    figlet -t -k -f /usr/share/figlet/small.flf " Django  on VPS " |& tee -a $LOG_FILE
+    figlet -t -k -f /usr/share/figlet/small.flf " $1  on VPS " |& tee -a $LOG_FILE
     echo -ne "${NC}${C_TIT}${BOLD}-----------------------------------------------------------------"
     echo "-----------------------------------------------------------------" |& tee -a $LOG_FILE &> /dev/null
 
@@ -193,7 +193,7 @@ function start_scripts(){
     
     echo -ne "\n\r${NC}${C_TIT}${BOLD}-----------------------------------------------------------------"
     echo "-----------------------------------------------------------------" |& tee -a $LOG_FILE &> /dev/null
-    echo "" |& tee -a $LOG_FILE &> /dev/null
+    echo "" |& tee -a $LOG_FILE
 }
 
 function get_exit(){
@@ -291,7 +291,7 @@ function get_git_clone_config(){
         rm -rf /tmp/$PROJ_DIR
         GIT_LINK=$PARAM
         C_CGIT=1
-        message "Link do repozytorium poprawny." "-c"
+        message "Link do repozytorium=$GIT_LINK" "-c"
         message "Sprawdź w repozytorium nazwę katalogu projektu Django!" "-w"
         message "I wpisz ją tak samo w następnym kroku!" "-w"
         break
