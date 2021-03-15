@@ -3,6 +3,13 @@
 # author: Piotr Michna
 # e-mail: pm@piotrmichna.pl
 
+currentDate=$(date +"%F")
+currentTime=$(date +"%T")
+
+# -------- KONFIGURACJA SKRYPUT ---------------
+REQUIRMENTS="psycopg2-binary Django django-rest djangorestframework"
+LOG_NAME="log_${currentDate}_${currentTime}.log"
+# -------------- KONIEC -----------------------
 C_ERR="\e[0;31m"
 C_WOR="\e[0;33m"
 C_MES="\e[0;34m"
@@ -17,16 +24,12 @@ BLINK="\e[5m"
 BOLD="\e[1m"
 NC="\e[40m\e[0m"
 
-currentDate=$(date +"%F")
-currentTime=$(date +"%T")
-
-DIR_SC=`pwd`
-LOG_NAME="log_${currentDate}_${currentTime}.log"
-LOG_FILE="$DIR_SC/${LOG_NAME}"
 # LOG_FILE="log_file.log"
 # if [ -f $LOG_FILE ] ; then
 #   rm $LOG_FILE
 # fi
+DIR_SC=`pwd`
+LOG_FILE="$DIR_SC/${LOG_NAME}"
 
 SYS_UPDATE=0
 T_COL=0
