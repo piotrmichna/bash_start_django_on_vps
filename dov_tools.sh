@@ -461,6 +461,24 @@ function venv_activate(){
   fi
 }
 
+function venv_deactivate(){
+  message "Deaktywacja środowiska virtualenv." "-m"
+  cd ${HOME}/${PROJ_DIR}
+  x=`which python3`
+  if [ "$x" == "${HOME}/${PROJ_DIR}/venv/bin/python3" ] ; then
+    deactivate
+    x=`which python3`
+    if [ "$x" != "${HOME}/${PROJ_DIR}/venv/bin/python3" ] ; then
+      message "OFF środowisko virtualenv." "-c"
+    else
+      message "Nie udane wyłączenie środowiska virtualenv." "-e"
+      get_exit "Błąd wyłączenie środowiska virtualenv"
+    fi
+  else
+    message "Środowiska virtualenv nie było aktywne." "-m"
+  fi
+}
+
 function get_pip_install(){
   PIP_END=0
   for i in $@ ; do
