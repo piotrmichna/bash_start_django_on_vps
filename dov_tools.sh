@@ -304,17 +304,36 @@ function get_git_clone_config(){
 }
 
 function get_config_psql_db(){
+  message 'KONFIGURACJA BAZY PostgreSQL' "-t"
+  local is_psql=0
+  sudo dpkg -s $i &> /dev/null
+  if [ $? -eq 0 ] ; then
+    is_psql=1
+  fi
+
+  PSQL_C=0
   while true ; do
     get_param "Podaj nazwę bazy"
     PSQL_NAME=$PARAM
-    x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='$PSQL_NAME'"`
-    if [ "$x" == "" ] ; then
-      echo "---> Nazwa bazy postgresql=${PSQL_NAME}" |& tee -a $LOG_FILE &> /dev/null
-      break
+    if [ $is_psql -eq 1 ] ; then
+      x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='$PSQL_NAME'"`
+      if [ "$x" == "" ] ; then
+        PSQL_C=1
+        break
+      else
+        message "Baza danych już istnieje" "-w"
+      fi
     else
-      message "Baza danych już istnieje" "-w"
+      if [ $PSQL_NAME != 'postgres' ] ; then
+        PSQL_C=1
+        break
+      fi
     fi
   done
+
+  if [ $PSQL_C -eq 1 ] ; then
+    message "Nazwa bazy PostgreSQL=$PSQL_NAME." "-c"
+  fi
 }
 
 function system_update(){
