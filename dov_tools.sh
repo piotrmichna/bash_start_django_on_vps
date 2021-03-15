@@ -23,7 +23,9 @@ currentTime=$(date +"%T")
 DIR_SC=`pwd`
 #LOG_FILE="$DIR_SC/log_${currentDate}_${currentTime}.log"
 LOG_FILE="log_file.log"
-rm $LOG_FILE
+if [ -f $LOG_FILE ] ; then
+  rm $LOG_FILE
+fi
 
 SYS_UPDATE=0
 T_COL=0
@@ -330,7 +332,7 @@ function install_prog(){
   done
 }
 
-if [ "$0" == "./tools.sh" ] || [ "$0" == "tools.sh" ] ; then
+if [ "$0" == "./dov_tools.sh" ] || [ "$0" == "dov_tools.sh" ] ; then
     start_scripts
     message "TYTUŁ MODÓŁU" "-t"
     message "Błąd wykonywania instrukcji!" "-e"
