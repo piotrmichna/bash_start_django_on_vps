@@ -216,11 +216,9 @@ function get_prompt(){
         message "Prompt jest już skonfigurowany." "-w"
         while true ; do
             get_param "Nadpisać konfiguracje prompt? [n/t]" "TtNn"
-            if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
-                flag=2
-            else
-                message "Pominięto  konfigurację prompt." "-w"
-                flag=0
+            if [ "$PARAM" == "N" ] || [ "$PARAM" == "n" ] ; then
+              message "Pominięto  konfigurację prompt." "-w"
+              flag=0
             fi
             break
         done
@@ -234,11 +232,11 @@ function get_prompt(){
         else
             x=`ls -a $HOME | grep .bash_profile | wc -l`
             if [ $x -eq 1 ] ; then
-                message "Sprawdzanie pliku .bash_profile." "-c"
-                link_bash=".bash_profile"
+              message "Sprawdzanie pliku .bash_profile." "-c"
+              link_bash=".bash_profile"
             else
-                message "Brak pliku .bashrc lub .bash_profile w katalogu domowym użytkownika!" "-e"
-                get_exit
+              message "Brak pliku .bashrc lub .bash_profile w katalogu domowym użytkownika!" "-e"
+              get_exit
             fi
         fi
 
@@ -249,9 +247,12 @@ function get_prompt(){
             x=`ls -a $HOME | grep .git_venv_prompt.sh | wc -l`
             if [ $x -gt 0 ] ; then
                 message "Skrypt .git_bash_prompt.sh w katalogu domowym." "-c"
-                if [ $flag -eq 1 ] ; then
-                    echo "source ~/.git_venv_prompt.sh" >> "${HOME}/$link_bash"
-                    message "Dołączenie skryptu w pliku $link_bash." "-c"
+                x=`cat ~/$link_bash | grep 'source ~/.git_venv_prompt.sh' | wc -l`
+                if [ $x -eq 0 ] ; then
+                  echo "source ~/.git_venv_prompt.sh" >> "${HOME}/$link_bash"
+                  message "Dołączenie skryptu w pliku $link_bash." "-c"
+                else
+                  message "Dołączenie skryptu w pliku $link_bash istniało." "-m"
                 fi
             fi
 
