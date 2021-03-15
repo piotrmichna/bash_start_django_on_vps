@@ -303,7 +303,7 @@ function get_git_clone_config(){
   done  
 }
 
-function get_config_psql_db(){
+function get_config_psql(){
   message 'KONFIGURACJA BAZY PostgreSQL' "-t"
   local is_psql=0
   sudo dpkg -s $i &> /dev/null
@@ -333,6 +333,35 @@ function get_config_psql_db(){
 
   if [ $PSQL_C -eq 1 ] ; then
     message "Nazwa bazy PostgreSQL=$PSQL_NAME." "-c"
+    PSQL_USER=""
+    while true ; do
+      if [ "$PSQL_USER" == "" ] ; then
+        get_param "Podaj nazwę użytkownika bazy"
+        PSQL_USER=$PARAM
+      else
+        message "Jeśli nie znasz hasła dla użytkonika $PSQL_USER konfiguracja nie będzie poprawna!" "-m"
+        get_param "Czy użyć użytkownika [t/n]" "TtNn"
+        if [ "$PARAM" == "N" ] || [ "$PARAM" == "n" ] ; then
+          get_param "Podaj nazwę użytkownika bazy danych"
+          PSQL_USER=$PARAM
+        else
+          break
+        fi
+      fi
+      if [ $is_psql -eq 1 ] ; then
+        x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='$PSQL_USER'"`
+        if [ "$x" == "" ] ; then
+          break
+        else
+          message "Użytkownik baza danych już istnieje" "-w"
+        fi
+      else
+        if [ $PSQL_USER != 'postgres' ] ; then
+          break
+        fi
+      fi
+    done
+    message "Nazwa użytkownika bazy PostgreSQL=$PSQL_USER." "-c"
   fi
 }
 
