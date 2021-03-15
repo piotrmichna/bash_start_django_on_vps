@@ -96,8 +96,6 @@ function message(){
       '-w') # worning
         echo -ne "${C_NRM}  |${C_WOR}!${C_NRM}|->${C_WOR} $1 ${NC}\n\r"
         echo "--|!|-> $1 " |& tee -a $LOG_FILE &> /dev/null
-        sudo modprobe pcspkr
-        beep
       ;;
       '-c') # correct ✓
         echo -ne "  ${C_NRM}|${GREEN}✓${C_NRM}|->${C_COR} $1 ${NC}\n\r"
@@ -109,6 +107,8 @@ function message(){
       ;;
       '-q') # question
         echo -ne "${C_NRM}  |${C_QST}?${C_NRM}|-> ${C_QST}$1: ${NC} "
+        sudo modprobe pcspkr
+        beep
       ;;
     esac
   else
@@ -217,7 +217,7 @@ function get_prompt(){
         while true ; do
             get_param "Nadpisać konfiguracje prompt? [n/t]" "TtNn"
             if [ "$PARAM" == "N" ] || [ "$PARAM" == "n" ] ; then
-              message "Pominięto  konfigurację prompt." "-w"
+              message "Pominięto  konfigurację prompt." "-m"
               flag=0
             fi
             break
@@ -286,7 +286,7 @@ if [ "$0" == "./tools.sh" ] || [ "$0" == "tools.sh" ] ; then
     echo -ne "${NC}\n\r"
     message "Wiadomość informacyjna"
     get_project_tree
-    get_param "Struktura katalogów jest zrozumiała?" "TtNn"
+    get_param "Struktura katalogów jest zrozumiała? [t/n]" "TtNn"
     get_prompt
     system_update
 fi
