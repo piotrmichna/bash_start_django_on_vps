@@ -21,11 +21,12 @@ currentDate=$(date +"%F")
 currentTime=$(date +"%T")
 
 DIR_SC=`pwd`
-#LOG_FILE="$DIR_SC/log_${currentDate}_${currentTime}.log"
-LOG_FILE="log_file.log"
-if [ -f $LOG_FILE ] ; then
-  rm $LOG_FILE
-fi
+LOG_NAME="log_${currentDate}_${currentTime}.log"
+LOG_FILE="$DIR_SC/${LOG_NAME}"
+# LOG_FILE="log_file.log"
+# if [ -f $LOG_FILE ] ; then
+#   rm $LOG_FILE
+# fi
 
 SYS_UPDATE=0
 T_COL=0
@@ -274,7 +275,7 @@ function get_git_clone_config(){
 
     if [ "$PARAM" == "Q" ] || [ "$PARAM" == "q" ] ; then
       C_CGIT=0
-      echo "---> Repozytorium gita=BRAK" |& tee -a $LOG_FILE &> /dev/null
+      echo "--|✓|-> Repozytorium gita=BRAK" |& tee -a $LOG_FILE &> /dev/null
       break
     else
       if [ "$PROJ_DIR" == "" ] ; then
@@ -332,7 +333,7 @@ function get_config_psql(){
   done
 
   if [ $PSQL_C -eq 1 ] ; then
-    message "Nazwa bazy PostgreSQL=$PSQL_NAME." "-c"
+    echo "--|✓|-> Nazwa bazy PostgreSQL=$PSQL_NAME" |& tee -a $LOG_FILE &> /dev/null
     PSQL_USER=""
     while true ; do
       if [ "$PSQL_USER" == "" ] ; then
@@ -361,7 +362,7 @@ function get_config_psql(){
         fi
       fi
     done
-    message "Nazwa użytkownika bazy PostgreSQL=$PSQL_USER." "-c"
+    echo "--|✓|-> Nazwa użytkownika bazy PostgreSQL=$PSQL_USER" |& tee -a $LOG_FILE &> /dev/null
     while true ; do
       message "Podaj hasło" "-q"
       read -s PSQL_PASS
@@ -385,7 +386,7 @@ function get_config_psql(){
 }
 
 function system_update(){
-  message 'UAKTUALNIENIE SYSTEMU' "-t"
+  message 'UAKTUALNIENIE SYSTEMU' "-m"
   message 'Aktualizacja pakietów.' "-m"
   sudo apt-get update | pv -w 50 -l -c | tee -a $LOG_FILE | display_progres $C_MES
   message 'Ukończona aktualizacja pakietów' "-c"
