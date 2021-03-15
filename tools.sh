@@ -262,17 +262,50 @@ function get_prompt(){
 
 function system_update(){
   message 'UAKTUALNIENIE SYSTEMU' "-t"
-  message 'Aktualizacja repozytorium' "-m"
-  sudo apt-get update |& tee -a $LOG_FILE &> /dev/null
-  message 'Wykonane' "-c"
+  message 'Aktualizacja pakietów.' "-m"
+  sudo apt-get update | pv -w 50 -l -c | tee -a $LOG_FILE | display_progres $C_MES
+  message 'Ukończona aktualizacja pakietów' "-c"
 
-  message 'Aktualizacja systemu' "-m"
-  sudo apt-get upgrade -y |& tee -a $LOG_FILE &> /dev/null
-  message 'Wykonane' "-c"
+  message 'Aktualizacja systemu.' "-m"
+  sudo apt-get upgrade -y | pv -w 50 -l -c | tee -a $LOG_FILE | display_progres $C_MES
+  message 'Ukończona aktualizacja systemu.' "-c"
 
-  message 'Usunięcie zbędnych repozytoriów' "-m"
-  sudo apt-get upgrade -y |& tee -a $LOG_FILE &> /dev/null
-  message 'Wykonane' "-c"
+  message 'Usunięcie zbędnych repozytoriów.' "-m"
+  sudo apt-get autoremove -y | pv -w 50 -l -c | tee -a $LOG_FILE | display_progres $C_MES
+  message 'Ukończone usuwanie zbędnych pakietów.' "-c"
+}
+
+function install_prog(){
+    for i in $@ ; do
+        sudo dpkg -s $i &> /dev/null
+        if [ $? -eq 0 ] ; then
+            #soft_config $i
+            message "Program $i jest już zainstalowany" "-w"
+        else
+            message "Instalacja $i" "-m"
+            sudo apt-get install -y $i | pv -w 50 -l -c | tee -a $LOG_FILE | display_progres $C_MES
+            sudo dpkg-query -l $i &> /dev/null
+
+            if [ $? -eq 1 ] ; then
+                message "Program $i nie został zainstalowany! zerknij do pliku $LOG_FILE w katalogu instalatora." "-e"
+                message "Zerknij po informacje do pliku $LOG_FILE w katalogu instalatora." "-w"
+                message "Konynuować działanie skryptu? [t/n]" "-q"
+                while true ; do
+                    read x
+                    echo -ne "${NC}\n\r"
+                    if [ "$x" == "T" ] ||  [ "$x" == "t" ] ; then
+                        break
+                    else
+                        message "Przerwano wykonywanie skryptu" "-w"
+                        exit
+                    fi
+                done
+            else
+                message "Program $i został zainstalowany." "-c"
+                #soft_config $i
+            fi
+        fi
+    done
 }
 
 if [ "$0" == "./tools.sh" ] || [ "$0" == "tools.sh" ] ; then
