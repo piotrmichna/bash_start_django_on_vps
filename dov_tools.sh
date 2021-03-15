@@ -306,81 +306,84 @@ function get_git_clone_config(){
 
 function get_config_psql(){
   message 'KONFIGURACJA BAZY PostgreSQL' "-t"
-  local is_psql=0
-  sudo dpkg -s $i &> /dev/null
-  if [ $? -eq 0 ] ; then
-    is_psql=1
-  fi
-
+  get_param "Utworzyć bazę  PostgreSQL [t/n]" "TtNn"
   PSQL_C=0
-  while true ; do
-    get_param "Podaj nazwę bazy"
-    PSQL_NAME=$PARAM
-    if [ $is_psql -eq 1 ] ; then
-      x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='$PSQL_NAME'"`
-      if [ "$x" == "" ] ; then
-        PSQL_C=1
-        break
-      else
-        message "Baza danych już istnieje" "-w"
-      fi
-    else
-      if [ $PSQL_NAME != 'postgres' ] ; then
-        PSQL_C=1
-        break
-      fi
+  if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+    local is_psql=0
+    sudo dpkg -s $i &> /dev/null
+    if [ $? -eq 0 ] ; then
+      is_psql=1
     fi
-  done
 
-  if [ $PSQL_C -eq 1 ] ; then
-    echo "--|✓|-> Nazwa bazy PostgreSQL=$PSQL_NAME" |& tee -a $LOG_FILE &> /dev/null
-    PSQL_USER=""
     while true ; do
-      if [ "$PSQL_USER" == "" ] ; then
-        get_param "Podaj nazwę użytkownika bazy"
-        PSQL_USER=$PARAM
+      get_param "Podaj nazwę bazy"
+      PSQL_NAME=$PARAM
+      if [ $is_psql -eq 1 ] ; then
+        x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='$PSQL_NAME'"`
+        if [ "$x" == "" ] ; then
+          PSQL_C=1
+          break
+        else
+          message "Baza danych już istnieje" "-w"
+        fi
       else
-        message "Jeśli nie znasz hasła dla użytkonika $PSQL_USER konfiguracja nie będzie poprawna!" "-m"
-        get_param "Czy użyć użytkownika [t/n]" "TtNn"
-        if [ "$PARAM" == "N" ] || [ "$PARAM" == "n" ] ; then
-          get_param "Podaj nazwę użytkownika bazy danych"
+        if [ $PSQL_NAME != 'postgres' ] ; then
+          PSQL_C=1
+          break
+        fi
+      fi
+    done
+
+    if [ $PSQL_C -eq 1 ] ; then
+      echo "--|✓|-> Nazwa bazy PostgreSQL=$PSQL_NAME" |& tee -a $LOG_FILE &> /dev/null
+      PSQL_USER=""
+      while true ; do
+        if [ "$PSQL_USER" == "" ] ; then
+          get_param "Podaj nazwę użytkownika bazy"
           PSQL_USER=$PARAM
         else
-          break
+          message "Jeśli nie znasz hasła dla użytkonika $PSQL_USER konfiguracja nie będzie poprawna!" "-m"
+          get_param "Czy użyć użytkownika [t/n]" "TtNn"
+          if [ "$PARAM" == "N" ] || [ "$PARAM" == "n" ] ; then
+            get_param "Podaj nazwę użytkownika bazy danych"
+            PSQL_USER=$PARAM
+          else
+            break
+          fi
         fi
-      fi
-      if [ $is_psql -eq 1 ] ; then
-        x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='$PSQL_USER'"`
-        if [ "$x" == "" ] ; then
+        if [ $is_psql -eq 1 ] ; then
+          x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='$PSQL_USER'"`
+          if [ "$x" == "" ] ; then
+            break
+          else
+            message "Użytkownik baza danych już istnieje" "-w"
+          fi
+        else
+          if [ $PSQL_USER != 'postgres' ] ; then
+            break
+          fi
+        fi
+      done
+      echo "--|✓|-> Nazwa użytkownika bazy PostgreSQL=$PSQL_USER" |& tee -a $LOG_FILE &> /dev/null
+      while true ; do
+        message "Podaj hasło" "-q"
+        read -s PSQL_PASS
+        echo -ne "${NC}\n\r"
+
+        message "Podaj ponownie hasło" "-q"
+        read -s PARAM
+        echo -ne "${NC}\n\r"
+        if [ "$PSQL_PASS" == "$PARAM" ] ; then
+        C_PSQL=1
           break
         else
-          message "Użytkownik baza danych już istnieje" "-w"
+          message "Hasła nie są zgodne" "-w"
         fi
-      else
-        if [ $PSQL_USER != 'postgres' ] ; then
-          break
-        fi
+      done
+      get_param "Zapisać hasła w pliku log? [t/n]" "TtNn"
+      if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+        echo "--|✓|-> Hasło użytkownika postgresql=${PSQL_PASS}" |& tee -a $LOG_FILE &> /dev/null
       fi
-    done
-    echo "--|✓|-> Nazwa użytkownika bazy PostgreSQL=$PSQL_USER" |& tee -a $LOG_FILE &> /dev/null
-    while true ; do
-      message "Podaj hasło" "-q"
-      read -s PSQL_PASS
-      echo -ne "${NC}\n\r"
-
-      message "Podaj ponownie hasło" "-q"
-      read -s PARAM
-      echo -ne "${NC}\n\r"
-      if [ "$PSQL_PASS" == "$PARAM" ] ; then
-      C_PSQL=1
-        break
-      else
-        message "Hasła nie są zgodne" "-w"
-      fi
-    done
-    get_param "Zapisać hasła w pliku log? [t/n]" "TtNn"
-    if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
-      echo "--|✓|-> Hasło użytkownika postgresql=${PSQL_PASS}" |& tee -a $LOG_FILE &> /dev/null
     fi
   fi
 }
