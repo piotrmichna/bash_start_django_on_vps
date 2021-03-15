@@ -15,7 +15,7 @@ WHITE="\e[0;97m"
 DM="\e[2m"
 BLINK="\e[5m"
 BOLD="\e[1m"
-NC="\e[0m"
+NC="\e[40m\e[0m"
 
 currentDate=$(date +"%F")
 currentTime=$(date +"%T")
@@ -78,7 +78,7 @@ function message(){
   if [ -n "$2" ] ; then
     case "$2" in
       '-t') # title
-        echo "" |& tee -a $LOG_FILE
+        echo "" |& tee -a $LOG_FILE &> /dev/null
         echo -ne "\n\r${C_TIT}------> ${BOLD}${1}${NC}${C_TIT}"
         echo -n "------> $1" |& tee -a $LOG_FILE &> /dev/null
         end_line_date
