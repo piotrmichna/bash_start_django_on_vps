@@ -362,6 +362,25 @@ function get_config_psql(){
       fi
     done
     message "Nazwa użytkownika bazy PostgreSQL=$PSQL_USER." "-c"
+    while true ; do
+      message "Podaj hasło" "-q"
+      read -s PSQL_PASS
+      echo -ne "${NC}\n\r"
+
+      message "Podaj ponownie hasło" "-q"
+      read -s PARAM
+      echo -ne "${NC}\n\r"
+      if [ "$PSQL_PASS" == "$PARAM" ] ; then
+      C_PSQL=1
+        break
+      else
+        message "Hasła nie są zgodne" "-w"
+      fi
+    done
+    get_param "Zapisać hasła w pliku log? [t/n]" "TtNn"
+    if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+      echo "--|✓|-> Hasło użytkownika postgresql=${PSQL_PASS}" |& tee -a $LOG_FILE &> /dev/null
+    fi
   fi
 }
 
