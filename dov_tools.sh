@@ -435,6 +435,37 @@ function install_prog(){
   done
 }
 
+function get_virtualenv(){
+  message "ŚRODOWISKO VIRTUALENV" "-m"
+  x=`pip3 list | grep virtualenv | wc -l`
+  if [ $x -eq 0 ] ; then
+    message 'Instalacja virtualenv' "-m"
+    sudo pip3 install virtualenv | pv -w 50 -l -c | tee -a $LOG_FILE | display_progres $C_MES
+    x=`pip3 list | grep virtualenv | wc -l`
+    if [ $x -eq 1 ] ; then
+        message 'Zainstalowano virtualenv' "-c"
+    else
+        message 'Błąd instalacji virtualenv' "-e"
+        get_exit 'Błąd instalacji virtualenv'
+    fi
+  else
+    message 'Tworzenie środowiska virtualenv' "-m"
+    cd ${HOME}/${PROJ_DIR}
+    virtualenv -p python3 venv | pv -w 50 -l -c | tee -a $LOG_FILE | display_progres $C_MES
+    if [ -d "venv" ] ; then
+        message "Utworzono środowisko virtualenv." "-c"
+        cd ${HOME}/${PROJ_DIR}
+        . venv/bin/activate
+        message 'Aktywacja środowiska virtualenv' "-c"
+        message 'Instalacja wymaganych bibliotek' "-m"
+        get_pip_install psycopg2-binary Django django-rest djangorestframework
+    else
+        message "Nie udane utworzenie środowiska virtualenv." "-e"
+        get_exit
+    fi
+  fi
+}
+
 if [ "$0" == "./dov_tools.sh" ] || [ "$0" == "dov_tools.sh" ] ; then
     start_scripts
     message "TYTUŁ MODÓŁU" "-t"
