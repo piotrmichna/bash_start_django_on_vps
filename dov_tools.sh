@@ -268,6 +268,41 @@ function get_prompt(){
     fi
 }
 
+function get_git_clone_config(){  
+  while true ; do
+    get_param "Podaj adres repozytorium aplikacji [q-quit]"
+
+    if [ "$PARAM" == "Q" ] || [ "$PARAM" == "q" ] ; then
+      C_CGIT=0
+      echo "---> Repozytorium gita=BRAK" |& tee -a $LOG_FILE &> /dev/null
+      break
+    else
+      if [ "$PROJ_DIR" == "" ] ; then
+        PROJ_DIR="dxd"
+      fi
+      message "Sprawdzanie repozytorium!" "-m"
+      if [ -d /tmp/$PROJ_DIR ] ; then
+        rm /tmp/$PROJ_DIR
+      fi
+      mkdir /tmp/$PROJ_DIR
+      git clone --depth 1 --single-branch $PARAM /tmp/$PROJ_DIR &> /dev/null
+
+      if [ $? -eq 0 ] ; then
+        rm -rf /tmp/$PROJ_DIR
+        GIT_LINK=$PARAM
+        C_CGIT=1
+        echo "---> Repozytorium gita=$GIT_LINK" |& tee -a $LOG_FILE &> /dev/null
+        message "Link do repozytorium poprawny." "-c"
+        message "Sprawdź w repozytorium nazwę katalogu projektu Django!" "-w"
+        message "I wpisz ją tak samo w następnym kroku!" "-w"
+        break
+      else
+        message "Błędny adres repozytorium!" "-w"
+      fi
+    fi
+  done  
+}
+
 function system_update(){
   message 'UAKTUALNIENIE SYSTEMU' "-t"
   message 'Aktualizacja pakietów.' "-m"
@@ -328,10 +363,10 @@ if [ "$0" == "./dov_tools.sh" ] || [ "$0" == "dov_tools.sh" ] ; then
     message "Wykonać instalację narzędzi? [t/n]" "-q"
     echo -ne "${NC}\n\r"
     message "Wiadomość informacyjna"
-    get_project_tree
-    get_param "Struktura katalogów jest zrozumiała? [t/n]" "TtNn"
-    get_prompt
+    #get_param "Struktura katalogów jest zrozumiała? [t/n]" "TtNn"
+    #get_prompt
     install_prog nginx
+    get_git_clone_config
     end_script
     get_exit "BŁĄD INSTALACJI!"
 fi
