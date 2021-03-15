@@ -194,6 +194,17 @@ function start_scripts(){
     echo "" |& tee -a $LOG_FILE &> /dev/null
 }
 
+function get_exit(){
+    echo "" |& tee -a $LOG_FILE &> /dev/null
+    echo -ne "\n\r${C_ERR}------> EXIT ERROR: ${1}"
+    echo -n "------> EXIT ERROR: $1" |& tee -a $LOG_FILE &> /dev/null
+    end_line_date
+    echo -ne "${NC}"
+    echo "" |& tee -a $LOG_FILE
+    exit 0
+}
+
+
 function get_project_tree(){
     echo -ne "     -> ${C_TIT}${BOLD}STRUKTURA CZYSTEGO PROJEKTU Django${NC}\n\r"
     echo -ne "     ->   ${C_MES}${BOLD}~/proj_app/ ${NC}${GREEN}${DM}# Katalog projektu${NC}\n\r"
@@ -325,4 +336,5 @@ if [ "$0" == "./tools.sh" ] || [ "$0" == "tools.sh" ] ; then
     get_param "Struktura katalogów jest zrozumiała? [t/n]" "TtNn"
     get_prompt
     install_prog nginx
+    get_exit "BŁĄD INSTALACJI!"
 fi
