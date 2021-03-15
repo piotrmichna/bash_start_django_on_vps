@@ -471,6 +471,33 @@ function get_pip_install(){
   done
 }
 
+function get_install_lib(){
+  message "INSTALACJA BIBLIOTEK" "-m"
+  message "Szukanie pliku requirements.txt" "-m"
+
+#   local requirments_file="asgiref==3.2.7
+# Django==3.0.6
+# Faker==4.1.0
+# psycopg2-binary==2.8.5
+# python-dateutil==2.8.1
+# pytz==2020.1
+# six==1.14.0
+# sqlparse==0.3.1
+# text-unidecode==1.3"
+#   echo "$requirments_file" > "${HOME}/${PROJ_DIR}/requirements.txt"
+
+  if [ -f "${HOME}/${PROJ_DIR}/requirements.txt" ] ; then
+    message "Czytanie pliku requirements.txt" "-m"
+    n=0
+    while read p; do
+      n=$((n+1))
+      get_pip_install $p
+    done <${HOME}/${PROJ_DIR}/requirements.txt
+  else
+    get_pip_install $REQUIRMENTS
+  fi
+}
+
 function get_virtualenv(){
   message "ŚRODOWISKO VIRTUALENV" "-m"
   x=`pip3 list | grep virtualenv | wc -l`
