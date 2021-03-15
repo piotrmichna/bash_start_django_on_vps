@@ -207,6 +207,57 @@ function get_project_tree(){
     echo -ne "     ->        ${C_TIT}${BOLD}+ ${WHITE}$LOG_FILE${GREEN}${DM} # Zapis logów konfiguracji i instalacji.${NC}\n\r\n\r"
 }
 
+function get_prompt(){
+    message 'MODYFIKACJA PROMPT' "-t"
+    message "Sprawdzanie konfiguracji." "-m"
+    local flag=1
+    x=`ls -a $HOME | grep .git_venv_prompt.sh | wc -l`
+    if [ $x -eq 1 ] ; then
+        message "Prompt jest już skonfigurowany." "-w"
+        while true ; do
+            get_param "Nadpisać konfiguracje prompt? [n/t]" "TtNn"
+            if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+                flag=2
+            else
+                message "Pominięto  konfigurację prompt." "-w"
+                flag=0
+            fi
+            break
+        done
+    fi
+    if [ $flag -gt 0 ] ; then
+        local link_bash=""
+        x=`ls -a $HOME | grep .bashrc | wc -l`
+        if [ $x -eq 1 ] ; then
+            message "Sprawdzanie pliku .bashrc." "-c"
+            link_bash=".bashrc"
+        else
+            x=`ls -a $HOME | grep .bash_profile | wc -l`
+            if [ $x -eq 1 ] ; then
+                message "Sprawdzanie pliku .bash_profile." "-c"
+                link_bash=".bash_profile"
+            else
+                message "Brak pliku .bashrc lub .bash_profile w katalogu domowym użytkownika!" "-e"
+                get_exit
+            fi
+        fi
+
+        if [ "$link_bash" != "" ] ; then
+            message "Kopiowanie skryptu .git_bash_prompt.sh do katalogu domowego." "-m"
+            cp git_venv_prompt.sh "$HOME/.git_venv_prompt.sh"
+
+            x=`ls -a $HOME | grep .git_venv_prompt.sh | wc -l`
+            if [ $x -gt 0 ] ; then
+                message "Skrypt .git_bash_prompt.sh w katalogu domowym." "-c"
+                if [ $flag -eq 1 ] ; then
+                    echo "source ~/.git_venv_prompt.sh" >> "${HOME}/$link_bash"
+                    message "Dołączenie skryptu w pliku $link_bash." "-c"
+                fi
+            fi
+
+        fi
+    fi
+}
 
 if [ "$0" == "./tools.sh" ] || [ "$0" == "tools.sh" ] ; then
     start_scripts
@@ -220,4 +271,5 @@ if [ "$0" == "./tools.sh" ] || [ "$0" == "tools.sh" ] ; then
     message "Wiadomość informacyjna"
     get_project_tree
     get_param "Struktura katalogów jest zrozumiała?" "TtNn"
+    get_prompt
 fi
