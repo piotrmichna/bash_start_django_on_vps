@@ -291,16 +291,30 @@ function get_git_clone_config(){
         rm -rf /tmp/$PROJ_DIR
         GIT_LINK=$PARAM
         C_CGIT=1
-        echo "---> Repozytorium gita=$GIT_LINK" |& tee -a $LOG_FILE &> /dev/null
         message "Link do repozytorium poprawny." "-c"
         message "Sprawdź w repozytorium nazwę katalogu projektu Django!" "-w"
         message "I wpisz ją tak samo w następnym kroku!" "-w"
         break
       else
+        C_CGIT=0
         message "Błędny adres repozytorium!" "-w"
       fi
     fi
   done  
+}
+
+function get_config_psql_db(){
+  while true ; do
+    get_param "Podaj nazwę bazy"
+    PSQL_NAME=$PARAM
+    x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='$PSQL_NAME'"`
+    if [ "$x" == "" ] ; then
+      echo "---> Nazwa bazy postgresql=${PSQL_NAME}" |& tee -a $LOG_FILE &> /dev/null
+      break
+    else
+      message "Baza danych już istnieje" "-w"
+    fi
+  done
 }
 
 function system_update(){
