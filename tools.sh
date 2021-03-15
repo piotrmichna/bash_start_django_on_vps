@@ -85,6 +85,8 @@ function message(){
       '-e') # error
         echo -ne "${C_ERR}${BLINK}ERROR${C_NRM}${NC}->${C_ERR} ${BOLD}$1 ${NC}\n\r"
         echo "ERROR-> $1 " |& tee -a $LOG_FILE &> /dev/null
+        sudo modprobe pcspkr
+        beep
       ;;
       '-w') # worning
         echo -ne "${C_NRM}  |${C_WOR}!${C_NRM}|->${C_WOR} $1 ${NC}\n\r"
