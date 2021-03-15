@@ -86,11 +86,18 @@ function message(){
         echo -ne "${C_ERR}${BLINK}ERROR${C_NRM}${NC}->${C_ERR} ${BOLD}$1 ${NC}\n\r"
         echo "ERROR-> $1 " |& tee -a $LOG_FILE &> /dev/null
         sudo modprobe pcspkr
-        beep
+        local beep_num=0
+        while [ $beep_num -lt 5 ] ; do          
+          beep
+          beep_num=$((beep_num + 1))
+          sleep 0.25 
+        done
       ;;
       '-w') # worning
         echo -ne "${C_NRM}  |${C_WOR}!${C_NRM}|->${C_WOR} $1 ${NC}\n\r"
         echo "--|!|-> $1 " |& tee -a $LOG_FILE &> /dev/null
+        sudo modprobe pcspkr
+        beep
       ;;
       '-c') # correct ✓
         echo -ne "  ${C_NRM}|${GREEN}✓${C_NRM}|->${C_COR} $1 ${NC}\n\r"
