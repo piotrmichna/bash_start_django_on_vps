@@ -260,6 +260,21 @@ function get_prompt(){
     fi
 }
 
+function system_update(){
+  message 'UAKTUALNIENIE SYSTEMU' "-t"
+  message 'Aktualizacja repozytorium' "-m"
+  sudo apt-get update |& tee -a $LOG_FILE &> /dev/null
+  message 'Wykonane' "-c"
+
+  message 'Aktualizacja systemu' "-m"
+  sudo apt-get upgrade -y |& tee -a $LOG_FILE &> /dev/null
+  message 'Wykonane' "-c"
+
+  message 'Usunięcie zbędnych repozytoriów' "-m"
+  sudo apt-get upgrade -y |& tee -a $LOG_FILE &> /dev/null
+  message 'Wykonane' "-c"
+}
+
 if [ "$0" == "./tools.sh" ] || [ "$0" == "tools.sh" ] ; then
     start_scripts
     message "TYTUŁ MODÓŁU" "-t"
@@ -273,4 +288,5 @@ if [ "$0" == "./tools.sh" ] || [ "$0" == "tools.sh" ] ; then
     get_project_tree
     get_param "Struktura katalogów jest zrozumiała?" "TtNn"
     get_prompt
+    system_update
 fi
