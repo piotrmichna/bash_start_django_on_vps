@@ -215,20 +215,6 @@ function end_script(){
     echo "" |& tee -a $LOG_FILE
 }
 
-function get_project_tree(){
-    echo -ne "     -> ${C_TIT}${BOLD}STRUKTURA CZYSTEGO PROJEKTU Django${NC}\n\r"
-    echo -ne "     ->   ${C_MES}${BOLD}~/proj_app/ ${NC}${GREEN}${DM}# Katalog projektu${NC}\n\r"
-    echo -ne "     ->        ${C_TIT}${BOLD}+ ${C_MES}${BOLD}.git/${NC}\n\r"
-    echo -ne "     ->        ${C_TIT}${BOLD}+ ${C_MES}${BOLD}django_proj/ ${NC}${GREEN}${DM}# Katalog Django${NC}\n\r"
-    echo -ne "     ->        ${C_TIT}${BOLD}|    + ${C_MES}${BOLD}django_proj/${NC}${GREEN}${DM} # Katalog głównej aplikacji Django${NC}\n\r"
-    echo -ne "     ->        ${C_TIT}${BOLD}|    |    + ${WHITE}settings.py${NC}\n\r"
-    echo -ne "     ->        ${C_TIT}${BOLD}|    |    + ${WHITE}local_settings.py${GREEN}${DM} # Plik generowany automatycznie.${NC}\n\r"
-    echo -ne "     ->        ${C_TIT}${BOLD}|    + ${GREEN}${BOLD}manage.py${NC}\n\r"
-    echo -ne "     ->        ${C_TIT}${BOLD}+ ${C_MES}${BOLD}venv${NC}\n\r"
-    echo -ne "     ->        ${C_TIT}${BOLD}+ ${WHITE}${DM}.gitignore${NC}\n\r"
-    echo -ne "     ->        ${C_TIT}${BOLD}+ ${WHITE}$LOG_FILE${GREEN}${DM} # Zapis logów konfiguracji i instalacji.${NC}\n\r\n\r"
-}
-
 function get_prompt(){
     message 'MODYFIKACJA PROMPT' "-t"
     message "Sprawdzanie konfiguracji." "-m"
