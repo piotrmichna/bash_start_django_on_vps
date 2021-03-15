@@ -25,6 +25,7 @@ DIR_SC=`pwd`
 LOG_FILE="log_file.log"
 rm log_file.log
 
+SYS_UPDATE=0
 T_COL=0
 T_ROW=0
 
@@ -273,39 +274,41 @@ function system_update(){
   message 'Usunięcie zbędnych repozytoriów.' "-m"
   sudo apt-get autoremove -y | pv -w 50 -l -c | tee -a $LOG_FILE | display_progres $C_MES
   message 'Ukończone usuwanie zbędnych pakietów.' "-c"
+  SYS_UPDATE=1
 }
 
 function install_prog(){
-    for i in $@ ; do
-        sudo dpkg -s $i &> /dev/null
-        if [ $? -eq 0 ] ; then
-            #soft_config $i
-            message "Program $i jest już zainstalowany" "-w"
-        else
-            message "Instalacja $i" "-m"
-            sudo apt-get install -y $i | pv -w 50 -l -c | tee -a $LOG_FILE | display_progres $C_MES
-            sudo dpkg-query -l $i &> /dev/null
+  if [ $SYS_UPDATE -eq 0 ] ; then
+    system_update
+  fi
+  for i in $@ ; do
+    sudo dpkg -s $i &> /dev/null
+    if [ $? -eq 0 ] ; then
+      message "Program $i jest już zainstalowany" "-w"
+    else
+      message "Instalacja $i" "-m"
+      sudo apt-get install -y $i | pv -w 50 -l -c | tee -a $LOG_FILE | display_progres $C_MES
+      sudo dpkg-query -l $i &> /dev/null
 
-            if [ $? -eq 1 ] ; then
-                message "Program $i nie został zainstalowany! zerknij do pliku $LOG_FILE w katalogu instalatora." "-e"
-                message "Zerknij po informacje do pliku $LOG_FILE w katalogu instalatora." "-w"
-                message "Konynuować działanie skryptu? [t/n]" "-q"
-                while true ; do
-                    read x
-                    echo -ne "${NC}\n\r"
-                    if [ "$x" == "T" ] ||  [ "$x" == "t" ] ; then
-                        break
-                    else
-                        message "Przerwano wykonywanie skryptu" "-w"
-                        exit
-                    fi
-                done
-            else
-                message "Program $i został zainstalowany." "-c"
-                #soft_config $i
-            fi
-        fi
-    done
+      if [ $? -eq 1 ] ; then
+        message "Program $i nie został zainstalowany! zerknij do pliku $LOG_FILE w katalogu instalatora." "-e"
+        message "Zerknij po informacje do pliku $LOG_FILE w katalogu instalatora." "-w"
+        message "Konynuować działanie skryptu? [t/n]" "-q"
+        while true ; do
+          read x
+          echo -ne "${NC}\n\r"
+          if [ "$x" == "T" ] ||  [ "$x" == "t" ] ; then
+            break
+          else
+            message "Przerwano wykonywanie skryptu" "-w"
+            exit
+          fi
+        done
+      else
+        message "Program $i został zainstalowany." "-c"
+      fi
+    fi
+  done
 }
 
 if [ "$0" == "./tools.sh" ] || [ "$0" == "tools.sh" ] ; then
@@ -321,5 +324,5 @@ if [ "$0" == "./tools.sh" ] || [ "$0" == "tools.sh" ] ; then
     get_project_tree
     get_param "Struktura katalogów jest zrozumiała? [t/n]" "TtNn"
     get_prompt
-    system_update
+    install_prog nginx
 fi
