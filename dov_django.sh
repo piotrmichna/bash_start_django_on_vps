@@ -165,6 +165,11 @@ function get_django(){
     get_django_conf
     get_config_psql
     get_conf_django_service
+    # budowanie projektu
+    get_django_project
+    if [ $PSQL_C -eq 1 ] ; then
+        get_postgresql
+    fi
 }
 
 if [ "$0" == "./dov_django.sh" ] || [ "$0" == "dov_django.sh" ] ; then
