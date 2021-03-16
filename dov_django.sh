@@ -331,7 +331,8 @@ function get_django_soft(){
         install_prog postgresql postgresql-contrib
     fi
     if [ $C_SERVICE -eq 1 ] ; then
-        install_prog nginx
+        get_nginx
+
     fi
 }
 
@@ -350,6 +351,7 @@ function get_django(){
 
     if [ $C_SERVICE -eq 1 ] ; then
         get_django_soft
+        get_service
     fi
 }
 
