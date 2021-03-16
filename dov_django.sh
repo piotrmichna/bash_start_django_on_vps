@@ -283,6 +283,46 @@ function get_nginx(){
     message "Restart nginx" "-c"
 }
 
+function get_service(){
+    message "USŁUGA SYSTEMOWA GUNICORN" "-t"
+
+    venv_activate
+
+    get_pip_install gunicorn
+
+    venv_deactivate
+
+    message "Tworzenie plików konfiguracji usługi ${C_SYS_NAME}.service" "-m"
+
+    local service_vile="[Unit]
+Description=$C_SYS_DESCRIPTION
+After=network.target
+[Service]
+User=$USER
+Group=www-data
+WorkingDirectory=${HOME}/${PROJ_DIR}/${DJANGO_DIR}/
+ExecStart=${HOME}/${PROJ_DIR}/venv/bin/gunicorn --workers 1 --bind unix:${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}.sock ${DJANGO_DIR}.wsgi:application
+[Install]
+WantedBy=multi-user.target"
+
+    sudo echo "$service_vile" > "${C_SYS_NAME}.service"
+    if [ -f "/etc/systemd/system/${C_SYS_NAME}.service" ] ; then
+        message "Nadpisanie poprzedniej usługi ${C_SYS_NAME}.service" "-w"
+    fi
+    sudo cp "${C_SYS_NAME}.service" /etc/systemd/system/
+    #sudo rm "${C_SYS_NAME}.service"
+    message "Utworzono usługę ${C_SYS_NAME}.service" "-c"
+
+    sudo systemctl enable "${C_SYS_NAME}.service" |& tee -a $LOG_FILE &> /dev/null
+    message "Aktywowano usługę ${C_SYS_NAME}.service" "-c"
+    sudo systemctl start "${C_SYS_NAME}.service" |& tee -a $LOG_FILE &> /dev/null
+    message "Uruchomiono usługę ${C_SYS_NAME}.service" "-c"
+    sudo systemctl daemon-reload |& tee -a $LOG_FILE &> /dev/null
+    message "Ponownie załadowany deamon" "-c"
+    sudo systemctl restart "${C_SYS_NAME}.service" |& tee -a $LOG_FILE &> /dev/null
+
+}
+
 function get_django_soft(){
     message 'INSTALACJA OPROGRAMOWANIA' "-T"
     install_prog git vim python3-pip python3-dev
