@@ -322,10 +322,6 @@ WantedBy=multi-user.target"
 function get_django_soft(){
     message 'INSTALACJA OPROGRAMOWANIA' "-T"
     install_prog git vim python3-pip python3-dev
-    message "Instalacja podstawowego oprogramowania systemowego." "-m"
-    if [ $PSQL_C -eq 1 ] ; then
-        install_prog postgresql postgresql-contrib
-    fi
 }
 
 function get_django(){
