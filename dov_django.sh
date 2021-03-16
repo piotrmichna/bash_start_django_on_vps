@@ -240,6 +240,49 @@ local_*.py"
     fi
 }
 
+function get_nginx(){
+    message "KONFIGURACJA Nginx." "-t"
+    install_prog nginx
+    message 'Konfiguracja servera nginx' "-m"
+
+    host=$(echo $C_SYS_HOSTS | tr "," "\n")
+    hosts=""
+    for addr in $host ; do
+        hosts="${hosts} $addr"
+    done
+    if [ "$hosts" == "" ] ; then
+        hosts="localhost"
+    fi
+    serv_conf="server {
+    listen [::]:80;
+    server_name $hosts;
+    location /static/ {
+        root ${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}/;
+    }
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}.sock;
+    }
+}"
+    cd ${HOME}/${PROJ_DIR}/
+
+    sudo echo "$serv_conf" > "${DJANGO_DIR}.serv"
+    sudo cp "${DJANGO_DIR}.serv" /etc/nginx/sites-available/
+    sudo rm "${DJANGO_DIR}.serv"
+    message "Zapis /etc/nginx/sites-available/${DJANGO_DIR}.serv" "-c"
+
+    x=$(sudo ln -s "/etc/nginx/sites-available/${DJANGO_DIR}.serv" "/etc/nginx/sites-enabled/${DJANGO_DIR}.serv")
+    if [ "$x" != "" ] ; then
+        message "Nadpisano poprzednią konfigurację ${DJANGO_DIR}.serv" "-w"
+    fi
+
+    message "Dowiązanie /etc/nginx/sites-enabled/${DJANGO_DIR}.serv" "-c"
+
+    sudo systemctl restart nginx.service
+
+    message "Restart nginx" "-c"
+}
+
 function get_django_soft(){
     message 'INSTALACJA OPROGRAMOWANIA' "-T"
     install_prog git vim python3-pip python3-dev
