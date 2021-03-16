@@ -34,6 +34,7 @@ LOG_FILE="$DIR_SC/${LOG_NAME}"
 SYS_UPDATE=0
 T_COL=0
 T_ROW=0
+sudo modprobe pcspkr > /dev/null
 
 function get_position(){
     exec < /dev/tty
@@ -92,10 +93,9 @@ function message(){
       '-e') # error
         echo -ne "${C_ERR}${BLINK}ERROR${C_NRM}${NC}->${C_ERR} ${BOLD}$1 ${NC}\n\r"
         echo "ERROR-> $1 " |& tee -a $LOG_FILE &> /dev/null
-        sudo modprobe pcspkr
         local beep_num=0
         while [ $beep_num -lt 5 ] ; do          
-          beep
+          beep > /dev/null
           beep_num=$((beep_num + 1))
           sleep 0.25 
         done
@@ -114,8 +114,7 @@ function message(){
       ;;
       '-q') # question
         echo -ne "${C_NRM}  |${GREEN}?${C_NRM}|-> ${C_QST}$1: ${NC} "
-        sudo modprobe pcspkr
-        beep
+        beep > /dev/null
       ;;
     esac
   else
