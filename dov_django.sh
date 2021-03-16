@@ -241,8 +241,9 @@ local_*.py"
 }
 
 function get_django_soft(){
-    message 'INSTALACJA OPROGRAMOWANIA' "-t"
-    install_prog git vim links bc python3-pip python3-dev
+    message 'INSTALACJA OPROGRAMOWANIA' "-T"
+    install_prog git vim python3-pip python3-dev
+    message "Instalacja podstawowego oprogramowania systemowego." "-m"
     if [ $PSQL_C -eq 1 ] ; then
         install_prog postgresql postgresql-contrib
     fi
@@ -256,10 +257,14 @@ function get_django(){
     get_config_psql
     get_conf_django_service
     # budowanie projektu
+    get_django_soft
     get_django_project
+    
     if [ $PSQL_C -eq 1 ] ; then
         get_postgresql
     fi
+    get_django_settings
+
     if [ $C_SERVICE -eq 1 ] ; then
         get_django_soft
     fi
