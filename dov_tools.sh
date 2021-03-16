@@ -513,7 +513,7 @@ function get_pip_install(){
 }
 
 function get_install_lib(){
-  message "INSTALACJA BIBLIOTEK" "-m"
+  message "INSTALACJA BIBLIOTEK" "-t"
   message "Szukanie pliku requirements.txt" "-m"
 
 #   local requirments_file="asgiref==3.2.7
@@ -540,7 +540,7 @@ function get_install_lib(){
 }
 
 function get_virtualenv(){
-  message "ŚRODOWISKO VIRTUALENV" "-m"
+  message "ŚRODOWISKO VIRTUALENV" "-t"
   x=`pip3 list | grep virtualenv | wc -l`
   if [ $x -eq 0 ] ; then
     message 'Instalacja virtualenv' "-m"
@@ -560,16 +560,8 @@ function get_virtualenv(){
     virtualenv -p python3 venv | pv -w 50 -l -c | tee -a $LOG_FILE | display_progres $C_MES
     if [ -d "venv" ] ; then
         message "Utworzono środowisko virtualenv." "-c"
-        cd ${HOME}/${PROJ_DIR}
-        . venv/bin/activate
-        x=`which python`
-        if [ "$x" == "${HOME}/${PROJ_DIR}/venv/bin/python" ] ; then
-          message 'Aktywne środowisko virtualenv' "-c"
-          get_install_lib
-        else
-          message "Brak środowiska virtualenv." "-e"
-          get_exit "Budowanie virtualenv"
-        fi
+        venv_activate
+        get_install_lib
     else
         message "Nie udane utworzenie środowiska virtualenv." "-e"
         get_exit "Budowanie virtualenv"
