@@ -143,10 +143,6 @@ except ModuleNotFoundError:
         fi
 
         venv_activate
-        if [ $C_SERVICE -eq 1 ] ; then
-            message "Instalacja opragramowania dla usługi." "-m"
-            get_pip_install "gunicorn"
-        fi
         cd "${HOME}/${PROJ_DIR}/${DJANGO_DIR}"
 
         message "Wykonanie migracji modeli do bazy." "-m"
@@ -346,7 +342,6 @@ function get_django(){
     get_django_settings
 
     if [ $C_SERVICE -eq 1 ] ; then
-        get_django_soft
         get_nginx
         get_service
     fi
