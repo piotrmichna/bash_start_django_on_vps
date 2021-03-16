@@ -76,6 +76,84 @@ function get_conf_django_service(){
     else
         C_SERVICE=0
     fi
+
+}
+
+function get_django_settings(){
+    if [ -d "${HOME}/${PROJ_DIR}/${DJANGO_DIR}" ] ; then
+        message "KONFIGURACJA Django." "-t"
+        message "Konfiguracja ustawień Django." "-m"
+        local host=$(echo $C_SYS_HOSTS | tr "," "\n")
+        local hosts=""
+        local var_set=""
+        for addr in $host ; do
+            if [ "$hosts" == "" ] ; then
+            hosts="'$addr'"
+            else
+            hosts="${hosts},'$addr'"
+            fi
+        done
+        message "Szukanie pliku local_settings.py." "-m"
+        if [ -f "${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}/local_settings.py" ] ; then
+            message 'Nadpisano poprzednią kofigurację local_settings.py' "-m"
+        fi
+        local local_setting="LANGUAGE_CODE = 'pl-pl'
+
+TIME_ZONE = 'Europe/Warsaw'
+
+STATIC_URL = '/static/'
+"
+
+        echo "$local_setting" > ${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}/local_settings.py
+        var_set="LANGUAGE_CODE, TIME_ZONE, STATIC_URL"
+
+        if [ "$hosts" != "" ] ; then
+            local_setting="ALLOWED_HOSTS = [${hosts}]"
+            message "Konfiguracja ustawień ALLOWED_HOSTS." "-c"
+            var_set="${var_set}, ALLOWED_HOSTS"
+            echo "$local_setting" >> ${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}/local_settings.py
+        fi
+
+        if [ $PSQL_C -eq 1 ] ; then
+            message "Konfiguracja ustawień DATABASES." "-m"
+            local_setting="DATABASES = {
+    'default': {
+        'ENGINE': \"django.db.backends.postgresql_psycopg2\",
+        'NAME': \"$PSQL_NAME\",
+        'HOST': \"localhost\",
+        'PASSWORD': \"$PSQL_PASS\",
+        'USER': \"$PSQL_USER\",
+        'PORT': 5432
+    }
+}"
+
+            echo "$local_setting" >> ${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}/local_settings.py
+            message "Konfiguracja ustawień DATABASES." "-c"
+            var_set="${var_set}, DATABASES"
+        fi
+
+        if [ "${GIT_LINK}" == "" ] ; then
+            local_setting="try:
+    from ${DJANGO_DIR}.local_settings import (${var_set})
+except ModuleNotFoundError:
+    print('Brak konfiguracji bazy danych w pliku local_settings.py!')
+    exit(0)"
+            echo "$local_setting" >> ${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}/settings.py
+            message "Zmodyfikowano kofigurację settings.py" "-c"
+        fi
+
+        venv_activate
+        if [ $C_SERVICE -eq 1 ] ; then
+            message "Instalacja opragramowania dla usługi." "-m"
+            get_pip_install "gunicorn"
+        fi
+        cd "${HOME}/${PROJ_DIR}/${DJANGO_DIR}"
+
+        message "Wykonanie migracji modeli do bazy." "-m"
+        python manage.py migrate |& tee -a $LOG_FILE &> /dev/null
+        message "Wykonano migracje modeli do bazy." "-c"
+        venv_deactivate
+    fi
 }
 
 function get_django_project(){
