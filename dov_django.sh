@@ -7,7 +7,7 @@
 source dov_tools.sh
 
 function get_django_project_tree(){
-    sudo modprobe pcspkr > /dev/null
+    # sudo modprobe pcspkr > /dev/null
     echo -ne "     -> ${C_TIT}${BOLD}STRUKTURA NOWEGO PROJEKTU Django${NC}\n\r"
     echo -ne "     ->   ~/proj_app/ ${NC}${GREEN}${DM}# Katalog projektu${NC}\n\r"
     echo -ne "     ->        ${C_TIT}${BOLD}+ ${C_MES}${BOLD}.git/${NC}\n\r"
@@ -330,10 +330,6 @@ function get_django_soft(){
     if [ $PSQL_C -eq 1 ] ; then
         install_prog postgresql postgresql-contrib
     fi
-    if [ $C_SERVICE -eq 1 ] ; then
-        get_nginx
-
-    fi
 }
 
 function get_django(){
@@ -351,6 +347,7 @@ function get_django(){
 
     if [ $C_SERVICE -eq 1 ] ; then
         get_django_soft
+        get_nginx
         get_service
     fi
 }
