@@ -58,6 +58,7 @@ function get_django_conf(){
 
 function get_django(){
     get_django_conf
+    get_config_psql
 }
 
 if [ "$0" == "./dov_django.sh" ] || [ "$0" == "dov_django.sh" ] ; then
