@@ -77,9 +77,94 @@ function get_conf_django_service(){
     fi
 }
 
+function get_django_project(){
+    message 'PROJEKT Django' "-t"
+    if [ $PROJ_DIR != "" ] ; then
+        message 'Tworzenie katalogu projektu.' "-m"
+        if [ -d "${HOME}/${PROJ_DIR}" ] ; then
+            message "Nie utoworzono ${HOME}/${PROJ_DIR}." "-w"
+            message "Katalog ${HOME}/${PROJ_DIR} już istnieje." "-e"
+            get_exit "Katalog projektu już istnieje." "-e"
+        fi
+        mkdir ${HOME}/${PROJ_DIR}
+        if [ -d "${HOME}/${PROJ_DIR}" ] ; then
+            message "Utworzono katalog projektu ${HOME}/${PROJ_DIR}." "-c"
+        else
+            message "Nie utoworzono ${HOME}/${PROJ_DIR}." "-e"
+            get_exit "Nie utoworzono katalogu projektu."
+        fi
+        message 'Sprawdzanie konfiguracji git' "-m"
+        if [ $C_CGIT -eq 1 ]; then
+            message 'KLONOWANIE PROJEKTU Djanog' "-t"
+            message 'Klonowanie repozytorium do katalogu projektu.' "-m"
+            git clone ${GIT_LINK} ${HOME}/${PROJ_DIR} |& tee -a $LOG_FILE &> /dev/null
+
+            if [ $? -eq 0 ] ; then
+                if [ -d ${HOME}/${PROJ_DIR}/${DJANGO_DIR} ] ; then
+                    message "Pomyślnie pobrano repozytorium ${GIT_LINK}." "-c"
+                    get_virtualenv
+                    venv_deactivate
+                else
+                    message "Błędna nazwa Katalogu projektu Django w pobranym repozytorium." "-e"
+                    get_exit "Błąd konfiguracji git!"
+                fi
+            else
+                message "Pobieranie repozytorium ${GIT_LINK}." "-e"
+                get_exit "Błąd konfiguracji git!"
+            fi
+        else
+            cd ${HOME}/${PROJ_DIR}
+            message 'NOWY PROJEKT Djanog' "-t"
+            message 'Tworzenie nowego repozytorium w katalogu projektu.' "-m"
+            git init |& tee -a $LOG_FILE &> /dev/null
+            if [ $? -eq 0 ] ; then
+                message "Pomyślnie zinicjowano puste repozytorium ${HOME}/${PROJ_DIR}.git" "-c"
+                message 'Tworzenie pliku .gitignore.' "-m"
+
+                git_ignore=".idea/
+__pycache__/
+*.py[cod]
+*\$py.class
+env/
+venv/
+*.swp
+*.*.swp
+*.log
+local_*.py"
+                echo "$git_ignore" > .gitignore
+                git add .gitignore
+                git commit -m 'inicjalizacja repozytorium i dodanie .gitignore' |& tee -a $LOG_FILE &> /dev/null
+                message 'Utworzono i dodano plik .gitignore.' "-c"
+                message 'Tworzenie pliku readme.md.' "-m"
+                echo "# Nowy Projekt Django" > readme.md
+                git add readme.md
+                git commit -m 'utworzenie readme.md' |& tee -a $LOG_FILE &> /dev/null
+                message 'Utworzono i dodano plik readme.md.' "-c"
+
+                get_virtualenv
+                message "Django budowanie projektu." "-m"
+                cd ${HOME}/${PROJ_DIR}
+                django-admin startproject ${DJANGO_DIR}
+                message "django-admin startproject ${DJANGO_DIR}." "-c"
+                venv_deactivate
+            else
+                message "Nie udana inicjalizacja repozytorium w katalogu ${HOME}/${PROJ_DIR}." "-e"
+                get_exit "Błąd tworzenia repozytorium git!"
+            fi
+        fi
+        message "Przenoszenie pliku z zapiesem logów." "-m"
+        mv "${LOG_FILE}" "${HOME}/${PROJ_DIR}/${LOG_NAME}"
+        LOG_FILE="${HOME}/${PROJ_DIR}/${LOG_NAME}"
+    else
+        message 'Błąd konfiguracji Django' "-e"
+        get_exit "Brak zdefiniowanego katalogu projektu"
+    fi
+}
+
 function get_django(){
     get_django_conf
     get_config_psql
+    get_conf_django_service
 }
 
 if [ "$0" == "./dov_django.sh" ] || [ "$0" == "dov_django.sh" ] ; then
