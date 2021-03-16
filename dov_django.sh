@@ -34,6 +34,28 @@ function get_django_project_tree(){
     echo "     ->        + readme.md" |& tee -a $LOG_FILE &> /dev/null
 }
 
+function get_django_conf(){
+    start_scripts "Django"
+    message 'KONFIGURACJA Django' "-t"
+    get_django_project_tree
+    check_dir "Podaj katalog projektu ~/"
+    PROJ_DIR=$PARAM
+    echo "--|✓|-> Ktalog projektu=$HOME/$PROJ_DIR" |& tee -a $LOG_FILE &> /dev/null
+
+    get_param "Załadować aplikacje z Githuba? [n/t]" "TtNn"
+    if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+        echo "--|✓|-> Zdalne repozytorium git=TAK" |& tee -a $LOG_FILE &> /dev/null
+        get_git_clone_config
+    else
+        C_CGIT=0
+        echo "--|✓|-> Zdalne repozytorium git=NIE" |& tee -a $LOG_FILE &> /dev/null
+    fi
+
+    get_param "Podaj katalog projektu Django: ~/$PROJ_DIR/"
+    DJANGO_DIR=$PARAM
+    echo "--|✓|-> Katalog projektu Django=$HOME/$PROJ_DIR/$DJANGO_DIR" |& tee -a $LOG_FILE &> /dev/null
+}
+
 if [ "$0" == "./dov_django.sh" ] || [ "$0" == "dov_django.sh" ] ; then
     sudo ls > /dev/null
 fi
