@@ -56,6 +56,27 @@ function get_django_conf(){
     echo "--|✓|-> Katalog projektu Django=$HOME/$PROJ_DIR/$DJANGO_DIR" |& tee -a $LOG_FILE &> /dev/null
 }
 
+function get_conf_django_service(){
+    message 'KONFIGURACJA USŁUGI SYSTEMOWEJ' "-t"
+    get_param "Utworzyć usługę systemową dla aplikacji? gunicor + nginx [n/t]" "TtNn"
+    if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+        get_param "Podaj nazwa usługi systemowej (bez spacji)"
+        C_SYS_NAME=$PARAM
+        echo "--|✓|-> Nazwa usługi systemowej=${C_SYS_NAME}.service" |& tee -a $LOG_FILE &> /dev/null
+
+        get_param "Podaj opis usługi systemowej"
+        C_SYS_DESCRIPTION=$PARAM
+        echo "--|✓|-> Opis usługi systemowej=${C_SYS_DESCRIPTION}" |& tee -a $LOG_FILE &> /dev/null
+
+        get_param "Podaj liste hostów dla nginx: host0,host1.."
+        C_SYS_HOSTS=$PARAM
+        echo "--|✓|-> Lista hostów nginx=${C_SYS_HOSTS}" |& tee -a $LOG_FILE &> /dev/null
+        C_SERVICE=1
+    else
+        C_SERVICE=0
+    fi
+}
+
 function get_django(){
     get_django_conf
     get_config_psql
