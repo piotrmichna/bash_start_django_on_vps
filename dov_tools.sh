@@ -391,6 +391,47 @@ function get_config_psql(){
   fi
 }
 
+function get_postgresql(){
+    message "TWORZENIE BAZY PostreSQL" "-t"
+    message "Tworzenie bazy postgresql $PSQL_NAME" "-m"
+    x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='$PSQL_NAME'"`
+    if [ "$x" != "" ] ; then
+        message "Baza danych $PSQL_NAME juź istnieje" "-w"
+    else
+        sudo -u postgres psql -c "CREATE DATABASE $PSQL_NAME" |& tee -a $LOG_FILE &> /dev/null
+        x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='$PSQL_NAME'"`
+        if [ "$x" != "" ] ; then
+            message "Baza danych $PSQL_NAME utworzona." "-c"
+        else
+            message "Błąd tworzenia baza danych." "-e"
+            get_exit
+        fi
+    fi
+    message "Tworzenie użytkownika postgresql $PSQL_USER" "-m"
+    x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='$PSQL_USER'"`
+    if [ "$x" == "" ] ; then
+        sudo -u postgres psql -c "CREATE USER $PSQL_USER WITH PASSWORD '${PSQL_PASS}'" |& tee -a $LOG_FILE &> /dev/null
+        x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='$PSQL_USER'"`
+        if [ "$x" != "" ] ; then
+            message "Dodano użytkownika $PSQL_USER" "-c"
+        else
+            message "Błąd tworzenia użytkownika $PSQL_USER" "-e"
+            get_exit
+        fi
+    else
+      message "Użytkownik baza danych już istnieje" "-w"
+    fi
+    message "Uprawnienia bazy danych" "-m"
+    sudo -u postgres psql -c "ALTER ROLE $PSQL_USER SET client_encoding TO 'utf8'" |& tee -a $LOG_FILE &> /dev/null
+    message "Kodowanie utf8" "-c"
+    sudo -u postgres psql -c "ALTER ROLE $PSQL_USER SET default_transaction_isolation TO 'read committed'" |& tee -a $LOG_FILE &> /dev/null
+    message "read committed" "-c"
+    sudo -u postgres psql -c "ALTER ROLE $PSQL_USER SET timezone TO 'Europe/Warsaw'" |& tee -a $LOG_FILE &> /dev/null
+    message "Strefa czasowaEurope/Warsaw" "-c"
+    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $PSQL_NAME TO $PSQL_USER" |& tee -a $LOG_FILE &> /dev/null
+    message "Nadanie uprawnień $PSQL_USER do bazy $PSQL_NAME" "-c"
+}
+
 function system_update(){
   message 'UAKTUALNIENIE SYSTEMU' "-m"
   message 'Aktualizacja pakietów.' "-m"
