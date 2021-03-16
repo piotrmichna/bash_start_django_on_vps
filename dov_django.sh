@@ -56,6 +56,11 @@ function get_django_conf(){
     echo "--|✓|-> Katalog projektu Django=$HOME/$PROJ_DIR/$DJANGO_DIR" |& tee -a $LOG_FILE &> /dev/null
 }
 
+function get_django(){
+    get_django_conf
+}
+
 if [ "$0" == "./dov_django.sh" ] || [ "$0" == "dov_django.sh" ] ; then
     sudo ls > /dev/null
+    get_django
 fi
