@@ -162,6 +162,17 @@ local_*.py"
     fi
 }
 
+function get_django_soft(){
+    message 'INSTALACJA OPROGRAMOWANIA' "-t"
+    install_prog git vim links bc python3-pip python3-dev
+    if [ $PSQL_C -eq 1 ] ; then
+        install_prog postgresql postgresql-contrib
+    fi
+    if [ $C_SERVICE -eq 1 ] ; then
+        install_prog nginx
+    fi
+}
+
 function get_django(){
     get_django_conf
     get_config_psql
@@ -170,6 +181,9 @@ function get_django(){
     get_django_project
     if [ $PSQL_C -eq 1 ] ; then
         get_postgresql
+    fi
+    if [ $C_SERVICE -eq 1 ] ; then
+        get_django_soft
     fi
 }
 
