@@ -9,7 +9,9 @@ source dov_tools.sh
 function get_required_install_tools(){
     message "AKTUALIZACJA I INSTALACJA" "-t"
     install_prog vim git links curl bc
-    get_param 'Wybierz [q] aby zakończyć' "qQ"
+    if [ ! -z "$1" ] ; then
+        get_param 'Wybierz [x] aby zakończyć' "Xx"
+    fi
 }
 
 function get_root_menu(){
@@ -75,19 +77,19 @@ function get_root_menu(){
 
         case $PARAM in
             i)
-                get_required_install_tools
+                get_required_install_tools "w"
                 PARAM=""
                 ;;
             g)
-                get_user_git_config
+                get_user_git_config "w"
                 PARAM=""
                 ;;
             v)
-                get_user_config_vim
+                get_user_config_vim "w"
                 PARAM=""
                 ;;
             p)
-                get_prompt
+                get_prompt "w"
                 PARAM=""
                 ;;
         esac

@@ -272,7 +272,9 @@ function get_user_git_config(){
         git config --globa alias.dfc "diff --chacek" &> /dev/null
         message "alias dfc=diff --chacek" "-c"
     fi
-    get_param 'Wybierz [X] aby zakończyć' "xX"
+    if [ ! -z "$1" ] ; then
+        get_param 'Wybierz [x] aby zakończyć' "Xx"
+    fi
 }
 
 function get_user_config_vim(){
@@ -294,7 +296,9 @@ function get_user_config_vim(){
         echo "set smartcase" >> $HOME/.vimrc ; message "set smartcase" "-c"
         echo "set incsearch" >> $HOME/.vimrc ; message "set incsearch" "-c"
     fi
-    get_param 'Wybierz [X] aby zakończyć' "xX"
+    if [ ! -z "$1" ] ; then
+        get_param 'Wybierz [x] aby zakończyć' "Xx"
+    fi
 }
 
 function get_prompt(){
@@ -348,7 +352,9 @@ function get_prompt(){
 
         fi
     fi
-    get_param 'Wybierz [X] aby zakończyć' "xX"
+    if [ ! -z "$1" ] ; then
+        get_param 'Wybierz [x] aby zakończyć' "Xx"
+    fi
 }
 
 function get_git_clone_config(){  
