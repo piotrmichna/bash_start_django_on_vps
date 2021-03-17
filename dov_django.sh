@@ -143,10 +143,6 @@ except ModuleNotFoundError:
         fi
 
         venv_activate
-        if [ $C_SERVICE -eq 1 ] ; then
-            message "Instalacja opragramowania dla usługi." "-m"
-            get_pip_install "gunicorn"
-        fi
         cd "${HOME}/${PROJ_DIR}/${DJANGO_DIR}"
 
         message "Wykonanie migracji modeli do bazy." "-m"
@@ -326,10 +322,6 @@ WantedBy=multi-user.target"
 function get_django_soft(){
     message 'INSTALACJA OPROGRAMOWANIA' "-T"
     install_prog git vim python3-pip python3-dev
-    message "Instalacja podstawowego oprogramowania systemowego." "-m"
-    if [ $PSQL_C -eq 1 ] ; then
-        install_prog postgresql postgresql-contrib
-    fi
 }
 
 function get_django(){
@@ -346,7 +338,6 @@ function get_django(){
     get_django_settings
 
     if [ $C_SERVICE -eq 1 ] ; then
-        get_django_soft
         get_nginx
         get_service
     fi

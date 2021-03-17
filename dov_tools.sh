@@ -312,7 +312,7 @@ function get_config_psql(){
   PSQL_C=0
   if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
     local is_psql=0
-    sudo dpkg -s $i &> /dev/null
+    sudo dpkg -s postgresql &> /dev/null
     if [ $? -eq 0 ] ; then
       is_psql=1
     fi
@@ -392,6 +392,7 @@ function get_config_psql(){
 
 function get_postgresql(){
     message "BAZA PostreSQL" "-t"
+    install_prog postgresql postgresql-contrib
     message "Tworzenie bazy postgresql $PSQL_NAME" "-m"
     x=`sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='$PSQL_NAME'"`
     if [ "$x" != "" ] ; then
