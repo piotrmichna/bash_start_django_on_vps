@@ -32,7 +32,10 @@ NC="\e[40m\e[0m"
 # fi
 DIR_SC=`pwd`
 if [ "$USER" == "root" ] ; then
-  LOG_FILE="$HOME/pytho_log/${LOG_NAME}"
+  LOG_FILE="$HOME/python_log/${LOG_NAME}"
+  if [ ! -d $HOME/python_log ] ; then
+    mkdir $HOME/python_log/
+  fi
 else
   LOG_FILE="$DIR_SC/${LOG_NAME}"
 fi
