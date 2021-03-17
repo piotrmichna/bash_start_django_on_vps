@@ -31,7 +31,11 @@ NC="\e[40m\e[0m"
 #   rm $LOG_FILE
 # fi
 DIR_SC=`pwd`
-LOG_FILE="$DIR_SC/${LOG_NAME}"
+if [ "$USER" == "root" ] ; then
+  LOG_FILE="$HOME/pytho_log/${LOG_NAME}"
+else
+  LOG_FILE="$DIR_SC/${LOG_NAME}"
+fi
 
 SYS_UPDATE=0
 T_COL=0
