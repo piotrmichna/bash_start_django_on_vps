@@ -8,7 +8,8 @@ source dov_tools.sh
 
 
 function get_root_menu(){
-    tput civis
+    #tput civis
+    clear
     echo -ne "\n\r${NC}${C_TIT}${BOLD}-----------------------------------------------------------------"
     echo -ne "\n\r${C_TIT}${BOLD}"
     figlet -t -k -f /usr/share/figlet/small.flf " Python  on VPS "
@@ -38,22 +39,23 @@ function get_root_menu(){
             CHAR="${CHAR}Vv"
             echo -ne "\n\r ${C_TIT} [${C_MEN}V${NC}${C_TIT}] Konfiguracja vim ${DM}- tworzenie pliku .vimrc."
         fi
-        sudo git -s git &> /dev/null
+        sudo dpkg -s git &> /dev/null
         if [ $? -eq 0 ] ; then
             CHAR="${CHAR}Gg"
             echo -ne "\n\r ${C_TIT} [${C_MEN}G${NC}${C_TIT}] Konfiguracja git ${DM}- aliasy komend."
         fi
         echo -ne "\n\r ${C_TIT} [${C_MEN}P${NC}${C_TIT}] Konfiguracja prompt ${DM}- dodanie git branch i virtualenv."
-        echo -ne "\n\r ${C_TIT} [${C_MEN}X${NC}${C_TIT}] Koniec."
+        echo -ne "\n\r ${C_TIT} [${C_MEN}X${NC}${C_TIT}] Koniec skryptu."
         echo -ne "\n\r ${NC} [ ] Wybierz literę.${C_MEN}\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b${NC}${C_TIT}"
         read PARAM
         if [ `echo $CHAR | grep $PARAM | wc -l` -eq 1 ] ; then
-          break
+            echo -ne "${NC}${C_TIT}${BOLD}-----------------------------------------------------------------\r\n"
+            break
         fi
-        if [ `echo "Gg" | grep $CHAR | wc -l` -eq 1 ] ; then
+        if [ `echo $CHAR | grep "Gg" | wc -l` -eq 1 ] ; then
           tput cuu1
         fi
-        if [ `echo "Vv" | grep $CHAR | wc -l` -eq 1 ] ; then
+        if [ `echo $CHAR | grep "Vv" | wc -l` -eq 1 ] ; then
           tput cuu1
         fi
         tput cuu1
@@ -63,7 +65,7 @@ function get_root_menu(){
         tput cuu1
         tput cuu1
     done
-    tput cnorm
+    #tput cnorm
 }
 
 init_script
