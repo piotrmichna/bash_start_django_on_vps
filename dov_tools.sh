@@ -31,7 +31,11 @@ NC="\e[40m\e[0m"
 #   rm $LOG_FILE
 # fi
 DIR_SC=`pwd`
-LOG_FILE="$DIR_SC/${LOG_NAME}"
+if [ "$USER" == "root" ] ; then
+  LOG_FILE="$HOME/pytho_log/${LOG_NAME}"
+else
+  LOG_FILE="$DIR_SC/${LOG_NAME}"
+fi
 
 SYS_UPDATE=0
 T_COL=0
@@ -149,8 +153,11 @@ function get_param(){
     PARAM=""
     while [ "" == "$PARAM" ] ; do
       message "$1" "-q"
-
-      read PARAM
+      if [ ! -z "$3" ] && [[ "$3" =~ ^[0-9]+$ ]] ; then
+        read -n$3 PARAM
+      else
+        read PARAM
+      fi
       echo -ne "\e[40m\e[0m"
       if [ -n "$2" ] ; then
         if [ `echo $2 | grep $PARAM | wc -l` -eq 0 ] ; then
@@ -272,7 +279,9 @@ function get_user_git_config(){
         git config --globa alias.dfc "diff --chacek" &> /dev/null
         message "alias dfc=diff --chacek" "-c"
     fi
-    get_param 'Wybierz [X] aby zakończyć' "xX"
+    if [ ! -z "$1" ] ; then
+        get_param 'Wybierz [x] aby zakończyć' "Xx"
+    fi
 }
 
 function get_user_config_vim(){
@@ -294,7 +303,9 @@ function get_user_config_vim(){
         echo "set smartcase" >> $HOME/.vimrc ; message "set smartcase" "-c"
         echo "set incsearch" >> $HOME/.vimrc ; message "set incsearch" "-c"
     fi
-    get_param 'Wybierz [X] aby zakończyć' "xX"
+    if [ ! -z "$1" ] ; then
+        get_param 'Wybierz [x] aby zakończyć' "Xx"
+    fi
 }
 
 function get_prompt(){
@@ -348,7 +359,9 @@ function get_prompt(){
 
         fi
     fi
-    get_param 'Wybierz [X] aby zakończyć' "xX"
+    if [ ! -z "$1" ] ; then
+        get_param 'Wybierz [x] aby zakończyć' "Xx"
+    fi
 }
 
 function get_git_clone_config(){  
