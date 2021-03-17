@@ -113,7 +113,7 @@ function get_root_menu(){
                 CHAR="${CHAR}v"
                 echo -ne "\n\r ${C_TIT} [${C_MEN}V${NC}${C_TIT}] Konfiguracja vim ${DM}- tworzenie pliku .vimrc."
             fi
-            if [ $(git config --global --list | grep alias.dfc | wc -l) -eq 0 ] ; then
+            if [ ! -f ~/.gitconfig ] || [ $(git config --global --list | grep alias.dfc | wc -l) -eq 0 ] ; then
                 CHAR="${CHAR}g"
                 echo -ne "\n\r ${C_TIT} [${C_MEN}G${NC}${C_TIT}] Konfiguracja git ${DM}- aliasy komend."
             fi
@@ -128,7 +128,7 @@ function get_root_menu(){
             PARAM=$(echo "$PARAM" | tr '[:upper:]' '[:lower:]')
 
             if [ `echo $CHAR | grep $PARAM | wc -l` -eq 1 ] ; then
-                echo -ne "\n\r${NC}${C_TIT}${BOLD}-----------------------------------------------------------------\r\n"
+                echo -ne "\n\r${NC}${C_TIT}${BOLD}-----------------------------------------------------------------${NC}\r\n"
                 break
             fi
             if [ `echo $CHAR | grep "g" | wc -l` -eq 1 ] ; then
