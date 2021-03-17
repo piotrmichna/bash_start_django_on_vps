@@ -16,12 +16,14 @@ C_MES="\e[0;34m"
 C_QST="\e[0;42m\e[30m"
 C_COR="\e[0;32m"
 C_TIT="\e[0;33m"
+C_MEN="\e[0;33m\e[1m"
 C_NRM="\e[0;97m"
 GREEN="\e[0;32m"
 WHITE="\e[0;97m"
 DM="\e[2m"
 BLINK="\e[5m"
 BOLD="\e[1m"
+NORM="\e[21m"
 NC="\e[40m\e[0m"
 
 # LOG_FILE="log_file.log"
@@ -35,6 +37,25 @@ SYS_UPDATE=0
 T_COL=0
 T_ROW=0
 # sudo modprobe pcspkr > /dev/null
+
+function init_script(){
+    local xup=0
+    sudo dpkg -s pv &> /dev/null
+    if [ $? -eq 1 ] ; then
+        sudo apt-get update
+        sudo apt-get install -y pv
+        xup=1
+        clear
+    fi
+    sudo dpkg -s figlet &> /dev/null
+    if [ $? -eq 1 ] ; then
+        if [ $xup -eq 0 ] ; then
+            sudo apt-get update | pv -w 50 -l -c | display_progres $C_MES
+        fi
+        sudo apt-get install -y figlet ncurses-bin | pv -w 50 -l -c | display_progres $C_MES
+        clear
+    fi
+}
 
 function get_position(){
     exec < /dev/tty
@@ -218,6 +239,64 @@ function end_script(){
     echo "" |& tee -a $LOG_FILE
 }
 
+function get_user_git_config(){
+    message "KONFIGRUACJA Gita" "-t"
+    local guser=""
+    guser=$(git config --global user.name)
+    if [ "$guser" != "" ] ; then
+        message 'Git został już skonfigurowany.' "-w"
+    else
+        message 'Konfigurowanie globalna użytkownika.' "-m"
+        get_param 'Podaj Imię i nazwisko'
+        local git_user=$PARAM
+        get_param 'Podaj e-mail'
+        local git_email=$PARAM
+        git config --globa user.name $git_user &> /dev/null
+        message "user.name $git_user" "-c"
+        git config --globa user.email $git_email &> /dev/null
+        message "user.email $git_email" "-c"
+        git config --globa push.followtags true &> /dev/null
+        message "push.followtags true" "-c"
+        git config --globa alias.st "status" &> /dev/null
+        message "alias st=status" "-c"
+        git config --globa alias.ap "add -p" &> /dev/null
+        message "alias ap=add -p" "-c"
+        git config --globa alias.cm "commit -m" &> /dev/null
+        message "alias cm=commit -m" "-c"
+        git config --globa alias.ll "log -n 20 --all --graph --pretty --oneline" &> /dev/null
+        message "alias ll=log -n 20 --all --graph --pretty --oneline" "-c"
+        git config --globa alias.lb "branch -a -vv" &> /dev/null
+        message "alias lb=branch -a -vv" "-c"
+        git config --globa alias.df "diff" &> /dev/null
+        message "alias df=diff" "-c"
+        git config --globa alias.dfc "diff --chacek" &> /dev/null
+        message "alias dfc=diff --chacek" "-c"
+    fi
+    get_param 'Wybierz [X] aby zakończyć' "xX"
+}
+
+function get_user_config_vim(){
+    message "KONFIGRUACJA Vima" "-t"
+    if [ -f $HOME/.vimrc ] ; then
+        message 'Vim został już skonfigurowany.' "-m"
+    else
+        echo "set number" >> $HOME/.vimrc ; message "set number" "-c"
+        echo "set autoindent" >> $HOME/.vimrc ; message "set autoindent" "-c"
+        echo "set history=1000" >> $HOME/.vimrc ; message "set history=1000" "-c"
+        echo "set title" >> $HOME/.vimrc ; message "set title" "-c"
+        echo "set tabpagemax=50" >> $HOME/.vimrc ; message "set tabpagemax=50" "-c"
+        echo "set tabstop=8" >> $HOME/.vimrc ; message "set tabstop=8" "-c"
+        echo "set expandtab" >> $HOME/.vimrc ; message "set expandtab" "-c"
+        echo "set shiftwidth=4" >> $HOME/.vimrc ; message "set shiftwidth=4" "-c"
+        echo "set softtabstop=4" >> $HOME/.vimrc ; message "set softtabstop=4" "-c"
+
+        echo "set ignorecase" >> $HOME/.vimrc ; message "set ignorecase" "-c"
+        echo "set smartcase" >> $HOME/.vimrc ; message "set smartcase" "-c"
+        echo "set incsearch" >> $HOME/.vimrc ; message "set incsearch" "-c"
+    fi
+    get_param 'Wybierz [X] aby zakończyć' "xX"
+}
+
 function get_prompt(){
     message 'MODYFIKACJA PROMPT' "-t"
     message "Sprawdzanie konfiguracji." "-m"
@@ -269,6 +348,7 @@ function get_prompt(){
 
         fi
     fi
+    get_param 'Wybierz [X] aby zakończyć' "xX"
 }
 
 function get_git_clone_config(){  
