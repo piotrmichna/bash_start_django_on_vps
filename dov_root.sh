@@ -74,33 +74,46 @@ function get_root_menu(){
 
         echo -ne "\n\r${NC}${C_TIT}${BOLD}-----------------------------------------------------------------"
         while true ; do
-            echo -ne "\n\r ${C_TIT} [${C_MEN}I${NC}${C_TIT}] Instalacja ${DM}- instalacja podstawowych narzędzi."
+            sudo dpkg -s bc &> /dev/null
+            if [ $? -eq 0 ] && [ $SYS_UPDATE -eq 0 ] ; then
+                echo -ne "\n\r ${C_TIT} [${C_MEN}I${NC}${C_TIT}] Instalacja ${DM}- instalacja podstawowych narzędzi."
+            else
+                echo -ne "\n\r ${C_TIT}${DM} [I] Instalacja - instalacja podstawowych narzędzi."
+            fi
             echo -ne "\n\r ${C_TIT} [${C_MEN}U${NC}${C_TIT}] Użytkownicy ${DM}- tworzenie urzytkowników systemowych."
-            CHAR="iuxp"
+            CHAR="iux"
+            
             sudo dpkg -s vim &> /dev/null
-            if [ $? -eq 0 ] ; then
+            if [ $? -eq 0 ] && [ ! -f ~/.vimrc ] ; then
                 CHAR="${CHAR}v"
                 echo -ne "\n\r ${C_TIT} [${C_MEN}V${NC}${C_TIT}] Konfiguracja vim ${DM}- tworzenie pliku .vimrc."
             fi
-            sudo dpkg -s git &> /dev/null
-            if [ $? -eq 0 ] ; then
+            if [ $(git config --global --list | grep alias.dfc | wc -l) -eq 0 ] ; then
                 CHAR="${CHAR}g"
                 echo -ne "\n\r ${C_TIT} [${C_MEN}G${NC}${C_TIT}] Konfiguracja git ${DM}- aliasy komend."
             fi
-            echo -ne "\n\r ${C_TIT} [${C_MEN}P${NC}${C_TIT}] Konfiguracja prompt ${DM}- dodanie git branch i virtualenv."
+            if [ ! -f ~/.git_venv_prompt.sh ] ; then
+                CHAR="${CHAR}p"
+                echo -ne "\n\r ${C_TIT} [${C_MEN}P${NC}${C_TIT}] Konfiguracja prompt ${DM}- dodanie git branch i virtualenv."
+            fi
+            echo -ne "\n\r ${C_TIT} [${C_MEN}A${NC}${C_TIT}] Wykonaj wszystko."
             echo -ne "\n\r ${C_TIT} [${C_MEN}X${NC}${C_TIT}] Koniec skryptu."
             echo -ne "\n\r ${NC} [ ] Wybierz literę.${C_MEN}\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b${NC}${C_TIT}"
             read -n1 PARAM
             PARAM=$(echo "$PARAM" | tr '[:upper:]' '[:lower:]')
+
             if [ `echo $CHAR | grep $PARAM | wc -l` -eq 1 ] ; then
                 echo -ne "\n\r${NC}${C_TIT}${BOLD}-----------------------------------------------------------------\r\n"
                 break
             fi
             if [ `echo $CHAR | grep "g" | wc -l` -eq 1 ] ; then
-            tput cuu1
+                tput cuu1
             fi
             if [ `echo $CHAR | grep "v" | wc -l` -eq 1 ] ; then
-            tput cuu1
+                tput cuu1
+            fi
+            if [ `echo $CHAR | grep "p" | wc -l` -eq 1 ] ; then
+                tput cuu1
             fi
             tput cuu1
             tput cuu1
@@ -139,6 +152,7 @@ function get_root_menu(){
     #tput cnorm
 }
 
-init_script
-#get_root_menu
-add_user
+if [ "$0" == "./dov_root.sh" ] || [ "$0" == "dov_root.sh" ] ; then
+    init_script
+    get_root_menu
+fi
