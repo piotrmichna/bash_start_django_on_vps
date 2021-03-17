@@ -49,6 +49,31 @@ function add_user(){
     fi
 }
 
+function get_root_all_task(){
+    message "PRZYGOTOWANIE SERWERA" "-t"
+    message "Nie zaleca się używać konta root." "-m"
+    message "Jeśli tego nie zrobiłeś, dodaj użytkownika systemu." "-m"
+    get_param 'Dodać użytkownika? [t/n]' "TtNn"
+    if [ "$PARAM" == "t" ] ; then
+        add_user
+    fi
+
+    get_required_install_tools
+
+    if [ $(git config --global --list | grep alias.dfc | wc -l) -eq 0 ] ; then
+        get_user_git_config
+    fi
+
+    sudo dpkg -s vim &> /dev/null
+    if [ $? -eq 0 ] && [ ! -f ~/.vimrc ] ; then
+        get_user_config_vim
+    fi
+
+    if [ ! -f ~/.git_venv_prompt.sh ] ; then
+        get_prompt
+    fi
+}
+
 function get_root_menu(){
     #tput civis
     while true ; do
@@ -142,6 +167,10 @@ function get_root_menu(){
                 ;;
             u)
                 add_user "w"
+                ;;
+            a)
+                get_root_all_task
+                ;;
         esac
 
         if [ "$PARAM" == "x" ] ; then
