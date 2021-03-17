@@ -14,6 +14,41 @@ function get_required_install_tools(){
     fi
 }
 
+function add_user(){
+    message "TWORZENIE UŻYTKOWNIKA" "-t"
+    while true ; do
+        get_param 'Podaj nazwę użytkownika'
+        local username="$PARAM"
+        grep "^$username" /etc/passwd >/dev/null
+        if [ $? -eq 0 ] ; then
+            message "Użytkownik już istnieje" "-w"
+        else
+            break
+        fi
+    done
+    while true ; do
+        get_param 'Podaj hasło'
+        local password="$PARAM"
+        get_param 'Podaj hasło ponownie'
+        local user_pass="$PARAM"
+        if [ ${#password} -gt 2 ] && [ "$password" == "$user_pass" ] ; then
+            break
+        fi
+    done
+    user_pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
+    useradd -m -p "$user_pass" "$username" -s /bin/bash
+    if [ $? -eq 0 ] ; then
+        message "Utworzono użytkownika $username" "-c"
+        usermod -aG sudo "$username"
+        message "Dodano użytkownika do grupy sudo" "-c"
+    else
+        message "Nie udane tworzenie użytkownika!" "-w"
+    fi
+    if [ ! -z "$1" ] ; then
+        get_param 'Wybierz [x] aby zakończyć' "Xx"
+    fi
+}
+
 function get_root_menu(){
     #tput civis
     while true ; do
