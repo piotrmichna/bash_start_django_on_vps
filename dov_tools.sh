@@ -149,8 +149,11 @@ function get_param(){
     PARAM=""
     while [ "" == "$PARAM" ] ; do
       message "$1" "-q"
-
-      read PARAM
+      if [ ! -z "$3" ] && [[ "$3" =~ ^[0-9]+$ ]] ; then
+        read -n$3 PARAM
+      else
+        read PARAM
+      fi
       echo -ne "\e[40m\e[0m"
       if [ -n "$2" ] ; then
         if [ `echo $2 | grep $PARAM | wc -l` -eq 0 ] ; then

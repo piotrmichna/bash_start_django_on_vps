@@ -90,10 +90,10 @@ function get_root_menu(){
             echo -ne "\n\r ${C_TIT} [${C_MEN}P${NC}${C_TIT}] Konfiguracja prompt ${DM}- dodanie git branch i virtualenv."
             echo -ne "\n\r ${C_TIT} [${C_MEN}X${NC}${C_TIT}] Koniec skryptu."
             echo -ne "\n\r ${NC} [ ] Wybierz literę.${C_MEN}\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b${NC}${C_TIT}"
-            read PARAM
+            read -n1 PARAM
             PARAM=$(echo "$PARAM" | tr '[:upper:]' '[:lower:]')
             if [ `echo $CHAR | grep $PARAM | wc -l` -eq 1 ] ; then
-                echo -ne "${NC}${C_TIT}${BOLD}-----------------------------------------------------------------\r\n"
+                echo -ne "\n\r${NC}${C_TIT}${BOLD}-----------------------------------------------------------------\r\n"
                 break
             fi
             if [ `echo $CHAR | grep "g" | wc -l` -eq 1 ] ; then
@@ -127,6 +127,8 @@ function get_root_menu(){
                 get_prompt "w"
                 PARAM=""
                 ;;
+            u)
+                add_user "w"
         esac
 
         if [ "$PARAM" == "x" ] ; then
@@ -138,4 +140,5 @@ function get_root_menu(){
 }
 
 init_script
-get_root_menu
+#get_root_menu
+add_user
