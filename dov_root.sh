@@ -6,7 +6,7 @@
 
 source dov_tools.sh
 
-function get_root_install_tools(){
+function get_required_install_tools(){
     message "AKTUALIZACJA I INSTALACJA" "-t"
     install_prog vim git links curl bc
     get_param 'Wybierz [q] aby zakończyć' "qQ"
@@ -75,16 +75,20 @@ function get_root_menu(){
 
         case $PARAM in
             i)
-                get_root_install_tools
+                get_required_install_tools
+                PARAM=""
                 ;;
             g)
                 get_user_git_config
+                PARAM=""
                 ;;
             v)
                 get_user_config_vim
+                PARAM=""
                 ;;
             p)
                 get_prompt
+                PARAM=""
                 ;;
         esac
 
