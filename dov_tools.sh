@@ -45,6 +45,7 @@ function init_script(){
         sudo apt-get update
         sudo apt-get install -y pv
         xup=1
+        clear
     fi
     sudo dpkg -s figlet &> /dev/null
     if [ $? -eq 1 ] ; then
@@ -52,6 +53,7 @@ function init_script(){
             sudo apt-get update | pv -w 50 -l -c | display_progres $C_MES
         fi
         sudo apt-get install -y figlet ncurses-bin | pv -w 50 -l -c | display_progres $C_MES
+        clear
     fi
 }
 
