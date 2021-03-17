@@ -36,6 +36,23 @@ T_COL=0
 T_ROW=0
 # sudo modprobe pcspkr > /dev/null
 
+function init_script(){
+    local xup=0
+    sudo dpkg -s pv &> /dev/null
+    if [ $? -eq 1 ] ; then
+        sudo apt-get update
+        sudo apt-get install -y pv
+        xup=1
+    fi
+    sudo dpkg -s figlet &> /dev/null
+    if [ $? -eq 1 ] ; then
+        if [ $xup -eq 0 ] ; then
+            sudo apt-get update | pv -w 50 -l -c | display_progres $C_MES
+        fi
+        sudo apt-get install -y figlet ncurses-bin | pv -w 50 -l -c | display_progres $C_MES
+    fi
+}
+
 function get_position(){
     exec < /dev/tty
     oldstty=$(stty -g)
