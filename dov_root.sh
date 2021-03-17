@@ -6,6 +6,11 @@
 
 source dov_tools.sh
 
+function get_root_install_tools(){
+    message "AKTUALIZACJA I INSTALACJA" "-t"
+    install_prog vim git links curl bc
+    get_param 'Wybierz [q] aby zakończyć' "qQ"
+}
 
 function get_root_menu(){
     #tput civis
