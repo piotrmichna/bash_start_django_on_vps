@@ -239,6 +239,29 @@ function end_script(){
     echo "" |& tee -a $LOG_FILE
 }
 
+
+function get_config_vim(){
+    message "KONFIGRUACJA Vima" "-t"
+    if [ -f $HOME/.vimrc ] ; then
+        message 'Vim został już skonfigurowany.' "-m"
+    else
+        echo "set number" >> $HOME/.vimrc ; message "set number" "-c"
+        echo "set autoindent" >> $HOME/.vimrc ; message "set autoindent" "-c"
+        echo "set history=1000" >> $HOME/.vimrc ; message "set history=1000" "-c"
+        echo "set title" >> $HOME/.vimrc ; message "set title" "-c"
+        echo "set tabpagemax=50" >> $HOME/.vimrc ; message "set tabpagemax=50" "-c"
+        echo "set tabstop=8" >> $HOME/.vimrc ; message "set tabstop=8" "-c"
+        echo "set expandtab" >> $HOME/.vimrc ; message "set expandtab" "-c"
+        echo "set shiftwidth=4" >> $HOME/.vimrc ; message "set shiftwidth=4" "-c"
+        echo "set softtabstop=4" >> $HOME/.vimrc ; message "set softtabstop=4" "-c"
+
+        echo "set ignorecase" >> $HOME/.vimrc ; message "set ignorecase" "-c"
+        echo "set smartcase" >> $HOME/.vimrc ; message "set smartcase" "-c"
+        echo "set incsearch" >> $HOME/.vimrc ; message "set incsearch" "-c"
+    fi
+    get_param 'Wybierz [X] aby zakończyć' "xX"
+}
+
 function get_prompt(){
     message 'MODYFIKACJA PROMPT' "-t"
     message "Sprawdzanie konfiguracji." "-m"
@@ -290,6 +313,7 @@ function get_prompt(){
 
         fi
     fi
+    get_param 'Wybierz [X] aby zakończyć' "xX"
 }
 
 function get_git_clone_config(){  
