@@ -239,8 +239,43 @@ function end_script(){
     echo "" |& tee -a $LOG_FILE
 }
 
+function get_user_git_config(){
+    message "KONFIGRUACJA Gita" "-t"
+    local guser=""
+    guser=$(git config --global user.name)
+    if [ "$guser" != "" ] ; then
+        message 'Git został już skonfigurowany.' "-w"
+    else
+        message 'Konfigurowanie globalna użytkownika.' "-m"
+        get_param 'Podaj Imię i nazwisko'
+        local git_user=$PARAM
+        get_param 'Podaj e-mail'
+        local git_email=$PARAM
+        git config --globa user.name $git_user &> /dev/null
+        message "user.name $git_user" "-c"
+        git config --globa user.email $git_email &> /dev/null
+        message "user.email $git_email" "-c"
+        git config --globa push.followtags true &> /dev/null
+        message "push.followtags true" "-c"
+        git config --globa alias.st "status" &> /dev/null
+        message "alias st=status" "-c"
+        git config --globa alias.ap "add -p" &> /dev/null
+        message "alias ap=add -p" "-c"
+        git config --globa alias.cm "commit -m" &> /dev/null
+        message "alias cm=commit -m" "-c"
+        git config --globa alias.ll "log -n 20 --all --graph --pretty --oneline" &> /dev/null
+        message "alias ll=log -n 20 --all --graph --pretty --oneline" "-c"
+        git config --globa alias.lb "branch -a -vv" &> /dev/null
+        message "alias lb=branch -a -vv" "-c"
+        git config --globa alias.df "diff" &> /dev/null
+        message "alias df=diff" "-c"
+        git config --globa alias.dfc "diff --chacek" &> /dev/null
+        message "alias dfc=diff --chacek" "-c"
+    fi
+    get_param 'Wybierz [X] aby zakończyć' "xX"
+}
 
-function get_config_vim(){
+function get_user_config_vim(){
     message "KONFIGRUACJA Vima" "-t"
     if [ -f $HOME/.vimrc ] ; then
         message 'Vim został już skonfigurowany.' "-m"
