@@ -13,10 +13,10 @@ LOG_NAME="log_${currentDate}_${currentTime}.log"
 C_ERR="\e[0;31m"
 C_WOR="\e[0;33m"
 C_MES="\e[0;34m"
-C_QST="\e[0;42m\e[30m"
+C_QST="\e[0;30m\e[100m"
 C_COR="\e[0;32m"
 C_TIT="\e[0;33m"
-C_ROO="\e[0;94m"
+C_ROO="\e[0;35m"
 C_MEN="\e[0;33m\e[1m"
 C_NRM="\e[0;97m"
 GREEN="\e[0;32m"
@@ -210,8 +210,8 @@ function start_scripts(){
     figlet -t -k -f /usr/share/figlet/small.flf " $1  on VPS " |& tee -a $LOG_FILE
     echo -ne "${NC}${C_TIT}${BOLD}-----------------------------------------------------------------"
     echo "-----------------------------------------------------------------" |& tee -a $LOG_FILE &> /dev/null
-
-    echo -ne "\n\r${C_TIT}  Autor: ${BOLD}Piotr Michna${NC}"
+    echo -ne "\n\r${C_TIT}${BOLD}W ramach szkolenia w CodersLab${NC}"
+    echo -ne "\n\r${C_TIT}  Autor: Piotr Michna${NC}"
     echo -ne "\n\r${C_TIT}${DM} e-mail: pm@piotrmichna.pl"
     echo -ne "\n\r${C_TIT}${DM}   Data: 15.03.2021\n\r"
 
@@ -225,6 +225,7 @@ function start_scripts(){
     echo -ne "\n\r${C_TIT}     Korzystając z tego linku https://mikr.us/?r=758803ea"
     echo -ne "\n\r${C_TIT}             otrzymasz dodatkowy miesiąc gratis.\n\r"
 
+    echo "W ramach szkolenia w CodersLab"
     echo "  Autor: Piotr Michna" |& tee -a $LOG_FILE &> /dev/null
     echo " e-mail: pm@piotrmichna.pl" |& tee -a $LOG_FILE &> /dev/null
     echo "   Data: 15.03.2021" |& tee -a $LOG_FILE &> /dev/null

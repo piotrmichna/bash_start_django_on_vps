@@ -19,7 +19,8 @@ function get_install_menu(){
         figlet -t -k -f /usr/share/figlet/small.flf "Python  on VPS "
         echo -ne "${NC}${C_TIT}${BOLD}-----------------------------------------------------------------"
 
-        echo -ne "\n\r${C_TIT}  Autor: ${BOLD}Piotr Michna${NC}"
+        echo -ne "\n\r${C_TIT}${BOLD}W ramach szkolenia w CodersLab${NC}"
+        echo -ne "\n\r${C_TIT}  Autor: Piotr Michna${NC}"
         echo -ne "\n\r${C_TIT}${DM} e-mail: pm@piotrmichna.pl"
         echo -ne "\n\r${C_TIT}${DM}   Data: 15.03.2021\n\r"
 
@@ -35,6 +36,7 @@ function get_install_menu(){
 
         echo -ne "\n\r${NC}${C_TIT}${BOLD}-----------------------------------------------------------------"
         while true ; do
+            PARAM=""
             sudo dpkg -s bc &> /dev/null
             if [ $? -eq 0 ] && [ $SYS_UPDATE -eq 0 ] ; then
                 echo -ne "\n\r ${C_TIT} [${C_MEN}I${NC}${C_TIT}] Instalacja ${DM}- instalacja podstawowych narzędzi."
@@ -42,6 +44,7 @@ function get_install_menu(){
                 echo -ne "\n\r ${C_TIT}${DM} [I] Instalacja - instalacja podstawowych narzędzi."
             fi
             echo -ne "\n\r ${C_TIT} [${C_MEN}D${NC}${C_TIT}] Dejango ${DM}- tworzenie projektu."
+            echo -ne "\n\r ${C_TIT} ${DM}[ ] Flask - tworzenie projektu."
             CHAR="idx"
             
             sudo dpkg -s vim &> /dev/null
@@ -101,6 +104,9 @@ function get_install_menu(){
                 ;;
             d)
                 get_django "w"
+                ;;
+            *)
+                tput cuu1
                 ;;
         esac
 

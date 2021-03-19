@@ -128,9 +128,9 @@ function get_root_menu(){
         echo -ne "\n\r${NC}${C_ROO}${BOLD}-----------------------------------------------------------------"
         echo -ne "\n\r${C_ROO}${BOLD}"
         figlet -t -k -f /usr/share/figlet/small.flf "  - START  VPS - "
-        echo -ne "${NC}${C_ROO}${BOLD}-----------------------------------------------------------------"
-
-        echo -ne "\n\r${C_ROO}  Autor: ${BOLD}Piotr Michna${NC}"
+        echo -ne "${NC}${C_TIT}${BOLD}-----------------------------------------------------------------"
+        echo -ne "\n\r${C_TIT}${BOLD}W ramach szkolenia w CodersLab${NC}"
+        echo -ne "\n\r${C_ROO}  Autor: Piotr Michna${NC}"
         echo -ne "\n\r${C_ROO}${DM} e-mail: pm@piotrmichna.pl"
         echo -ne "\n\r${C_ROO}${DM}   Data: 15.03.2021\n\r"
 
