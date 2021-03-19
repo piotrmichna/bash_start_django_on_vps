@@ -58,8 +58,18 @@ function init_script(){
     if [ $? -eq 1 ] ; then
         if [ $xup -eq 0 ] ; then
             sudo apt-get update | pv -w 50 -l -c | display_progres $C_MES
+            xup=1
         fi
-        sudo apt-get install -y figlet ncurses-bin | pv -w 50 -l -c | display_progres $C_MES
+        sudo apt-get install -y figlet | pv -w 50 -l -c | display_progres $C_MES
+        clear
+    fi
+    sudo dpkg -s ncurses-bin &> /dev/null
+    if [ $? -eq 1 ] ; then
+        if [ $xup -eq 0 ] ; then
+            sudo apt-get update | pv -w 50 -l -c | display_progres $C_MES
+            xup=1
+        fi
+        sudo apt-get install -y ncurses-bin | pv -w 50 -l -c | display_progres $C_MES
         clear
     fi
 }
