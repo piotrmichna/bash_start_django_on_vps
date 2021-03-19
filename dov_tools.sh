@@ -16,6 +16,7 @@ C_MES="\e[0;34m"
 C_QST="\e[0;42m\e[30m"
 C_COR="\e[0;32m"
 C_TIT="\e[0;33m"
+C_ROO="\e[0;94m"
 C_MEN="\e[0;33m\e[1m"
 C_NRM="\e[0;97m"
 GREEN="\e[0;32m"
@@ -58,8 +59,18 @@ function init_script(){
     if [ $? -eq 1 ] ; then
         if [ $xup -eq 0 ] ; then
             sudo apt-get update | pv -w 50 -l -c | display_progres $C_MES
+            xup=1
         fi
-        sudo apt-get install -y figlet ncurses-bin | pv -w 50 -l -c | display_progres $C_MES
+        sudo apt-get install -y figlet | pv -w 50 -l -c | display_progres $C_MES
+        clear
+    fi
+    sudo dpkg -s ncurses-bin &> /dev/null
+    if [ $? -eq 1 ] ; then
+        if [ $xup -eq 0 ] ; then
+            sudo apt-get update | pv -w 50 -l -c | display_progres $C_MES
+            xup=1
+        fi
+        sudo apt-get install -y ncurses-bin | pv -w 50 -l -c | display_progres $C_MES
         clear
     fi
 }

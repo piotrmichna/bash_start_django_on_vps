@@ -7,7 +7,6 @@
 source dov_tools.sh
 
 function get_django_project_tree(){
-    # sudo modprobe pcspkr > /dev/null
     echo -ne "     -> ${C_TIT}${BOLD}STRUKTURA NOWEGO PROJEKTU Django${NC}\n\r"
     echo -ne "     ->   ~/proj_app/ ${NC}${GREEN}${DM}# Katalog projektu${NC}\n\r"
     echo -ne "     ->        ${C_TIT}${BOLD}+ ${C_MES}${BOLD}.git/${NC}\n\r"
@@ -325,6 +324,7 @@ function get_django_soft(){
 }
 
 function get_django(){
+    clear
     get_django_conf
     get_config_psql
     get_conf_django_service
@@ -340,6 +340,10 @@ function get_django(){
     if [ $C_SERVICE -eq 1 ] ; then
         get_nginx
         get_service
+    fi
+    end_script
+    if [ ! -z "$1" ] ; then
+        get_param 'Wybierz [x] aby zakończyć' "Xx"
     fi
 }
 
