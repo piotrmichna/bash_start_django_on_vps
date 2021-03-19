@@ -6,6 +6,41 @@
 
 source dov_tools.sh
 
+function init_root_script(){
+    local xup=0
+    if [ ! -f ~/.init_install ] ; then
+        apt-get update
+        apt-get upgrade -y
+        touch ~/.init_install
+        message "Przejdź do panelu administracyjnego servera VPS." "-w"
+        message "Wykonaj restart servera VPS." "-w"
+        message "Połącz się ponownie z serwerem." "-w"
+        logout
+    fi
+    dpkg -s pv &> /dev/null
+    if [ $? -eq 1 ] ; then
+        apt-get update
+        apt-get install -y pv
+        xup=1
+    fi
+    dpkg -s figlet &> /dev/null
+    if [ $? -eq 1 ] ; then
+        if [ $xup -eq 0 ] ; then
+            apt-get update | pv -w 50 -l -c | display_progres $C_MES
+            xup=1
+        fi
+        apt-get install -y figlet | pv -w 50 -l -c | display_progres $C_MES
+    fi
+    dpkg -s ncurses-bin &> /dev/null
+    if [ $? -eq 1 ] ; then
+        if [ $xup -eq 0 ] ; then
+            apt-get update | pv -w 50 -l -c | display_progres $C_MES
+            xup=1
+        fi
+        apt-get install -y ncurses-bin | pv -w 50 -l -c | display_progres $C_MES
+    fi
+}
+
 function get_required_install_tools(){
     message "AKTUALIZACJA I INSTALACJA" "-t"
     install_prog vim git links curl bc
@@ -182,6 +217,6 @@ function get_root_menu(){
 }
 
 if [ "$0" == "./dov_root.sh" ] || [ "$0" == "dov_root.sh" ] ; then
-    init_script
+    init_root_script
     get_root_menu
 fi

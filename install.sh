@@ -8,6 +8,8 @@ source dov_tools.sh
 source dov_django.sh
 source dov_root.sh
 
+# REQUIRMENTS="psycopg2-binary Django django-rest djangorestframework"
+
 function get_install_menu(){
     #tput civis
     while true ; do
