@@ -61,13 +61,20 @@ function add_user(){
             break
         fi
     done
+
     while true ; do
-        get_param 'Podaj hasło'
-        local password="$PARAM"
-        get_param 'Podaj hasło ponownie'
-        local user_pass="$PARAM"
+        message "Podaj hasło" "-q"
+        read -s password
+        echo -ne "${NC}\n\r"
+
+        message "Podaj ponownie hasło" "-q"
+        read -s user_pass
+        echo -ne "${NC}\n\r"
+
         if [ ${#password} -gt 2 ] && [ "$password" == "$user_pass" ] ; then
             break
+        else
+          message "Hasła nie są zgodne lub za mało znaków" "-w"
         fi
     done
     user_pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)

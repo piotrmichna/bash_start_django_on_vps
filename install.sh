@@ -114,6 +114,7 @@ function get_install_menu(){
 if [ "$0" == "./install.sh" ] || [ "$0" == "install.sh" ] ; then
     init_script
     if [ "$USER" == "root" ] ; then
+        init_root_script
         get_root_menu
     else
         get_install_menu
