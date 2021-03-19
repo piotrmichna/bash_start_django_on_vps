@@ -56,6 +56,45 @@ function get_django_conf(){
     echo "--|✓|-> Katalog projektu Django=$HOME/$PROJ_DIR/$DJANGO_DIR" |& tee -a $LOG_FILE &> /dev/null
 }
 
+function get_conf_env_var(){
+    message 'ZMIENNE ŚRODOWISKOWE' "-m"
+    get_param "Dodać zmienną środowiskową? [n/t]" "TtNn"
+    ENVVAR=""
+    if [ "$PARAM" == "t" ] || [ "$PARAM" == "t" ] ; then
+        
+        while true ; do
+            if [ "$ENVVAR" != "" ] ; then
+                env_var=$(echo "$ENVVAR" | tr "," "\n")
+                for enva in $env_var ; do
+                    varar=$(echo $enva | tr "=" "\n")
+                    n=0
+                    for par in $varar ; do
+                        if [ $n -eq 0 ] ; then
+                            vara="$par"
+                            n=$((n+1))
+                        else
+                            varb="$par"
+                        fi
+                    done
+                    message "Zmienna ${vara}=${varb}" "-m"
+                done
+            fi
+            get_param "Dodaj :nazwa_zmiennej=wartosc"
+            if [ $(echo "$PARAM" | grep "=" | wc -l) -gt 0 ] ; then
+                if [ "$ENVVAR" == "" ] ; then
+                    ENVVAR="${PARAM}"
+                else
+                    ENVVAR="${ENVVAR},${PARAM}"
+                fi
+            fi
+            get_param "Dodać zmienną środowiskową? [n/t]" "TtNn"
+            if [ "$PARAM" == "n" ] || [ "$PARAM" == "N" ] ; then
+                break
+            fi
+        done
+    fi
+}
+
 function get_conf_django_service(){
     message 'KONFIGURACJA USŁUGI SYSTEMOWEJ' "-t"
     get_param "Utworzyć usługę systemową dla aplikacji? gunicor + nginx [n/t]" "TtNn"
@@ -71,11 +110,11 @@ function get_conf_django_service(){
         get_param "Podaj liste hostów dla nginx: host0,host1.."
         C_SYS_HOSTS=$PARAM
         echo "--|✓|-> Lista hostów nginx=${C_SYS_HOSTS}" |& tee -a $LOG_FILE &> /dev/null
+        get_conf_env_var
         C_SERVICE=1
     else
         C_SERVICE=0
     fi
-
 }
 
 function get_django_settings(){
