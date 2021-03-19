@@ -61,8 +61,15 @@ function get_conf_env_var(){
     get_param "Dodać zmienną środowiskową? [n/t]" "TtNn"
     ENVVAR=""
     if [ "$PARAM" == "t" ] || [ "$PARAM" == "t" ] ; then
-        
         while true ; do
+            get_param "Dodaj :nazwa_zmiennej=wartosc"
+            if [ $(echo "$PARAM" | grep "=" | wc -l) -gt 0 ] ; then
+                if [ "$ENVVAR" == "" ] ; then
+                    ENVVAR="${PARAM}"
+                else
+                    ENVVAR="${ENVVAR},${PARAM}"
+                fi
+            fi
             if [ "$ENVVAR" != "" ] ; then
                 env_var=$(echo "$ENVVAR" | tr "," "\n")
                 for enva in $env_var ; do
@@ -79,19 +86,17 @@ function get_conf_env_var(){
                     message "Zmienna ${vara}=${varb}" "-m"
                 done
             fi
-            get_param "Dodaj :nazwa_zmiennej=wartosc"
-            if [ $(echo "$PARAM" | grep "=" | wc -l) -gt 0 ] ; then
-                if [ "$ENVVAR" == "" ] ; then
-                    ENVVAR="${PARAM}"
-                else
-                    ENVVAR="${ENVVAR},${PARAM}"
-                fi
-            fi
             get_param "Dodać zmienną środowiskową? [n/t]" "TtNn"
             if [ "$PARAM" == "n" ] || [ "$PARAM" == "N" ] ; then
                 break
             fi
         done
+        if [ "$ENVVAR" != "" ] ; then
+            env_var=$(echo "$ENVVAR" | tr "," "\n")
+            for enva in $env_var ; do
+                varar="Environment="$enva"\n\r"
+            done
+        fi
     fi
 }
 
@@ -327,11 +332,21 @@ function get_service(){
     venv_deactivate
 
     message "Tworzenie plików konfiguracji usługi ${C_SYS_NAME}.service" "-m"
-
+        varar=""
+    if [ "$ENVVAR" != "" ] ; then
+        env_var=$(echo "$ENVVAR" | tr "," "\n")
+        for enva in $env_var ; do
+            varar="$varar\n\rEnvironment=\"$enva\""
+        done
+    fi
     local service_vile="[Unit]
 Description=$C_SYS_DESCRIPTION
 After=network.target
-[Service]
+[Service]"
+if [ "$varar" != "" ] ; then
+    service_vile="${service_vile}$(echo -ne "$varar")"
+fi
+service_vile="$service_vile
 User=$USER
 Group=www-data
 WorkingDirectory=${HOME}/${PROJ_DIR}/${DJANGO_DIR}/
