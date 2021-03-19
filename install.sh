@@ -106,12 +106,14 @@ function get_install_menu(){
             break
         fi
     done
-
-    #tput cnorm
 }
 
 
 if [ "$0" == "./install.sh" ] || [ "$0" == "install.sh" ] ; then
     init_script
-    get_install_menu
+    if [ "$USER" == "root" ] ; then
+        get_root_menu
+    else
+        get_install_menu
+    fi
 fi
