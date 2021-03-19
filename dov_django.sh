@@ -324,7 +324,6 @@ function get_django_soft(){
 }
 
 function get_django(){
-    clear
     get_django_conf
     get_config_psql
     get_conf_django_service
@@ -340,10 +339,6 @@ function get_django(){
     if [ $C_SERVICE -eq 1 ] ; then
         get_nginx
         get_service
-    fi
-    end_script
-    if [ ! -z "$1" ] ; then
-        get_param 'Wybierz [x] aby zakończyć' "Xx"
     fi
 }
 
