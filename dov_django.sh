@@ -116,6 +116,17 @@ function get_conf_django_service(){
         C_SYS_HOSTS=$PARAM
         echo "--|✓|-> Lista hostów nginx=${C_SYS_HOSTS}" |& tee -a $LOG_FILE &> /dev/null
         get_conf_env_var
+        WORKERS=3
+        get_param "Zmienić ilość workers=3? [n/t]" "TtNn"
+        if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+            while true ; do
+                get_param "Podaj ilość"
+                if [ ! -z "$PARAM" ] && [[ "$3" =~ ^[0-9]+$ ]] ; then
+                    WORKERS=$PARAM
+                    break
+                fi
+            done
+        fi
         C_SERVICE=1
     else
         C_SERVICE=0
@@ -350,7 +361,7 @@ service_vile="$service_vile
 User=$USER
 Group=www-data
 WorkingDirectory=${HOME}/${PROJ_DIR}/${DJANGO_DIR}/
-ExecStart=${HOME}/${PROJ_DIR}/venv/bin/gunicorn --workers 1 --bind unix:${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}.sock ${DJANGO_DIR}.wsgi:application
+ExecStart=${HOME}/${PROJ_DIR}/venv/bin/gunicorn --workers $WORKERS --bind unix:${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}.sock ${DJANGO_DIR}.wsgi:application
 [Install]
 WantedBy=multi-user.target"
 
