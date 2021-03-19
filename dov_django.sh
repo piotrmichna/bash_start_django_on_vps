@@ -121,7 +121,7 @@ function get_conf_django_service(){
         if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
             while true ; do
                 get_param "Podaj ilość"
-                if [ ! -z "$PARAM" ] && [[ "$3" =~ ^[0-9]+$ ]] ; then
+                if [ ! -z "$PARAM" ] && ! [[ "$3" =~ ^[0-9]+$ ]] ; then
                     WORKERS=$PARAM
                     break
                 fi
