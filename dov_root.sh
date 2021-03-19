@@ -9,8 +9,13 @@ source dov_tools.sh
 function init_root_script(){
     local xup=0
     if [ ! -f ~/.init_install ] ; then
+        message "Aktualizacja pakietów." "-w"
         apt-get update
+        message "Usunięcie zbędnych pakietów." "-w"
+        apt-get autoremove -y
+        message "Aktualizacja systemu." "-w"
         apt-get upgrade -y
+
         touch ~/.init_install
         message "Przejdź do panelu administracyjnego servera VPS." "-w"
         message "Wykonaj restart servera VPS." "-w"
