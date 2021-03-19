@@ -56,6 +56,50 @@ function get_django_conf(){
     echo "--|✓|-> Katalog projektu Django=$HOME/$PROJ_DIR/$DJANGO_DIR" |& tee -a $LOG_FILE &> /dev/null
 }
 
+function get_conf_env_var(){
+    message 'ZMIENNE ŚRODOWISKOWE' "-m"
+    get_param "Dodać zmienną środowiskową? [n/t]" "TtNn"
+    ENVVAR=""
+    if [ "$PARAM" == "t" ] || [ "$PARAM" == "t" ] ; then
+        while true ; do
+            get_param "Dodaj :nazwa_zmiennej=wartosc"
+            if [ $(echo "$PARAM" | grep "=" | wc -l) -gt 0 ] ; then
+                if [ "$ENVVAR" == "" ] ; then
+                    ENVVAR="${PARAM}"
+                else
+                    ENVVAR="${ENVVAR},${PARAM}"
+                fi
+            fi
+            if [ "$ENVVAR" != "" ] ; then
+                env_var=$(echo "$ENVVAR" | tr "," "\n")
+                for enva in $env_var ; do
+                    varar=$(echo $enva | tr "=" "\n")
+                    n=0
+                    for par in $varar ; do
+                        if [ $n -eq 0 ] ; then
+                            vara="$par"
+                            n=$((n+1))
+                        else
+                            varb="$par"
+                        fi
+                    done
+                    message "Zmienna ${vara}=${varb}" "-m"
+                done
+            fi
+            get_param "Dodać zmienną środowiskową? [n/t]" "TtNn"
+            if [ "$PARAM" == "n" ] || [ "$PARAM" == "N" ] ; then
+                break
+            fi
+        done
+        if [ "$ENVVAR" != "" ] ; then
+            env_var=$(echo "$ENVVAR" | tr "," "\n")
+            for enva in $env_var ; do
+                varar="Environment="$enva"\n\r"
+            done
+        fi
+    fi
+}
+
 function get_conf_django_service(){
     message 'KONFIGURACJA USŁUGI SYSTEMOWEJ' "-t"
     get_param "Utworzyć usługę systemową dla aplikacji? gunicor + nginx [n/t]" "TtNn"
@@ -71,11 +115,22 @@ function get_conf_django_service(){
         get_param "Podaj liste hostów dla nginx: host0,host1.."
         C_SYS_HOSTS=$PARAM
         echo "--|✓|-> Lista hostów nginx=${C_SYS_HOSTS}" |& tee -a $LOG_FILE &> /dev/null
+        get_conf_env_var
+        WORKERS=3
+        get_param "Zmienić ilość workers=3? [n/t]" "TtNn"
+        if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+            while true ; do
+                get_param "Podaj ilość"
+                if [ ! -z "$PARAM" ] && [[ "$3" =~ ^[0-9]+$ ]] ; then
+                    WORKERS=$PARAM
+                    break
+                fi
+            done
+        fi
         C_SERVICE=1
     else
         C_SERVICE=0
     fi
-
 }
 
 function get_django_settings(){
@@ -288,15 +343,25 @@ function get_service(){
     venv_deactivate
 
     message "Tworzenie plików konfiguracji usługi ${C_SYS_NAME}.service" "-m"
-
+        varar=""
+    if [ "$ENVVAR" != "" ] ; then
+        env_var=$(echo "$ENVVAR" | tr "," "\n")
+        for enva in $env_var ; do
+            varar="$varar\n\rEnvironment=\"$enva\""
+        done
+    fi
     local service_vile="[Unit]
 Description=$C_SYS_DESCRIPTION
 After=network.target
-[Service]
+[Service]"
+if [ "$varar" != "" ] ; then
+    service_vile="${service_vile}$(echo -ne "$varar")"
+fi
+service_vile="$service_vile
 User=$USER
 Group=www-data
 WorkingDirectory=${HOME}/${PROJ_DIR}/${DJANGO_DIR}/
-ExecStart=${HOME}/${PROJ_DIR}/venv/bin/gunicorn --workers 1 --bind unix:${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}.sock ${DJANGO_DIR}.wsgi:application
+ExecStart=${HOME}/${PROJ_DIR}/venv/bin/gunicorn --workers $WORKERS --bind unix:${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}.sock ${DJANGO_DIR}.wsgi:application
 [Install]
 WantedBy=multi-user.target"
 
