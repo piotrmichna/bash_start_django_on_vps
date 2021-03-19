@@ -47,10 +47,15 @@ T_ROW=0
 # sudo modprobe pcspkr > /dev/null
 
 function init_script(){
-    local xup=0
+    message "Aktualizacja pakietów." "-w"
+    sudo apt-get update
+    message "Usunięcie zbędnych pakietów." "-w"
+    sudo apt-get autoremove -y
+    message "Aktualizacja systemu." "-w"
+    sudo apt-get upgrade -y
     sudo dpkg -s pv &> /dev/null
+
     if [ $? -eq 1 ] ; then
-        sudo apt-get update
         sudo apt-get install -y pv
         xup=1
         clear
