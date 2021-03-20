@@ -275,12 +275,15 @@ function get_root_menu(){
                 ;;
             u)
                 add_user "w"
+                PARAM=""
                 ;;
             a)
                 get_root_all_task
+                PARAM=""
                 ;;
             s)
                 get_all_prompt "w"
+                PARAM=""
                 ;;
         esac
 
