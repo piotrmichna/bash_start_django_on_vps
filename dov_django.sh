@@ -39,9 +39,11 @@ function get_conf_management(){
     echo -ne "\n\r"
     MANAGE_COMMAND=""
     get_param "Dodać komęde dla manage.py? [n/t]" "TtNn"
-    get_param "Podaj komęde"
-    MANAGE_COMMAND="$PARAM"
-    message "MANAGEMENT COMMAND: $MANAGE_COMMAND" "-c"
+    if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+        get_param "Podaj komęde"
+        MANAGE_COMMAND="$PARAM"
+        message "MANAGEMENT COMMAND: $MANAGE_COMMAND" "-c"
+    fi
 }
 
 function get_django_conf(){
