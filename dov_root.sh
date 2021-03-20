@@ -216,7 +216,7 @@ function get_root_menu(){
                 echo -ne "\n\r ${C_ROO} [${C_MEN}S${NC}${C_ROO}] Konfiguracja prompt dla wszystkich ${DM}- dodanie git branch i virtualenv."
             else
                 CHAR="${CHAR}s"
-                echo -ne "\n\r ${C_ROO} [${C_MEN}P${NC}${C_ROO}] Konfiguracja prompt dla wszystkich ${DM}- przywrócenie domyślnych ustawień."
+                echo -ne "\n\r ${C_ROO} [${C_MEN}S${NC}${C_ROO}] Konfiguracja prompt dla wszystkich ${DM}- przywrócenie domyślnych ustawień."
             fi
             echo -ne "\n\r ${C_ROO} [${C_MEN}A${NC}${C_ROO}] Wykonaj wszystko."
             echo -ne "\n\r ${C_ROO} [${C_MEN}X${NC}${C_ROO}] Koniec skryptu."
