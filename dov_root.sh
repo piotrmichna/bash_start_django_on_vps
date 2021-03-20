@@ -106,8 +106,8 @@ function get_all_prompt(){
         get_param 'Przywrucić domyślny prompt? [t/n]' "TtNn"
         if [ "$PARAM" == "t" ] || [ "$PARAM" == "T" ] ; then
             message "Przywracanie domyślnej konfiguracji." "-m"
-            rm /etc/skel/.git_venv_prompt
-            message "Kasowanie /etc/skel/.git_venv_prompt" "-c"
+            rm /etc/skel/.git_venv_prompt.sh
+            message "Kasowanie /etc/skel/.git_venv_prompt.sh" "-c"
             if [ -d $HOME/bash_back ] ; then
                 message "Przywrócono domyślny .bashrc" "-c"
                 rm /etc/skel/.bashrc
@@ -121,8 +121,8 @@ function get_all_prompt(){
         get_param 'Dodać do prompt informacje o git i virtualev? [t/n]' "TtNn"
         if [ "$PARAM" == "t" ] || [ "$PARAM" == "T" ] ; then
             message "Modyfikowanie prompt." "-m"
-            cp .git_venv_prompt /etc/skel/.git_venv_prompt
-            message "Kopiowanie .git_venv_prompt /etc/skel/.git_venv_prompt" "-c"
+            cp git_venv_prompt.sh /etc/skel/.git_venv_prompt.sh
+            message "Kopiowanie git_venv_prompt.sh /etc/skel/.git_venv_prompt.sh" "-c"
             if [ ! -d $HOME/bash_back ] ; then
                 mkdir $HOME/bash_back
                 cp /etc/skel/.bashrc $HOME/bash_back/.bashrc_back
@@ -213,7 +213,7 @@ function get_root_menu(){
             fi
             if [ ! -f /etc/skel/.git_venv_prompt.sh ] ; then
                 CHAR="${CHAR}s"
-                echo -ne "\n\r ${C_ROO} [${C_MEN}P${NC}${C_ROO}] Konfiguracja prompt dla wszystkich ${DM}- dodanie git branch i virtualenv."
+                echo -ne "\n\r ${C_ROO} [${C_MEN}S${NC}${C_ROO}] Konfiguracja prompt dla wszystkich ${DM}- dodanie git branch i virtualenv."
             else
                 CHAR="${CHAR}s"
                 echo -ne "\n\r ${C_ROO} [${C_MEN}P${NC}${C_ROO}] Konfiguracja prompt dla wszystkich ${DM}- przywrócenie domyślnych ustawień."
