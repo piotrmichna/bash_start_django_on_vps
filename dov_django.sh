@@ -34,6 +34,16 @@ function get_django_project_tree(){
     echo "     ->        + readme.md" |& tee -a $LOG_FILE &> /dev/null
 }
 
+function get_conf_management(){
+    message 'MANAGEMENT COMMAND' "-q"
+    echo -ne "\n\r"
+    MANAGE_COMMAND=""
+    get_param "Dodać komęde dla manage.py? [n/t]" "TtNn"
+    get_param "Podaj komęde"
+    MANAGE_COMMAND="$PARAM"
+    message "MANAGEMENT COMMAND: $MANAGE_COMMAND" "-c"
+}
+
 function get_django_conf(){
     start_scripts "Django"
     message 'KONFIGURACJA Django' "-t"
@@ -54,10 +64,13 @@ function get_django_conf(){
     get_param "Podaj katalog projektu Django: ~/$PROJ_DIR/"
     DJANGO_DIR=$PARAM
     echo "--|✓|-> Katalog projektu Django=$HOME/$PROJ_DIR/$DJANGO_DIR" |& tee -a $LOG_FILE &> /dev/null
+    get_conf_management
+
 }
 
 function get_conf_env_var(){
-    message 'ZMIENNE ŚRODOWISKOWE' "-m"
+    message 'ZMIENNE ŚRODOWISKOWE' "-q"
+    echo -ne "\n\r"
     get_param "Dodać zmienną środowiskową? [n/t]" "TtNn"
     ENVVAR=""
     if [ "$PARAM" == "t" ] || [ "$PARAM" == "t" ] ; then
@@ -202,6 +215,11 @@ except ModuleNotFoundError:
         message "Wykonanie migracji modeli do bazy." "-m"
         python manage.py migrate |& tee -a $LOG_FILE &> /dev/null
         message "Wykonano migracje modeli do bazy." "-c"
+        if [ "$MANAGE_COMMAND" != "" ] ; then
+            message "Wykonanie polecenia management." "-m"
+            python manage.py "$MANAGE_COMMAND" |& tee -a $LOG_FILE &> /dev/null
+            message "Wykonano polecenie manage.py $MANAGE_COMMAND" "-c"
+        fi
         venv_deactivate
     fi
 }
