@@ -64,10 +64,13 @@ function get_django_conf(){
     get_param "Podaj katalog projektu Django: ~/$PROJ_DIR/"
     DJANGO_DIR=$PARAM
     echo "--|✓|-> Katalog projektu Django=$HOME/$PROJ_DIR/$DJANGO_DIR" |& tee -a $LOG_FILE &> /dev/null
+    get_conf_management
+
 }
 
 function get_conf_env_var(){
-    message 'ZMIENNE ŚRODOWISKOWE' "-m"
+    message 'ZMIENNE ŚRODOWISKOWE' "-q"
+    echo -ne "\n\r"
     get_param "Dodać zmienną środowiskową? [n/t]" "TtNn"
     ENVVAR=""
     if [ "$PARAM" == "t" ] || [ "$PARAM" == "t" ] ; then
