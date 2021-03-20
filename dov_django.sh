@@ -79,7 +79,9 @@ function get_django_conf(){
 
     get_param "Podaj katalog projektu Django: ~/$PROJ_DIR/"
     DJANGO_DIR=$PARAM
+
     echo "--|✓|-> Katalog projektu Django=$HOME/$PROJ_DIR/$DJANGO_DIR" |& tee -a $LOG_FILE &> /dev/null
+    get_conf_static
     get_conf_management
 
 }
@@ -337,11 +339,14 @@ function get_nginx(){
     if [ "$hosts" == "" ] ; then
         hosts="localhost"
     fi
+    if [ "$DIR_STATIC" == "" ] ; then
+        DIR_STATIC="${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}"
+    fi
     serv_conf="server {
     listen [::]:80;
     server_name $hosts;
     location /static/ {
-        root ${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}/;
+        root ${DIR_STATIC}/;
     }
     location / {
         include proxy_params;
