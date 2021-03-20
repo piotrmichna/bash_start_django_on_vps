@@ -215,6 +215,11 @@ except ModuleNotFoundError:
         message "Wykonanie migracji modeli do bazy." "-m"
         python manage.py migrate |& tee -a $LOG_FILE &> /dev/null
         message "Wykonano migracje modeli do bazy." "-c"
+        if [ "$MANAGE_COMMAND" != "" ] ; then
+            message "Wykonanie polecenia management." "-m"
+            python manage.py "$MANAGE_COMMAND" |& tee -a $LOG_FILE &> /dev/null
+            message "Wykonano polecenie manage.py $MANAGE_COMMAND" "-c"
+        fi
         venv_deactivate
     fi
 }
