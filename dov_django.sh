@@ -34,6 +34,16 @@ function get_django_project_tree(){
     echo "     ->        + readme.md" |& tee -a $LOG_FILE &> /dev/null
 }
 
+function get_conf_management(){
+    message 'MANAGEMENT COMMAND' "-q"
+    echo -ne "\n\r"
+    MANAGE_COMMAND=""
+    get_param "Dodać komęde dla manage.py? [n/t]" "TtNn"
+    get_param "Podaj komęde"
+    MANAGE_COMMAND="$PARAM"
+    message "MANAGEMENT COMMAND: $MANAGE_COMMAND" "-c"
+}
+
 function get_django_conf(){
     start_scripts "Django"
     message 'KONFIGURACJA Django' "-t"
