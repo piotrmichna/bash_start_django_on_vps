@@ -122,30 +122,31 @@ function get_root_all_task(){
 }
 
 function get_root_menu(){
-    #tput civis
+    sudo ls &> /dev/null
     while true ; do
-        clear
-        echo -ne "\n\r${NC}${C_ROO}${BOLD}-----------------------------------------------------------------"
-        echo -ne "\n\r${C_ROO}${BOLD}"
-        figlet -t -k -f /usr/share/figlet/small.flf "  - START  VPS - "
-        echo -ne "${NC}${C_TIT}${BOLD}-----------------------------------------------------------------"
-        echo -ne "\n\r${C_TIT}${BOLD}W ramach szkolenia w CodersLab${NC}"
-        echo -ne "\n\r${C_ROO}  Autor: Piotr Michna${NC}"
-        echo -ne "\n\r${C_ROO}${DM} e-mail: pm@piotrmichna.pl"
-        echo -ne "\n\r${C_ROO}${DM}   Data: 15.03.2021\n\r"
-
-        echo -ne "\n\r${C_ROO}${DM} Skrypt przygotowany w oparciu o wirtualny serwer projektu:"
-        echo -ne "\n\r${C_ROO} UW-TEAM.ORG Jakuba Mrugalskiego"
-        echo -ne "\n\r${C_ROO}${DM}        Link: ${NC}${C_ROO}https://mikr.us${NC}\n\r"
-        echo -ne "\n\r${C_ROO}         MIKR.US 1.0 ${BLINK}35zł/rok"
-        echo -ne "\n\r${C_ROO}${DM}         RAM: ${NC}${C_ROO}256MB"
-        echo -ne "\n\r${C_ROO}${DM} Technologia: ${NC}${C_ROO}OpenVZ 6${NC}"
-        echo -ne "\n\r${C_ROO}${DM}      System: ${NC}${C_ROO}Ubuntu 16${NC}\n\r"
-        echo -ne "\n\r${C_ROO}     Korzystając z tego linku https://mikr.us/?r=758803ea"
-        echo -ne "\n\r${C_ROO}             otrzymasz dodatkowy miesiąc gratis.\n\r"
-
-        echo -ne "\n\r${NC}${C_ROO}${BOLD}-----------------------------------------------------------------"
         while true ; do
+            clear
+            echo -ne "\n\r${NC}${C_ROO}${BOLD}-----------------------------------------------------------------"
+            echo -ne "\n\r${C_ROO}${BOLD}"
+            figlet -t -k -f /usr/share/figlet/small.flf "  - START  VPS - "
+            echo -ne "${NC}${C_ROO}${BOLD}-----------------------------------------------------------------"
+            echo -ne "\n\r${C_TIT}${BOLD}W ramach szkolenia w CodersLab${NC}"
+            echo -ne "\n\r${C_ROO}  Autor: Piotr Michna${NC}"
+            echo -ne "\n\r${C_ROO}${DM} e-mail: pm@piotrmichna.pl"
+            echo -ne "\n\r${C_ROO}${DM}   Data: 15.03.2021\n\r"
+
+            echo -ne "\n\r${C_ROO}${DM} Skrypt przygotowany w oparciu o wirtualny serwer projektu:"
+            echo -ne "\n\r${C_ROO} UW-TEAM.ORG Jakuba Mrugalskiego"
+            echo -ne "\n\r${C_ROO}${DM}        Link: ${NC}${C_ROO}https://mikr.us${NC}\n\r"
+            echo -ne "\n\r${C_ROO}         MIKR.US 1.0 ${BLINK}35zł/rok"
+            echo -ne "\n\r${C_ROO}${DM}         RAM: ${NC}${C_ROO}256MB"
+            echo -ne "\n\r${C_ROO}${DM} Technologia: ${NC}${C_ROO}OpenVZ 6${NC}"
+            echo -ne "\n\r${C_ROO}${DM}      System: ${NC}${C_ROO}Ubuntu 16${NC}\n\r"
+            echo -ne "\n\r${C_ROO}     Korzystając z tego linku https://mikr.us/?r=758803ea"
+            echo -ne "\n\r${C_ROO}             otrzymasz dodatkowy miesiąc gratis.\n\r"
+
+            echo -ne "\n\r${NC}${C_ROO}${BOLD}-----------------------------------------------------------------"
+
             sudo dpkg -s bc &> /dev/null
             if [ $? -eq 0 ] && [ $SYS_UPDATE -eq 0 ] ; then
                 echo -ne "\n\r ${C_ROO} [${C_MEN}I${NC}${C_ROO}] Instalacja ${DM}- instalacja podstawowych narzędzi."
@@ -154,7 +155,6 @@ function get_root_menu(){
             fi
             echo -ne "\n\r ${C_ROO} [${C_MEN}U${NC}${C_ROO}] Użytkownicy ${DM}- tworzenie urzytkowników systemowych."
             CHAR="iux"
-            
             sudo dpkg -s vim &> /dev/null
             if [ $? -eq 0 ] && [ ! -f ~/.vimrc ] ; then
                 CHAR="${CHAR}v"
@@ -187,12 +187,13 @@ function get_root_menu(){
             if [ `echo $CHAR | grep "p" | wc -l` -eq 1 ] ; then
                 tput cuu1
             fi
+            if [ "$PARAM" != "x" ] ; then
             tput cuu1
             tput cuu1
             tput cuu1
             tput cuu1
             tput cuu1
-            tput cuu1
+            fi
         done
 
         case $PARAM in
