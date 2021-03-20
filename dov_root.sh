@@ -96,6 +96,48 @@ function add_user(){
     fi
 }
 
+function get_all_prompt(){
+    message 'MODYFIKACJA PROMPT' "-t"
+    message "Sprawdzanie konfiguracji." "-m"
+    x=`ls -a /etc/skel/ | grep .git_venv_prompt.sh | wc -l`
+    if [ $x -eq 1 ] ; then
+        message "Prompt jest zmodyfikowany." "-q"
+        echo -ne "\n\r"
+        get_param 'Przywrucić domyślny prompt? [t/n]' "TtNn"
+        if [ "$PARAM" == "t" ] || [ "$PARAM" == "T" ] ; then
+            message "Przywracanie domyślnej konfiguracji." "-m"
+            rm /etc/skel/.git_venv_prompt
+            message "Kasowanie /etc/skel/.git_venv_prompt" "-c"
+            if [ -d $HOME/bash_back ] ; then
+                message "Przywrócono domyślny .bashrc" "-c"
+                rm /etc/skel/.bashrc
+                cp $HOME/bash_back/.bashrc_back /etc/skel/.bashrc
+            fi
+            message "Przywrócono domyślny prompt" "-c"
+        fi
+    else
+        message "Prompt jest domyślny." "-q"
+        echo -ne "\n\r"
+        get_param 'Dodać do prompt informacje o git i virtualev? [t/n]' "TtNn"
+        if [ "$PARAM" == "t" ] || [ "$PARAM" == "T" ] ; then
+            message "Modyfikowanie prompt." "-m"
+            cp .git_venv_prompt /etc/skel/.git_venv_prompt
+            message "Kopiowanie .git_venv_prompt /etc/skel/.git_venv_prompt" "-c"
+            if [ ! -d $HOME/bash_back ] ; then
+                mkdir $HOME/bash_back
+                cp /etc/skel/.bashrc $HOME/bash_back/.bashrc_back
+                message "Kopiowanie /etc/skel/.bashrc $HOME/bash_back/.bashrc_back" "-c"
+            fi
+            echo "source ~/.git_venv_prompt.sh" >> /etc/skel/.bashrc
+            message "Modyfikacja /etc/skel/.bashrc" "-c"
+            message "Zmodyfikowano prompt" "-c"
+        fi
+    fi
+    if [ ! -z "$1" ] ; then
+        get_param 'Wybierz [x] aby zakończyć' "Xx"
+    fi
+}
+
 function get_root_all_task(){
     message "PRZYGOTOWANIE SERWERA" "-t"
     message "Nie zaleca się używać konta root." "-m"
