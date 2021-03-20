@@ -96,6 +96,48 @@ function add_user(){
     fi
 }
 
+function get_all_prompt(){
+    message 'MODYFIKACJA PROMPT' "-t"
+    message "Sprawdzanie konfiguracji." "-m"
+    x=`ls -a /etc/skel/ | grep .git_venv_prompt.sh | wc -l`
+    if [ $x -eq 1 ] ; then
+        message "Prompt jest zmodyfikowany." "-q"
+        echo -ne "\n\r"
+        get_param 'Przywrucić domyślny prompt? [t/n]' "TtNn"
+        if [ "$PARAM" == "t" ] || [ "$PARAM" == "T" ] ; then
+            message "Przywracanie domyślnej konfiguracji." "-m"
+            rm /etc/skel/.git_venv_prompt.sh
+            message "Kasowanie /etc/skel/.git_venv_prompt.sh" "-c"
+            if [ -d $HOME/bash_back ] ; then
+                message "Przywrócono domyślny .bashrc" "-c"
+                rm /etc/skel/.bashrc
+                cp $HOME/bash_back/.bashrc_back /etc/skel/.bashrc
+            fi
+            message "Przywrócono domyślny prompt" "-c"
+        fi
+    else
+        message "Prompt jest domyślny." "-q"
+        echo -ne "\n\r"
+        get_param 'Dodać do prompt informacje o git i virtualev? [t/n]' "TtNn"
+        if [ "$PARAM" == "t" ] || [ "$PARAM" == "T" ] ; then
+            message "Modyfikowanie prompt." "-m"
+            cp git_venv_prompt.sh /etc/skel/.git_venv_prompt.sh
+            message "Kopiowanie git_venv_prompt.sh /etc/skel/.git_venv_prompt.sh" "-c"
+            if [ ! -d $HOME/bash_back ] ; then
+                mkdir $HOME/bash_back
+                cp /etc/skel/.bashrc $HOME/bash_back/.bashrc_back
+                message "Kopiowanie /etc/skel/.bashrc $HOME/bash_back/.bashrc_back" "-c"
+            fi
+            echo "source ~/.git_venv_prompt.sh" >> /etc/skel/.bashrc
+            message "Modyfikacja /etc/skel/.bashrc" "-c"
+            message "Zmodyfikowano prompt" "-c"
+        fi
+    fi
+    if [ ! -z "$1" ] ; then
+        get_param 'Wybierz [x] aby zakończyć' "Xx"
+    fi
+}
+
 function get_root_all_task(){
     message "PRZYGOTOWANIE SERWERA" "-t"
     message "Nie zaleca się używać konta root." "-m"
@@ -169,6 +211,13 @@ function get_root_menu(){
                 CHAR="${CHAR}p"
                 echo -ne "\n\r ${C_ROO} [${C_MEN}P${NC}${C_ROO}] Konfiguracja prompt ${DM}- dodanie git branch i virtualenv."
             fi
+            if [ ! -f /etc/skel/.git_venv_prompt.sh ] ; then
+                CHAR="${CHAR}s"
+                echo -ne "\n\r ${C_ROO} [${C_MEN}S${NC}${C_ROO}] Konfiguracja prompt dla wszystkich ${DM}- dodanie git branch i virtualenv."
+            else
+                CHAR="${CHAR}s"
+                echo -ne "\n\r ${C_ROO} [${C_MEN}S${NC}${C_ROO}] Konfiguracja prompt dla wszystkich ${DM}- przywrócenie domyślnych ustawień."
+            fi
             echo -ne "\n\r ${C_ROO} [${C_MEN}A${NC}${C_ROO}] Wykonaj wszystko."
             echo -ne "\n\r ${C_ROO} [${C_MEN}X${NC}${C_ROO}] Koniec skryptu."
             echo -ne "\n\r ${NC} [ ] Wybierz literę.${C_MEN}\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b${NC}${C_ROO}"
@@ -193,6 +242,9 @@ function get_root_menu(){
                 tput cuu1
             fi
             if [ `echo $CHAR | grep "p" | wc -l` -eq 1 ] ; then
+                tput cuu1
+            fi
+            if [ `echo $CHAR | grep "s" | wc -l` -eq 1 ] ; then
                 tput cuu1
             fi
             if [ "$PARAM" != "x" ] ; then
@@ -223,9 +275,15 @@ function get_root_menu(){
                 ;;
             u)
                 add_user "w"
+                PARAM=""
                 ;;
             a)
                 get_root_all_task
+                PARAM=""
+                ;;
+            s)
+                get_all_prompt "w"
+                PARAM=""
                 ;;
         esac
 
