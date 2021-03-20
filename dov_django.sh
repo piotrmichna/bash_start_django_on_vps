@@ -46,6 +46,20 @@ function get_conf_management(){
     fi
 }
 
+function get_conf_static(){
+    message 'KONFIGURACJA STATIC' "-q"
+    echo -ne "\n\r"
+    DIR_STATIC=""
+    get_param "Definiować katalog static? [n/t]" "TtNn"
+    if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+        message "Podaj lokalizację katalogu static" "-q"
+        echo -ne "\n\r"
+        get_param "~/$PROJ_DIR/$DJANGO_DIR/"
+        DIR_STATIC="$HOME/$PROJ_DIR/$DJANGO_DIR/$PARAM"
+        message "Katalog static: $DIR_STATIC" "-c"
+    fi
+}
+
 function get_django_conf(){
     start_scripts "Django"
     message 'KONFIGURACJA Django' "-t"
