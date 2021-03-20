@@ -46,6 +46,20 @@ function get_conf_management(){
     fi
 }
 
+function get_conf_static(){
+    message 'KONFIGURACJA STATIC' "-q"
+    echo -ne "\n\r"
+    DIR_STATIC=""
+    get_param "Definiować katalog static? [n/t]" "TtNn"
+    if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+        message "Podaj lokalizację katalogu static" "-q"
+        echo -ne "\n\r"
+        get_param "~/$PROJ_DIR/$DJANGO_DIR/"
+        DIR_STATIC="$HOME/$PROJ_DIR/$DJANGO_DIR/$PARAM"
+        message "Katalog static: $DIR_STATIC" "-c"
+    fi
+}
+
 function get_django_conf(){
     start_scripts "Django"
     message 'KONFIGURACJA Django' "-t"
@@ -65,7 +79,9 @@ function get_django_conf(){
 
     get_param "Podaj katalog projektu Django: ~/$PROJ_DIR/"
     DJANGO_DIR=$PARAM
+
     echo "--|✓|-> Katalog projektu Django=$HOME/$PROJ_DIR/$DJANGO_DIR" |& tee -a $LOG_FILE &> /dev/null
+    get_conf_static
     get_conf_management
 
 }
@@ -323,11 +339,14 @@ function get_nginx(){
     if [ "$hosts" == "" ] ; then
         hosts="localhost"
     fi
+    if [ "$DIR_STATIC" == "" ] ; then
+        DIR_STATIC="${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}"
+    fi
     serv_conf="server {
     listen [::]:80;
     server_name $hosts;
     location /static/ {
-        root ${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}/;
+        root ${DIR_STATIC}/;
     }
     location / {
         include proxy_params;
