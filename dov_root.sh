@@ -147,6 +147,7 @@ function get_root_menu(){
 
             echo -ne "\n\r${NC}${C_ROO}${BOLD}-----------------------------------------------------------------"
 
+            PARAM=""
             sudo dpkg -s bc &> /dev/null
             if [ $? -eq 0 ] && [ $SYS_UPDATE -eq 0 ] ; then
                 echo -ne "\n\r ${C_ROO} [${C_MEN}I${NC}${C_ROO}] Instalacja ${DM}- instalacja podstawowych narzędzi."
