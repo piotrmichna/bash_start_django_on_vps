@@ -11,31 +11,32 @@ source dov_root.sh
 # REQUIRMENTS="psycopg2-binary Django django-rest djangorestframework"
 
 function get_install_menu(){
-    #tput civis
+    sudo ls &> /dev/null
     while true ; do
-        clear
-        echo -ne "\n\r${NC}${C_TIT}${BOLD}-----------------------------------------------------------------"
-        echo -ne "\n\r${C_TIT}${BOLD}"
-        figlet -t -k -f /usr/share/figlet/small.flf "Python  on VPS "
-        echo -ne "${NC}${C_TIT}${BOLD}-----------------------------------------------------------------"
-
-        echo -ne "\n\r${C_TIT}${BOLD}W ramach szkolenia w CodersLab${NC}"
-        echo -ne "\n\r${C_TIT}  Autor: Piotr Michna${NC}"
-        echo -ne "\n\r${C_TIT}${DM} e-mail: pm@piotrmichna.pl"
-        echo -ne "\n\r${C_TIT}${DM}   Data: 15.03.2021\n\r"
-
-        echo -ne "\n\r${C_TIT}${DM} Skrypt przygotowany w oparciu o wirtualny serwer projektu:"
-        echo -ne "\n\r${C_TIT} UW-TEAM.ORG Jakuba Mrugalskiego"
-        echo -ne "\n\r${C_TIT}${DM}        Link: ${NC}${C_TIT}https://mikr.us${NC}\n\r"
-        echo -ne "\n\r${C_TIT}         MIKR.US 1.0 ${BLINK}35zł/rok"
-        echo -ne "\n\r${C_TIT}${DM}         RAM: ${NC}${C_TIT}256MB"
-        echo -ne "\n\r${C_TIT}${DM} Technologia: ${NC}${C_TIT}OpenVZ 6${NC}"
-        echo -ne "\n\r${C_TIT}${DM}      System: ${NC}${C_TIT}Ubuntu 16${NC}\n\r"
-        echo -ne "\n\r${C_TIT}     Korzystając z tego linku https://mikr.us/?r=758803ea"
-        echo -ne "\n\r${C_TIT}             otrzymasz dodatkowy miesiąc gratis.\n\r"
-
-        echo -ne "\n\r${NC}${C_TIT}${BOLD}-----------------------------------------------------------------"
         while true ; do
+            clear
+            echo -ne "\n\r${NC}${C_TIT}${BOLD}-----------------------------------------------------------------"
+            echo -ne "\n\r${C_TIT}${BOLD}"
+            figlet -t -k -f /usr/share/figlet/small.flf "Python  on VPS "
+            echo -ne "${NC}${C_TIT}${BOLD}-----------------------------------------------------------------"
+
+            echo -ne "\n\r${C_TIT}W ramach szkolenia w ${BOLD}CodersLab${NC}"
+            echo -ne "\n\r${C_TIT}  Autor: Piotr Michna${NC}"
+            echo -ne "\n\r${C_TIT}${DM} e-mail: pm@piotrmichna.pl"
+            echo -ne "\n\r${C_TIT}${DM}   Data: 15.03.2021\n\r"
+
+            echo -ne "\n\r${C_TIT}${DM} Skrypt przygotowany w oparciu o wirtualny serwer projektu:"
+            echo -ne "\n\r${C_TIT} UW-TEAM.ORG Jakuba Mrugalskiego"
+            echo -ne "\n\r${C_TIT}${DM}        Link: ${NC}${C_TIT}https://mikr.us${NC}\n\r"
+            echo -ne "\n\r${C_TIT}         MIKR.US 1.0 ${BLINK}35zł/rok"
+            echo -ne "\n\r${C_TIT}${DM}         RAM: ${NC}${C_TIT}256MB"
+            echo -ne "\n\r${C_TIT}${DM} Technologia: ${NC}${C_TIT}OpenVZ 6${NC}"
+            echo -ne "\n\r${C_TIT}${DM}      System: ${NC}${C_TIT}Ubuntu 16${NC}\n\r"
+            echo -ne "\n\r${C_TIT}     Korzystając z tego linku https://mikr.us/?r=758803ea"
+            echo -ne "\n\r${C_TIT}             otrzymasz dodatkowy miesiąc gratis.\n\r"
+
+            echo -ne "\n\r${NC}${C_TIT}${BOLD}-----------------------------------------------------------------"
+
             PARAM=""
             sudo dpkg -s bc &> /dev/null
             if [ $? -eq 0 ] && [ $SYS_UPDATE -eq 0 ] ; then
@@ -62,11 +63,19 @@ function get_install_menu(){
             fi
             echo -ne "\n\r ${C_TIT} [${C_MEN}X${NC}${C_TIT}] Koniec skryptu."
             echo -ne "\n\r ${NC} [ ] Wybierz literę.${C_MEN}\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b${NC}${C_TIT}"
-            read -n1 PARAM
-            PARAM=$(echo "$PARAM" | tr '[:upper:]' '[:lower:]')
+            PARAM=""
+            while true ; do
+                read -N1 -s PARAM
+                PARAM=$(echo "$PARAM" | tr '[:upper:]' '[:lower:]')
+                x=$(echo $CHAR | grep $PARAM 2> /dev/null | wc -l 2> /dev/null)
+                if [ "$PARAM" != "" ] && [ $x -eq 1 ] ; then
+                    echo -ne "$PARAM"
+                    break
+                fi
+            done
 
+            echo -ne "\n\r${NC}${C_TIT}${BOLD}-----------------------------------------------------------------${NC}\r\n"
             if [ `echo $CHAR | grep $PARAM | wc -l` -eq 1 ] ; then
-                echo -ne "\n\r${NC}${C_TIT}${BOLD}-----------------------------------------------------------------${NC}\r\n"
                 break
             fi
             if [ `echo $CHAR | grep "g" | wc -l` -eq 1 ] ; then
@@ -104,9 +113,6 @@ function get_install_menu(){
                 ;;
             d)
                 get_django "w"
-                ;;
-            *)
-                tput cuu1
                 ;;
         esac
 
