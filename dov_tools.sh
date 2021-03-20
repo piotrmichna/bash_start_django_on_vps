@@ -210,7 +210,7 @@ function start_scripts(){
     figlet -t -k -f /usr/share/figlet/small.flf " $1  on VPS " |& tee -a $LOG_FILE
     echo -ne "${NC}${C_TIT}${BOLD}-----------------------------------------------------------------"
     echo "-----------------------------------------------------------------" |& tee -a $LOG_FILE &> /dev/null
-    echo -ne "\n\r${C_TIT}${BOLD}W ramach szkolenia w CodersLab${NC}"
+    echo -ne "\n\r${C_TIT}W ramach szkolenia w ${BOLD}CodersLab${NC}"
     echo -ne "\n\r${C_TIT}  Autor: Piotr Michna${NC}"
     echo -ne "\n\r${C_TIT}${DM} e-mail: pm@piotrmichna.pl"
     echo -ne "\n\r${C_TIT}${DM}   Data: 15.03.2021\n\r"
@@ -554,14 +554,6 @@ function system_update(){
   message 'Aktualizacja pakietów.' "-m"
   sudo apt-get update | pv -w 50 -l -c | tee -a $LOG_FILE | display_progres $C_MES
   message 'Ukończona aktualizacja pakietów' "-c"
-
-  message 'Aktualizacja systemu.' "-m"
-  sudo apt-get upgrade -y | pv -w 50 -l -c | tee -a $LOG_FILE | display_progres $C_MES
-  message 'Ukończona aktualizacja systemu.' "-c"
-
-  message 'Usunięcie zbędnych repozytoriów.' "-m"
-  sudo apt-get autoremove -y | pv -w 50 -l -c | tee -a $LOG_FILE | display_progres $C_MES
-  message 'Ukończone usuwanie zbędnych pakietów.' "-c"
   SYS_UPDATE=1
 }
 
@@ -654,7 +646,7 @@ function get_pip_install(){
     x=`pip3 list | grep $lib_name | wc -l`
     if [ $x -eq 0 ] ; then
         message "Instalacja biblioteki $i" "-m"
-        pip3 install "$i" | pv -w 50 -l -c | tee -a $LOG_FILE | display_progres $C_MES
+        pip3 install "$i" |& tee -a $LOG_FILE
         x=`pip3 list | grep $lib_name | wc -l`
         if [ $x -eq 0 ] ; then
             message "Instalacji biblioteki $i." "-e"
