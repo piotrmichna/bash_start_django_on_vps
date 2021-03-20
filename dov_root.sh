@@ -211,6 +211,10 @@ function get_root_menu(){
                 CHAR="${CHAR}p"
                 echo -ne "\n\r ${C_ROO} [${C_MEN}P${NC}${C_ROO}] Konfiguracja prompt ${DM}- dodanie git branch i virtualenv."
             fi
+            if [ ! -f /etc/skel/.git_venv_prompt.sh ] ; then
+                CHAR="${CHAR}s"
+                echo -ne "\n\r ${C_ROO} [${C_MEN}P${NC}${C_ROO}] Konfiguracja prompt dla wszystkich ${DM}- dodanie git branch i virtualenv."
+            fi
             echo -ne "\n\r ${C_ROO} [${C_MEN}A${NC}${C_ROO}] Wykonaj wszystko."
             echo -ne "\n\r ${C_ROO} [${C_MEN}X${NC}${C_ROO}] Koniec skryptu."
             echo -ne "\n\r ${NC} [ ] Wybierz literę.${C_MEN}\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b${NC}${C_ROO}"
@@ -235,6 +239,9 @@ function get_root_menu(){
                 tput cuu1
             fi
             if [ `echo $CHAR | grep "p" | wc -l` -eq 1 ] ; then
+                tput cuu1
+            fi
+            if [ `echo $CHAR | grep "s" | wc -l` -eq 1 ] ; then
                 tput cuu1
             fi
             if [ "$PARAM" != "x" ] ; then
@@ -268,6 +275,9 @@ function get_root_menu(){
                 ;;
             a)
                 get_root_all_task
+                ;;
+            s)
+                get_all_prompt "w"
                 ;;
         esac
 
