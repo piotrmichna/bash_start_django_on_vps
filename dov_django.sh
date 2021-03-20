@@ -39,9 +39,25 @@ function get_conf_management(){
     echo -ne "\n\r"
     MANAGE_COMMAND=""
     get_param "Dodać komęde dla manage.py? [n/t]" "TtNn"
-    get_param "Podaj komęde"
-    MANAGE_COMMAND="$PARAM"
-    message "MANAGEMENT COMMAND: $MANAGE_COMMAND" "-c"
+    if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+        get_param "Podaj komęde"
+        MANAGE_COMMAND="$PARAM"
+        message "MANAGEMENT COMMAND: $MANAGE_COMMAND" "-c"
+    fi
+}
+
+function get_conf_static(){
+    message 'KONFIGURACJA STATIC' "-q"
+    echo -ne "\n\r"
+    DIR_STATIC=""
+    get_param "Definiować katalog static? [n/t]" "TtNn"
+    if [ "$PARAM" == "T" ] || [ "$PARAM" == "t" ] ; then
+        message "Podaj lokalizację katalogu static" "-q"
+        echo -ne "\n\r"
+        get_param "~/$PROJ_DIR/$DJANGO_DIR/"
+        DIR_STATIC="$HOME/$PROJ_DIR/$DJANGO_DIR/$PARAM"
+        message "Katalog static: $DIR_STATIC" "-c"
+    fi
 }
 
 function get_django_conf(){
@@ -63,7 +79,9 @@ function get_django_conf(){
 
     get_param "Podaj katalog projektu Django: ~/$PROJ_DIR/"
     DJANGO_DIR=$PARAM
+
     echo "--|✓|-> Katalog projektu Django=$HOME/$PROJ_DIR/$DJANGO_DIR" |& tee -a $LOG_FILE &> /dev/null
+    get_conf_static
     get_conf_management
 
 }
@@ -213,11 +231,11 @@ except ModuleNotFoundError:
         cd "${HOME}/${PROJ_DIR}/${DJANGO_DIR}"
 
         message "Wykonanie migracji modeli do bazy." "-m"
-        python manage.py migrate |& tee -a $LOG_FILE &> /dev/null
+        python manage.py migrate |& tee -a $LOG_FILE
         message "Wykonano migracje modeli do bazy." "-c"
         if [ "$MANAGE_COMMAND" != "" ] ; then
             message "Wykonanie polecenia management." "-m"
-            python manage.py "$MANAGE_COMMAND" |& tee -a $LOG_FILE &> /dev/null
+            python manage.py "$MANAGE_COMMAND" |& tee -a $LOG_FILE
             message "Wykonano polecenie manage.py $MANAGE_COMMAND" "-c"
         fi
         venv_deactivate
@@ -321,11 +339,14 @@ function get_nginx(){
     if [ "$hosts" == "" ] ; then
         hosts="localhost"
     fi
+    if [ "$DIR_STATIC" == "" ] ; then
+        DIR_STATIC="${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}"
+    fi
     serv_conf="server {
     listen [::]:80;
     server_name $hosts;
     location /static/ {
-        root ${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}/;
+        root ${DIR_STATIC}/;
     }
     location / {
         include proxy_params;
