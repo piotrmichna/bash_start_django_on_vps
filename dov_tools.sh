@@ -646,7 +646,7 @@ function get_pip_install(){
     x=`pip3 list | grep $lib_name | wc -l`
     if [ $x -eq 0 ] ; then
         message "Instalacja biblioteki $i" "-m"
-        pip3 install "$i" | pv -w 50 -l -c | tee -a $LOG_FILE | display_progres $C_MES
+        pip3 install "$i" |& tee -a $LOG_FILE
         x=`pip3 list | grep $lib_name | wc -l`
         if [ $x -eq 0 ] ; then
             message "Instalacji biblioteki $i." "-e"
