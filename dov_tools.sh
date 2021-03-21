@@ -694,7 +694,7 @@ function get_virtualenv(){
   x=`pip3 list | grep virtualenv | wc -l`
   if [ $x -eq 0 ] ; then
     message 'Instalacja virtualenv' "-m"
-    sudo pip3 install virtualenv | pv -w 50 -l -c | tee -a $LOG_FILE | display_progres $C_MES
+    sudo pip3 install virtualenv |& tee -a $LOG_FILE
     x=`pip3 list | grep virtualenv | wc -l`
     if [ $x -eq 1 ] ; then
         message 'Zainstalowano virtualenv' "-c"
