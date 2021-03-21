@@ -424,7 +424,7 @@ WantedBy=multi-user.target"
 
 function get_django_soft(){
     message 'INSTALACJA OPROGRAMOWANIA' "-T"
-    install_prog git vim python3-pip python3-dev
+    install_prog git vim python3 python3-dev python3-pip
 }
 
 function get_django(){
