@@ -52,26 +52,26 @@ function init_script(){
     fi
     if [ ! -f ~/init_log/init_${currentDate}.log ] ; then
         message "Aktualizacja pakietów." "-w"
-        apt-get update
+        sudo apt-get update
         message "Usunięcie zbędnych pakietów." "-w"
-        apt-get autoremove -y
+        sudo apt-get autoremove -y
         message "Aktualizacja systemu." "-w"
-        apt-get upgrade -y
+        sudo apt-get upgrade -y
 
         touch ~/init_log/init_${currentDate}.log
     fi
-    dpkg -s pv &> /dev/null
+    sudo dpkg -s pv &> /dev/null
     if [ $? -eq 1 ] ; then
-        apt-get install -y pv
+        sudo apt-get install -y pv
         xup=1
     fi
-    dpkg -s figlet &> /dev/null
+    sudo dpkg -s figlet &> /dev/null
     if [ $? -eq 1 ] ; then
-        apt-get install -y figlet
+        sudo apt-get install -y figlet
     fi
-    dpkg -s ncurses-bin &> /dev/null
+    sudo dpkg -s ncurses-bin &> /dev/null
     if [ $? -eq 1 ] ; then
-        apt-get install -y ncurses-bin
+        sudo apt-get install -y ncurses-bin
     fi
 }
 
