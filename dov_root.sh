@@ -6,6 +6,34 @@
 
 source dov_tools.sh
 
+function init_root_script(){
+    if [ ! -d ~/.init_log ] ; then
+        mkdir ~/.init_log/
+    fi
+    if [ ! -f ~/init_log/init_${currentDate}.log ] ; then
+        message "Aktualizacja pakietów." "-w"
+        apt-get update
+        message "Usunięcie zbędnych pakietów." "-w"
+        apt-get autoremove -y
+        message "Aktualizacja systemu." "-w"
+        apt-get upgrade -y
+
+        touch ~/init_log/init_${currentDate}.log
+    fi
+    dpkg -s pv &> /dev/null
+    if [ $? -eq 1 ] ; then
+        apt-get install -y pv
+        xup=1
+    fi
+    dpkg -s figlet &> /dev/null
+    if [ $? -eq 1 ] ; then
+        apt-get install -y figlet
+    fi
+    dpkg -s ncurses-bin &> /dev/null
+    if [ $? -eq 1 ] ; then
+        apt-get install -y ncurses-bin
+    fi
+}
 
 function get_required_install_tools(){
     message "AKTUALIZACJA I INSTALACJA" "-t"
@@ -259,6 +287,6 @@ function get_root_menu(){
 }
 
 if [ "$0" == "./dov_root.sh" ] || [ "$0" == "dov_root.sh" ] ; then
-    init_script
+    init_root_script
     get_root_menu
 fi
