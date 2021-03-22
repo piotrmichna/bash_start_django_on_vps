@@ -47,36 +47,31 @@ T_ROW=0
 # sudo modprobe pcspkr > /dev/null
 
 function init_script(){
-    message "Aktualizacja pakietów." "-w"
-    sudo apt-get update
-    message "Usunięcie zbędnych pakietów." "-w"
-    sudo apt-get autoremove -y
-    message "Aktualizacja systemu." "-w"
-    sudo apt-get upgrade -y
-    sudo dpkg -s pv &> /dev/null
+    if [ ! -d ~/.init_log ] ; then
+        mkdir ~/.init_log/
+    fi
+    if [ ! -f ~/init_log/init_${currentDate}.log ] ; then
+        message "Aktualizacja pakietów." "-w"
+        apt-get update
+        message "Usunięcie zbędnych pakietów." "-w"
+        apt-get autoremove -y
+        message "Aktualizacja systemu." "-w"
+        apt-get upgrade -y
 
+        touch ~/init_log/init_${currentDate}.log
+    fi
+    dpkg -s pv &> /dev/null
     if [ $? -eq 1 ] ; then
-        sudo apt-get install -y pv
+        apt-get install -y pv
         xup=1
-        clear
     fi
-    sudo dpkg -s figlet &> /dev/null
+    dpkg -s figlet &> /dev/null
     if [ $? -eq 1 ] ; then
-        if [ $xup -eq 0 ] ; then
-            sudo apt-get update | pv -w 50 -l -c | display_progres $C_MES
-            xup=1
-        fi
-        sudo apt-get install -y figlet | pv -w 50 -l -c | display_progres $C_MES
-        clear
+        apt-get install -y figlet
     fi
-    sudo dpkg -s ncurses-bin &> /dev/null
+    dpkg -s ncurses-bin &> /dev/null
     if [ $? -eq 1 ] ; then
-        if [ $xup -eq 0 ] ; then
-            sudo apt-get update | pv -w 50 -l -c | display_progres $C_MES
-            xup=1
-        fi
-        sudo apt-get install -y ncurses-bin | pv -w 50 -l -c | display_progres $C_MES
-        clear
+        apt-get install -y ncurses-bin
     fi
 }
 
