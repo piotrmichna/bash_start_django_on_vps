@@ -1,5 +1,24 @@
 # instalacja i konfiguracja oprogramowania dla projektu Django
 
+## 1 Instalacja skryptu
+
+```
+cd ~/
+mkdir install_django
+cd install_django
+git clone https://github.com/piotrmichna/bash_start_django_on_vps.git .
+```
+## 2 Uruchomienie skryptu
+
+```
+cd ~/ install_django
+./install.sh
+```
+## 2.1 Funkcjonalności dla konta root
+
+![alt text](doc/menu_root.png "menu_root")
+
+1. Instalacja
 ### 1. Modyfikacja promptu terminala
 
 Funkcja kopiuje plik skryptu do katalogu domowego urzytkownika oraz rejestruje go w tym samym katalogu w pliku __.bashrc__.
