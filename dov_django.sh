@@ -55,7 +55,11 @@ function get_conf_static(){
         message "Podaj lokalizację katalogu static" "-q"
         echo -ne "\n\r"
         get_param "~/$PROJ_DIR/$DJANGO_DIR/"
-        DIR_STATIC="$HOME/$PROJ_DIR/$DJANGO_DIR/$PARAM"
+        if [ "$PARAM" == "." ] ; then
+          DIR_STATIC="$HOME/$PROJ_DIR/$DJANGO_DIR/"
+        else
+          DIR_STATIC="$HOME/$PROJ_DIR/$DJANGO_DIR/$PARAM"
+        fi
         message "Katalog static: $DIR_STATIC" "-c"
     fi
 }
