@@ -359,7 +359,7 @@ function get_nginx(){
 }"
     cd ${HOME}/${PROJ_DIR}/
 
-    sudo echo "$serv_conf" > "${DJANGO_DIR}.serv"
+    sudo echo "$serv_conf" > "${C_SYS_NAME}.serv"
     sudo cp "${DJANGO_DIR}.serv" /etc/nginx/sites-available/
     sudo rm "${DJANGO_DIR}.serv"
     message "Zapis /etc/nginx/sites-available/${DJANGO_DIR}.serv" "-c"
