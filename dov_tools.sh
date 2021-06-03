@@ -393,13 +393,13 @@ function get_git_clone_config(){
       fi
       message "Sprawdzanie repozytorium!" "-m"
       if [ -d /tmp/$PROJ_DIR ] ; then
-        rm /tmp/$PROJ_DIR
+        sudo rm /tmp/$PROJ_DIR
       fi
-      mkdir /tmp/$PROJ_DIR
-      git clone --depth 1 --single-branch $PARAM /tmp/$PROJ_DIR &> /dev/null
+      sudo mkdir /tmp/$PROJ_DIR
+      sudo git clone --depth 1 --single-branch $PARAM /tmp/$PROJ_DIR &> /dev/null
 
       if [ $? -eq 0 ] ; then
-        rm -rf /tmp/$PROJ_DIR
+        sudo rm -rf /tmp/$PROJ_DIR
         GIT_LINK=$PARAM
         C_CGIT=1
         message "Link do repozytorium=$GIT_LINK" "-c"
