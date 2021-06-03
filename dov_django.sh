@@ -360,16 +360,16 @@ function get_nginx(){
     cd ${HOME}/${PROJ_DIR}/
 
     sudo echo "$serv_conf" > "${C_SYS_NAME}.serv"
-    sudo cp "${DJANGO_DIR}.serv" /etc/nginx/sites-available/
-    sudo rm "${DJANGO_DIR}.serv"
-    message "Zapis /etc/nginx/sites-available/${DJANGO_DIR}.serv" "-c"
+    sudo cp "${C_SYS_NAME}.serv" /etc/nginx/sites-available/
 
-    x=$(sudo ln -s "/etc/nginx/sites-available/${DJANGO_DIR}.serv" "/etc/nginx/sites-enabled/${DJANGO_DIR}.serv")
+    message "Zapis /etc/nginx/sites-available/${C_SYS_NAME}.serv" "-c"
+
+    x=$(sudo ln -s "/etc/nginx/sites-available/${C_SYS_NAME}.serv" "/etc/nginx/sites-enabled/${C_SYS_NAME}.serv")
     if [ "$x" != "" ] ; then
-        message "Nadpisano poprzednią konfigurację ${DJANGO_DIR}.serv" "-w"
+        message "Nadpisano poprzednią konfigurację ${C_SYS_NAME}.serv" "-w"
     fi
 
-    message "Dowiązanie /etc/nginx/sites-enabled/${DJANGO_DIR}.serv" "-c"
+    message "Dowiązanie /etc/nginx/sites-enabled/${C_SYS_NAME}.serv" "-c"
 
     sudo systemctl restart nginx.service
 
