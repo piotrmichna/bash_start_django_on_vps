@@ -56,11 +56,10 @@ function get_conf_static(){
         echo -ne "\n\r"
         get_param "~/$PROJ_DIR/$DJANGO_DIR/"
         if [ "$PARAM" == "." ] ; then
-            DIR_STATIC="$HOME/$PROJ_DIR/$DJANGO_DIR/"
+          DIR_STATIC="$HOME/$PROJ_DIR/$DJANGO_DIR/"
         else
-            DIR_STATIC="$HOME/$PROJ_DIR/$DJANGO_DIR/$PARAM"
+          DIR_STATIC="$HOME/$PROJ_DIR/$DJANGO_DIR/$PARAM"
         fi
-
         message "Katalog static: $DIR_STATIC" "-c"
     fi
 }
@@ -360,7 +359,7 @@ function get_nginx(){
 }"
     cd ${HOME}/${PROJ_DIR}/
 
-    sudo echo "$serv_conf" > "${DJANGO_DIR}.serv"
+    sudo echo "$serv_conf" > "${C_SYS_NAME}.serv"
     sudo cp "${DJANGO_DIR}.serv" /etc/nginx/sites-available/
     sudo rm "${DJANGO_DIR}.serv"
     message "Zapis /etc/nginx/sites-available/${DJANGO_DIR}.serv" "-c"
