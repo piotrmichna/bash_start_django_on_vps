@@ -50,15 +50,18 @@ function init_script(){
     if [ ! -d ~/.init_log ] ; then
         mkdir ~/.init_log/
     fi
-    if [ ! -f ~/init_log/init_${currentDate}.log ] ; then
+    cd ~/.init_log/
+    if [ ! -f init_${currentDate}.log ] ; then
         message "Aktualizacja pakietów." "-w"
         sudo apt-get update
         message "Usunięcie zbędnych pakietów." "-w"
         sudo apt-get autoremove -y
         message "Aktualizacja systemu." "-w"
         sudo apt-get upgrade -y
-
-        touch ~/init_log/init_${currentDate}.log
+        message "Aktualizacja pip." "-w"
+        sudo pip3 install --upgrade pip
+        rm *.*
+        touch init_${currentDate}.log
     fi
     sudo dpkg -s pv &> /dev/null
     if [ $? -eq 1 ] ; then
