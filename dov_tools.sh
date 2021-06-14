@@ -365,7 +365,7 @@ function get_prompt(){
 
         if [ "$link_bash" != "" ] ; then
             message "Kopiowanie skryptu .git_bash_prompt.sh do katalogu domowego." "-m"
-            cp git_venv_prompt.sh "$HOME/.git_venv_prompt.sh"
+            sudo cp git_venv_prompt.sh "$HOME/.git_venv_prompt.sh"
 
             x=`ls -a $HOME | grep .git_venv_prompt.sh | wc -l`
             if [ $x -gt 0 ] ; then
