@@ -331,6 +331,8 @@ function get_user_config_vim(){
 function get_prompt(){
     message 'MODYFIKACJA PROMPT' "-t"
     message "Sprawdzanie konfiguracji." "-m"
+    x=`pwd`
+    message "Aktualny katalog: $x" "-c"
     local flag=1
     x=`ls -a $HOME | grep .git_venv_prompt.sh | wc -l`
     if [ $x -eq 1 ] ; then
