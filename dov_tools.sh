@@ -51,8 +51,7 @@ function init_script(){
     if [ ! -d ~/.init_log ] ; then
         mkdir ~/.init_log/
     fi
-    cd ~/.init_log/
-    if [ ! -f init_${currentDate}.log ] ; then
+    if [ ! -f ~/.init_log/init_${currentDate}.log ] ; then
         message "Aktualizacja pakietów." "-w"
         sudo apt-get update
         message "Usunięcie zbędnych pakietów." "-w"
