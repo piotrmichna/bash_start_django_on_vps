@@ -112,7 +112,7 @@ function get_all_prompt(){
         get_param 'Dodać do prompt informacje o git i virtualev? [t/n]' "TtNn"
         if [ "$PARAM" == "t" ] || [ "$PARAM" == "T" ] ; then
             message "Modyfikowanie prompt." "-m"
-            cp git_venv_prompt.sh /etc/skel/.git_venv_prompt.sh
+            sudo cp git_venv_prompt.sh /etc/skel/.git_venv_prompt.sh
             message "Kopiowanie git_venv_prompt.sh /etc/skel/.git_venv_prompt.sh" "-c"
             if [ ! -d $HOME/bash_back ] ; then
                 mkdir $HOME/bash_back

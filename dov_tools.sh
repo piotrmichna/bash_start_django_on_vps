@@ -692,7 +692,7 @@ function get_virtualenv(){
   x=`pip3 list | grep virtualenv | wc -l`
   if [ $x -eq 0 ] ; then
     message 'Instalacja virtualenv' "-m"
-    sudo pip3 install virtualenv |& tee -a $LOG_FILE
+    pip3 install virtualenv |& tee -a $LOG_FILE
     x=`pip3 list | grep virtualenv | wc -l`
     if [ $x -eq 1 ] ; then
         message 'Zainstalowano virtualenv' "-c"
@@ -705,7 +705,7 @@ function get_virtualenv(){
   if [ $x -eq 1 ] ; then
     message 'Tworzenie środowiska virtualenv' "-m"
     cd ${HOME}/${PROJ_DIR}
-    virtualenv -p python3 venv | pv -w 50 -l -c | tee -a $LOG_FILE | display_progres $C_MES
+    virtualenv -p python3 venv | tee -a $LOG_FILE | display_progres $C_MES
     if [ -d "venv" ] ; then
         message "Utworzono środowisko virtualenv." "-c"
         venv_activate
