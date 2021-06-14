@@ -296,6 +296,8 @@ function get_user_git_config(){
         message "alias df=diff" "-c"
         git config --globa alias.dfc "diff --chacek" &> /dev/null
         message "alias dfc=diff --chacek" "-c"
+        git config --globa core.editor vim &> /dev/null
+        message "core.editor vim" "-c"
     fi
     if [ ! -z "$1" ] ; then
         get_param 'Wybierz [x] aby zakończyć' "Xx"
