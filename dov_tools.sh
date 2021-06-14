@@ -59,7 +59,7 @@ function init_script(){
         message "Aktualizacja systemu." "-w"
         sudo apt-get upgrade -y
         message "Aktualizacja pip." "-w"
-        sudo pip3 install --upgrade pip
+        pip3 install --upgrade pip
         rm *.*
         touch init_${currentDate}.log
     fi
