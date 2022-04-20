@@ -59,8 +59,8 @@ function init_script(){
         message "Aktualizacja systemu." "-w"
         sudo apt-get upgrade -y
         message "Aktualizacja pip." "-w"
-        pip3 install --upgrade pip
-        rm *.*
+        #pip3 install --upgrade pip
+        #rm *.*
         touch init_${currentDate}.log
     fi
     sudo dpkg -s pv &> /dev/null
@@ -365,7 +365,7 @@ function get_prompt(){
 
         if [ "$link_bash" != "" ] ; then
             message "Kopiowanie skryptu .git_bash_prompt.sh do katalogu domowego." "-m"
-            cp git_venv_prompt.sh "$HOME/.git_venv_prompt.sh"
+            cp git_venv_prompt.sh "${HOME}/.git_venv_prompt.sh"
 
             x=`ls -a $HOME | grep .git_venv_prompt.sh | wc -l`
             if [ $x -gt 0 ] ; then
@@ -403,10 +403,10 @@ function get_git_clone_config(){
         sudo rm /tmp/$PROJ_DIR
       fi
       sudo mkdir /tmp/$PROJ_DIR
-      sudo git clone --depth 1 --single-branch $PARAM /tmp/$PROJ_DIR &> /dev/null
+      sudo git clone --depth 1 --single-branch /tmp/${PROJ_DIR}
 
       if [ $? -eq 0 ] ; then
-        sudo rm -rf /tmp/$PROJ_DIR
+        sudo rm -rf /tmp/${PROJ_DIR}
         GIT_LINK=$PARAM
         C_CGIT=1
         message "Link do repozytorium=$GIT_LINK" "-c"
@@ -481,7 +481,7 @@ function get_config_psql(){
           fi
         fi
       done
-      echo "--|✓|-> Nazwa użytkownika bazy PostgreSQL=$PSQL_USER" |& tee -a $LOG_FILE &> /dev/null
+      echo "--|✓|-> Nazwa użytkownika bazy PostgreSQL=${PSQL_USER}" |& tee -a $LOG_FILE &> /dev/null
       while true ; do
         message "Podaj hasło" "-q"
         read -s PSQL_PASS
