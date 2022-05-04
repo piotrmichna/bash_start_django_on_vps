@@ -400,10 +400,10 @@ function get_git_clone_config(){
       fi
       message "Sprawdzanie repozytorium!" "-m"
       if [ -d /tmp/$PROJ_DIR ] ; then
-        sudo rm /tmp/$PROJ_DIR
+        sudo rm -fr /tmp/$PROJ_DIR
       fi
       sudo mkdir /tmp/$PROJ_DIR
-      sudo git clone --depth 1 --single-branch /tmp/${PROJ_DIR}
+      sudo git clone --depth 1 --single-branch $PARAM /tmp/${PROJ_DIR}
 
       if [ $? -eq 0 ] ; then
         sudo rm -rf /tmp/${PROJ_DIR}
