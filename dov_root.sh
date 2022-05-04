@@ -38,8 +38,11 @@ function init_root_script(){
 function get_required_install_tools(){
     message "AKTUALIZACJA I INSTALACJA" "-t"
     install_prog vim git links curl bc python3 python3-dev python3-pip
+    sudo apt-get install build-essential cmake pkg-config -y
+
     python3 -m pip install --upgrade pip
     python -m pip install --user virtualenv
+
     if [ ! -z "$1" ] ; then
         get_param 'Wybierz [x] aby zakończyć' "Xx"
     fi
