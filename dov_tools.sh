@@ -403,10 +403,10 @@ function get_git_clone_config(){
         sudo rm -fr /tmp/$PROJ_DIR
       fi
       sudo mkdir /tmp/$PROJ_DIR
-      sudo git clone --depth 1 --single-branch $PARAM /tmp/${PROJ_DIR}
+      sudo git clone --depth 1 --single-branch $PARAM /tmp/$PROJ_DIR
 
       if [ $? -eq 0 ] ; then
-        sudo rm -rf /tmp/${PROJ_DIR}
+        sudo rm -rf /tmp/$PROJ_DIR
         GIT_LINK=$PARAM
         C_CGIT=1
         message "Link do repozytorium=$GIT_LINK" "-c"
