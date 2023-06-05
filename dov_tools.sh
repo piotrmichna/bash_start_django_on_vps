@@ -693,11 +693,11 @@ function get_install_lib(){
 
 function get_virtualenv(){
   message "ŚRODOWISKO VIRTUALENV" "-t"
-  x=`pip3 list | grep virtualenv | wc -l`
+  x=`python3 -m pip list | grep virtualenv | wc -l`
   if [ $x -eq 0 ] ; then
     message 'Instalacja virtualenv' "-m"
     pip3 install virtualenv |& tee -a $LOG_FILE
-    x=`pip3 list | grep virtualenv | wc -l`
+    x=`python3 -m pip list | grep virtualenv | wc -l`
     if [ $x -eq 1 ] ; then
         message 'Zainstalowano virtualenv' "-c"
     else
@@ -705,7 +705,7 @@ function get_virtualenv(){
         get_exit 'Błąd instalacji virtualenv'
     fi
   fi
-  x=`pip3 list | grep virtualenv | wc -l`
+  x=`python3 -m pip list | grep virtualenv | wc -l`
   if [ $x -eq 1 ] ; then
     message 'Tworzenie środowiska virtualenv' "-m"
     cd ${HOME}/${PROJ_DIR}
