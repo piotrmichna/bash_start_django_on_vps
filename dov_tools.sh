@@ -713,6 +713,7 @@ function get_virtualenv(){
     if [ -d "venv" ] ; then
         message "Utworzono środowisko virtualenv." "-c"
         venv_activate
+        python -m pip install --upgrade pip
         get_install_lib
     else
         message "Nie udane utworzenie środowiska virtualenv." "-e"
