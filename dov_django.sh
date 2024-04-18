@@ -207,7 +207,7 @@ STATIC_URL = '/static/'
         fi
 
         if [ "$crhosts" != "" ] ; then
-            local_setting="CSRF_TRUSTED_ORIGINS = [${$crhosts}]"
+            local_setting="CSRF_TRUSTED_ORIGINS = [${crhosts}]"
             message "Konfiguracja ustawień CSRF_TRUSTED_ORIGINS." "-c"
             var_set="${var_set}, CSRF_TRUSTED_ORIGINS"
             echo "$local_setting" >> ${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}/local_settings.py
