@@ -174,12 +174,15 @@ function get_django_settings(){
         message "Konfiguracja ustawień Django." "-m"
         local host=$(echo $C_SYS_HOSTS | tr "," "\n")
         local hosts=""
+        local crhosts=""
         local var_set=""
         for addr in $host ; do
             if [ "$hosts" == "" ] ; then
             hosts="'$addr'"
+            crhosts="'https://$addr'"
             else
             hosts="${hosts},'$addr'"
+            crhosts="${crhosts},'https://$addr'"
             fi
         done
         message "Szukanie pliku local_settings.py." "-m"
@@ -200,6 +203,13 @@ STATIC_URL = '/static/'
             local_setting="ALLOWED_HOSTS = [${hosts}]"
             message "Konfiguracja ustawień ALLOWED_HOSTS." "-c"
             var_set="${var_set}, ALLOWED_HOSTS"
+            echo "$local_setting" >> ${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}/local_settings.py
+        fi
+
+        if [ "$crhosts" != "" ] ; then
+            local_setting="CSRF_TRUSTED_ORIGINS = [${$crhosts}]"
+            message "Konfiguracja ustawień CSRF_TRUSTED_ORIGINS." "-c"
+            var_set="${var_set}, CSRF_TRUSTED_ORIGINS"
             echo "$local_setting" >> ${HOME}/${PROJ_DIR}/${DJANGO_DIR}/${DJANGO_DIR}/local_settings.py
         fi
 
